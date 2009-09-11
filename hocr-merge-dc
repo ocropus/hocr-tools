@@ -1,0 +1,60 @@
+#!/usr/bin/python
+
+import sys,os,string,re
+import xml
+from xml.dom.ext.reader import Sax2
+from xml.dom.ext.reader import HtmlLib
+from xml.xpath import Compile,Evaluate
+
+dcknown = [
+    "dc:title","dc:creator","dc:subject",
+    "dc:description","dc:publisher",
+    "dc:contributor","dc:date","dc:type","dc:format",
+    "dc:identifier","dc:source","dc:language","dc:relation",
+    "dc:coverage","dc:rights"
+]
+
+def get_text(node):
+    textnodes = Evaluate(".//text()",node)
+    s = string.join([node.nodeValue for node in textnodes])
+    return re.sub(r'\s+',' ',s)
+
+if len(sys.argv)<2:
+    sys.stderr.write("merge Dublin Core metadata into hOCR header files\n\n")
+    sys.stderr.write("usage: %s dc.xml hocr.html\n"%sys.argv[0])
+    sys.exit(1)
+
+s = open(sys.argv[1]).read()
+dc_doc = Sax2.Reader().fromString(s)
+dc_context = xml.xpath.Context.Context(dc_doc)
+dc_context.setNamespaces({"dc":"http://purl.org/dc/elements/1.1/"})
+
+s = open(sys.argv[2]).read()
+hocr_doc = HtmlLib.Reader().fromString(s)
+
+### remove all existing META tags representing Dublin Core metadata
+
+hocr_meta = Evaluate("//HEAD",hocr_doc)
+assert hocr_meta!=[]
+hocr_meta = hocr_meta[0]
+
+hocr_nodes = Evaluate("//HEAD//META[starts-with(@name,'DC.')]",hocr_doc)
+for node in hocr_nodes:
+    node.parentNode.removeChild(node)
+
+### find all the Dublin Core tags in the Dublin Core metadata
+
+dc_nodes = Evaluate("//dc:*",dc_doc,dc_context)
+for node in dc_nodes:
+    if node.nodeName in dcknown:
+        name = re.sub(r'^dc:','DC.',node.nodeName)
+        value = get_text(node)
+        value = re.sub("[\t\r\n'\"]"," ",value).strip()
+        value = value[:500]
+        # hnode = hocr_doc.importNode(node,1)
+        hnode = hocr_doc.createElement("META")
+        hnode.setAttribute("name",name)
+        hnode.setAttribute("value",value)
+        hocr_meta.appendChild(hnode)
+
+xml.dom.ext.PrettyPrint(hocr_doc,sys.stdout)

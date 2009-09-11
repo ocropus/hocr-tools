@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+
+<metadata
+  xmlns="http://example.org/myapp/"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://example.org/myapp/ http://example.org/myapp/schema.xsd"
+  xmlns:dc="http://purl.org/dc/elements/1.1/">
+
+  <dc:title>
+    UKOLN
+  </dc:title>
+  <dc:description>
+    UKOLN is a national focus of expertise in digital information
+    management. It provides policy, research and awareness services
+    to the UK library, information and cultural heritage communities.
+    UKOLN is based at the University of Bath.
+  </dc:description>
+  <dc:publisher>
+    UKOLN, University of Bath
+  </dc:publisher>
+  <dc:identifier>
+    http://www.ukoln.ac.uk/
+  </dc:identifier>
+
+</metadata>

@@ -1,0 +1,98 @@
+#!/usr/bin/python
+
+# compute statistics about the quality of the geometric segmentation
+# at the level of the given OCR element
+
+import sys,os,string,re,getopt
+import xml
+from xml.dom.ext.reader import HtmlLib
+from xml.xpath import Evaluate as xquery
+from pylab import array,zeros,reshape
+
+################################################################
+### misc library code
+################################################################
+
+def assoc(key,list):
+    for k,v in list:
+        if k==key: return v
+    return None
+
+def get_text(node):
+    textnodes = xquery(".//text()",node)
+    s = string.join([node.nodeValue for node in textnodes])
+    return re.sub(r'\s+',' ',s)
+
+simp_re = re.compile(r'[^a-zA-Z0-9.,!?:;]+')
+
+def normalize(s):
+    s = simp_re.sub(' ',s)
+    s = s.strip()
+    return s
+
+def edit_distance(a,b,threshold=999999):
+    if a==b: return 0
+    m = len(a)
+    n = len(b)
+    distances = zeros((m+1,n+1))
+    distances[:,:] = threshold
+    distances[:,0] = array(range(m+1))
+    distances[0,:] = array(range(n+1))
+    for i in range(1,m+1):
+        for j in range(1,n+1):        
+            if a[i-1] == b[j-1]:
+                cij = 0
+            else:
+                cij = 1
+            d = min(
+                distances[i-1,j] + 1, 
+                distances[i,j-1] + 1, 
+                distances[i-1,j-1] + cij
+            )
+            if d>=threshold: return d
+            distances[i,j] = d
+    return distances[m,n]
+
+################################################################
+### main program
+################################################################
+
+if len(sys.argv)<3:
+    print "usage: %s [-v] true-lines.txt hocr-actual.html"%sys.argv[0]
+    sys.exit(0)
+optlist,args = getopt.getopt(sys.argv[1:],"v")
+
+verbose = (assoc('-v',optlist)=='')
+truth_lines = open(args[0]).read().split('\n')
+actual_doc = HtmlLib.Reader().fromString(open(args[1]).read())
+actual_lines = [get_text(node) for node in xquery("//*[@class='ocr_line']",actual_doc)]
+
+truth_lines = [normalize(s) for s in truth_lines]
+truth_lines = [s for s in truth_lines if s!=""]
+actual_lines = [normalize(s) for s in actual_lines]
+actual_lines = [s for s in truth_lines if s!=""]
+
+remaining = []+truth_lines
+ocr_errors = 0
+for actual_line in actual_lines:
+    min_d = 999999
+    min_i = -1
+    for index in range(len(remaining)):
+        true_line = remaining[index]
+        d = edit_distance(true_line,actual_line,min_d)
+        if d<min_d:
+            min_d = d
+            min_i = index
+    if verbose and min_d>0:
+        print "distance",min_d
+        print "\t"+actual_line
+        print "\t"+remaining[min_i]
+    assert min_i>=0
+    del remaining[min_i]
+    ocr_errors += min_d
+
+segmentation_errors = 0
+for s in remaining: segmentation_errors += len(s)
+
+print "segmentation_errors",segmentation_errors
+print "ocr_errors",ocr_errors

@@ -1,0 +1,20 @@
+#!/usr/bin/python
+
+# extract the text within all the ocr_line elements within the hOCR file
+
+import sys,os,string,re
+from xml.dom.ext.reader import HtmlLib
+from xml.xpath import Evaluate as xquery
+
+def get_text(node):
+    textnodes = xquery(".//text()",node)
+    s = string.join([node.nodeValue for node in textnodes])
+    return re.sub(r'\s+',' ',s)
+
+if len(sys.argv)>1: stream = open(sys.argv[1])
+else: stream = sys.stdin
+doc = HtmlLib.Reader().fromString(stream.read())
+lines = xquery("//*[@class='ocr_line']",doc.documentElement)
+
+for line in lines:
+    print get_text(line)

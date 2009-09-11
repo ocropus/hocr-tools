@@ -1,0 +1,117 @@
+#!/usr/bin/python
+
+# compute statistics about the quality of the geometric segmentation
+# at the level of the given OCR element
+
+import sys,os,string,re,getopt
+import xml
+from xml.dom.ext.reader import HtmlLib
+from xml.xpath import Evaluate as xquery
+
+### general utilities
+
+def assoc(key,list):
+    for k,v in list:
+        if k==key: return v
+    return None
+
+### XML processing
+
+def get_text(node):
+    textnodes = xquery(".//text()",node)
+    s = string.join([node.nodeValue for node in textnodes])
+    return re.sub(r'\s+',' ',s)
+def get_prop(node,name):
+    title = node.getAttributeNS(None,'title')
+    props = title.split(';')
+    for prop in props:
+        (key,args) = prop.split(None,1)
+        if key==name: return args
+    return None
+def get_bbox(node):
+    bbox = get_prop(node,'bbox')
+    if not bbox: return None
+    return tuple([int(x) for x in bbox.split()])
+
+### rectangle properties
+
+def intersect(u,v):
+    # intersection of two rectangles
+    r = (max(u[0],v[0]),max(u[1],v[1]),min(u[2],v[2]),min(u[3],v[3]))
+    return r
+def area(u):
+    # area of a rectangle
+    return max(0,u[2]-u[0])*max(0,u[3]-u[1])
+def overlaps(u,v):
+    # predicate: do the two rectangles overlap?
+    return area(intersect(u,v))>0
+def relative_overlap(u,v):
+    m = max(area(u),area(v))
+    i = area(intersect(u,v))
+    return float(i)/m
+
+################################################################
+### main program
+################################################################
+
+### argument parsing
+
+if len(sys.argv)<3:
+    print "usage: %s [-e element-name] [-o overlap-threshold] hocr-truth hocr-actualf"%sys.argv[0]
+    sys.exit(0)
+optlist,args = getopt.getopt(sys.argv[1:],"e:o:")
+
+element = assoc('-e',optlist) or 'ocr_line'
+significant_overlap = assoc('-o',optlist) or 0.1
+significant_overlap = float(significant_overlap)
+close_match = assoc('-c',optlist) or 0.9
+close_match = float(close_match)
+
+### read the hOCR files
+
+truth_doc = HtmlLib.Reader().fromString(open(args[0]).read())
+actual_doc = HtmlLib.Reader().fromString(open(args[1]).read())
+truth_pages = xquery("//*[@class='ocr_page']",truth_doc)
+actual_pages = xquery("//*[@class='ocr_page']",actual_doc)
+assert len(truth_pages) == len(actual_pages)
+pages = zip(truth_pages,actual_pages)
+
+### compute statistics
+
+def boxstats(truths,actuals):
+    multiple = 0
+    missing = 0
+    error = 0
+    count = 0
+    for t in truths:
+        overlapping = [a for a in actuals if overlaps(a,t)]
+        oas = [relative_overlap(t,a) for a in overlapping]
+        if len([o for o in oas if o > significant_overlap])>1:
+            multiple += 1
+        matching = [o for o in oas if o > close_match]
+        if len(matching)<1:
+            missing += 1
+        elif len(matching)>1:
+            raise "multiple close matches: your segmentation files are bad"
+        else:
+            error += 1.0-matching[0]
+            count += 1
+    return multiple,missing,error,count
+
+def check_bad_partition(boxes):
+    for i in range(len(boxes)):
+        for j in range(i+1,len(boxes)):
+            if relative_overlap(boxes[i],boxes[j])>significant_overlap:
+                return 1
+    return 0
+
+for truth,actual in pages:
+    tobjs = xquery("//*[@class='%s']"%element,truth)
+    aobjs = xquery("//*[@class='%s']"%element,actual)
+    tboxes = [get_bbox(n) for n in tobjs]
+    if check_bad_partition(tboxes):
+        raise "ground truth data is not an acceptable segmentation"
+    aboxes = [get_bbox(n) for n in aobjs]
+    if check_bad_partition(aboxes):
+        raise "actual data is not an acceptable segmentation"
+    print boxstats(tboxes,aboxes),boxstats(aboxes,tboxes)

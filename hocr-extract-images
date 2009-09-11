@@ -1,0 +1,62 @@
+#!/usr/bin/python
+
+# extract the text within all the ocr_line elements within the hOCR file
+
+import sys,os,string,re,getopt
+import xml
+from PIL import Image
+from xml.dom.ext.reader import HtmlLib
+from xml.xpath import Evaluate as xquery
+
+def assoc(key,list):
+    for k,v in list:
+        if k==key: return v
+    return None
+
+def get_text(node):
+    textnodes = xquery(".//text()",node)
+    s = string.join([node.nodeValue for node in textnodes])
+    return re.sub(r'\s+',' ',s)
+
+def get_prop(node,name):
+    title = node.getAttributeNS(None,'title')
+    props = title.split(';')
+    for prop in props:
+        (key,args) = prop.split(None,1)
+        if key==name: return args
+    return None
+
+if len(sys.argv)<2 and sys.stdin.isatty():
+    print "usage: %s [-b image-dir] [-p file-pattern] [-e element-name] [hocr-file]"%sys.argv[0]
+    sys.exit(0)
+optlist,args = getopt.getopt(sys.argv[1:],"b:p:e:")
+print args
+
+basename = assoc('-b',optlist)
+pattern = assoc('-p',optlist) or 'line-%03d.png'
+element = assoc('-e',optlist) or 'ocr_line'
+
+if len(args)>1: raise "too many args"
+if len(args)==1: stream = open(args[0])
+else: stream = sys.stdin
+
+doc = HtmlLib.Reader().fromString(stream.read())
+pages = xquery("//*[@class='ocr_page']",doc)
+for page in pages:
+    iname = get_prop(page,'file')
+    if basename:
+        iname = os.path.join(basename,os.path.basename(iname))
+    if not os.path.exists(iname):
+        print "not found:",iname
+        sys.exit(1)
+    image = Image.open(iname)
+    print image
+    lines = xquery("//*[@class='%s']"%element,page)
+    lcount = 1
+    for line in lines:
+        bbox = [int(x) for x in get_prop(line,'bbox').split()]
+        assert bbox[0]<bbox[2]
+        assert bbox[1]<bbox[3]
+        lineimage = image.crop(bbox)
+        lineimage.save(pattern%lcount)
+        lcount += 1

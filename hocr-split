@@ -1,0 +1,52 @@
+#!/usr/bin/python
+
+# split an hOCR file into individual pages
+
+import sys,os,string,re
+import xml
+from xml.dom.ext.reader import HtmlLib
+from xml.xpath import Evaluate as xquery
+
+################################################################
+### library
+################################################################
+
+def get_text(node):
+    textnodes = xquery(".//text()",node)
+    s = string.join([node.nodeValue for node in textnodes])
+    return re.sub(r'\s+',' ',s)
+
+################################################################
+### main program
+################################################################
+
+if len(sys.argv)!=3:
+    sys.stderr.write("split a multipage hOCR file into single pages\n\n")
+    sys.stderr.write("usage: %s file.html pattern\n" % sys.argv[0])
+    sys.stderr.write("   where 'pattern' is something like 'base-%%03d.html'\n")
+    sys.exit(1)
+
+pattern = sys.argv[2]
+assert re.search('%[0-9]*d',pattern)
+
+stream = open(sys.argv[1])
+doc = HtmlLib.Reader().fromString(stream.read())
+
+template = doc.cloneNode(1)
+pages = xquery("//*[@class='ocr_page']",template)
+assert pages!=[]
+container = pages[0].parentNode
+
+def write_template_with_page(new_page,index):
+    pages = xquery("//*[@class='ocr_page']",template)
+    for page in pages: container.removeChild(page)
+    container.appendChild(new_page)
+    stream = open(pattern % index,"w")
+    xml.dom.ext.PrettyPrint(doc,stream)
+    stream.close()
+
+pages = xquery("//*[@class='ocr_page']",template)
+index = 1
+for page in pages:
+    write_template_with_page(page,index)
+    index += 1

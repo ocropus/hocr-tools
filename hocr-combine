@@ -1,0 +1,42 @@
+#!/usr/bin/python
+
+import sys,os,string,re
+import xml
+from xml.dom.ext.reader import HtmlLib
+from xml.xpath import Evaluate as xquery
+
+################################################################
+### library code
+################################################################
+
+def get_text(node):
+    textnodes = xquery(".//text()",node)
+    s = string.join([node.nodeValue for node in textnodes])
+    return re.sub(r'\s+',' ',s)
+
+################################################################
+### main program
+################################################################
+
+if len(sys.argv)<2:
+    sys.stderr.write("combine multiple hOCR documents into one\n\n")
+    sys.stderr.write("usage: %s file1.html file2.html...\n"%sys.argv[0])
+    sys.exit(1)
+
+stream = open(sys.argv[1])
+doc = HtmlLib.Reader().fromString(open(sys.argv[1]).read())
+
+pages = xquery("//*[@class='ocr_page']",doc)
+container = pages[-1].parentNode
+
+for fname in sys.argv[2:]:
+    doc2 = HtmlLib.Reader().fromString(open(fname).read())
+    pages = xquery("//*[@class='ocr_page']",doc2)
+    for page in pages:
+        page = doc.importNode(page,1)
+        container.appendChild(page)
+
+xml.dom.ext.PrettyPrint(doc,sys.stdout)
+
+    
+    

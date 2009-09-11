@@ -1,0 +1,128 @@
+#!/usr/bin/python
+
+# check the given file for conformance with the hOCR format spec
+
+import sys,os,string,re,getopt
+from xml.dom.ext.reader import HtmlLib
+from xml.xpath import Evaluate as xquery
+
+################################################################
+### misc library code
+################################################################
+
+def assoc(key,list):
+    for k,v in list:
+        if k==key: return v
+    return None
+
+### node properties
+
+def get_prop(node,name):
+    title = node.getAttributeNS(None,'title')
+    if not title: return None
+    props = title.split(';')
+    for prop in props:
+        (key,args) = prop.split(None,1)
+        if key==name: return args
+    return None
+def get_bbox(node):
+    bbox = get_prop(node,'bbox')
+    if not bbox: return None
+    return tuple([int(x) for x in bbox.split()])
+
+### rectangle properties
+
+def intersect(u,v):
+    # intersection of two rectangles
+    r = (max(u[0],v[0]),max(u[1],v[1]),min(u[2],v[2]),min(u[3],v[3]))
+    return r
+def area(u):
+    # area of a rectangle
+    return max(0,u[2]-u[0])*max(0,u[3]-u[1])
+def overlaps(u,v):
+    # predicate: do the two rectangles overlap?
+    return area(intersect(u,v))>0
+def relative_overlap(u,v):
+    m = max(area(u),area(v))
+    i = area(intersect(u,v))
+    return float(i)/m
+
+def mostly_nonoverlapping(boxes,significant_overlap=0.2):
+    for i in range(len(boxes)):
+        for j in range(i+1,len(boxes)):
+            if relative_overlap(boxes[i],boxes[j])>significant_overlap:
+                return 0
+    return 1
+
+################################################################
+### main
+################################################################
+
+if len(sys.argv)<1:
+    print "usage:",sys.argv[0],"[-o] file.html"
+    sys.exit(1)
+optlist,args = getopt.getopt(sys.argv[1:],"o")
+nooverlap = (assoc('-o',optlist)=='')
+if len(args)>0: stream = open(args[0])
+elif len(args)>1: raise "can only check one file at a time"
+else: stream = sys.stdin
+doc = HtmlLib.Reader().fromString(stream.read())
+
+################################################################
+### XML structure checks
+################################################################
+
+# check for presence of meta information
+assert xquery("//META[@name='ocr-id']",doc)!=[]
+assert xquery("//META[@name='ocr-recognized']",doc)!=[]
+
+# check for presence of page
+assert xquery("//*[@class='ocr_page']",doc)!=[]
+
+# check that lines are inside pages
+lines = xquery("//*[@class='ocr_line']",doc.documentElement)
+for line in lines:
+    assert xquery("//*[@class='ocr_page']",line)
+
+# check that pars are inside pages
+pars = xquery("//*[@class='ocr_par']",doc.documentElement)
+for par in pars:
+    assert xquery("//*[@class='ocr_page']",par)
+
+# check that columns are inside pages
+columns = xquery("//*[@class='ocr_column']",doc.documentElement)
+for column in columns:
+    assert xquery("//*[@class='ocr_page']",column)
+
+################################################################
+### geometric checks
+################################################################    
+
+if not nooverlap:
+    for page in xquery("//*[@class='ocr_page']",doc):
+        # check lines
+        objs = xquery("//*[@class='ocr_line']",page)
+        line_bboxes = [get_bbox(obj) for obj in objs if get_prop(obj,'bbox')]
+        assert mostly_nonoverlapping(line_bboxes)
+        # check paragraphs
+        objs = xquery("//*[@class='ocr_par']",page)
+        par_bboxes = [get_bbox(obj) for obj in objs if get_prop(obj,'bbox')]
+        assert mostly_nonoverlapping(par_bboxes)
+        # check columns
+        objs = xquery("//*[@class='ocr_column']",page)
+        column_bboxes = [get_bbox(obj) for obj in objs if get_prop(obj,'bbox')]
+        assert mostly_nonoverlapping(column_bboxes)
+
+################################################################
+### TODO
+################################################################
+
+# FIXME add many other checks:
+# - containment of paragraphs, columns, etc.
+# - ocr-recognized vs. actual tags
+# - warn about text outside ocr_ elements
+# - check title= attribute format
+# - check that only the right attributes are present on the right elements
+# - check for unrecognized ocr_ elements
+# - check for significant overlaps
+# - check that image files are not repeated
