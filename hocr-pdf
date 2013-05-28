@@ -32,7 +32,7 @@ def export_pdf(playground, default_dpi):
   """Create a searchable PDF from a pile of HOCR + JPEG"""
   load_invisible_font()
   pdf = Canvas(sys.stdout, pageCompression=1)
-  pdf.setCreator('hocr-pdf')
+  pdf.setCreator('hocr-tools')
   pdf.setTitle(os.path.basename(playground))
   images = glob.glob(os.path.join(playground, '*.jpg'))
   dpi = default_dpi
