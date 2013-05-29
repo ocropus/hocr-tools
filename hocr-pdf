@@ -27,6 +27,9 @@ import re
 
 from PIL import Image
 from reportlab.pdfgen.canvas import Canvas
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+from xml.etree.ElementTree import ElementTree, ParseError
 
 def export_pdf(playground, default_dpi):
   """Create a searchable PDF from a pile of HOCR + JPEG"""
@@ -53,39 +56,41 @@ def export_pdf(playground, default_dpi):
 
 def add_text_layer(pdf, image, height, dpi):
   """Draw an invisible text layer for OCR data"""
-  from xml.etree.ElementTree import ElementTree, ParseError
-  p = re.compile('bbox((\s+\d+){4})')
-  hocrfile = os.path.splitext(image)[0] + ".html"
+  p1 = re.compile('bbox((\s+\d+){4})')
+  p2 = re.compile('baseline((\s+[\d\.\-]+){2})')
+  hocrfile = os.path.splitext(image)[0] + ".hocr"
   hocr = ElementTree()
-  try:
-    hocr.parse(hocrfile)
-  except ParseError:
-    # Tesseract bug fixed Aug 16, 2012
-    sys.stderr.write("Parse error for %s\n" % hocrfile)
-    return
-  for line in hocr.findall(".//%sspan"%('')):
+  hocr.parse(hocrfile)
+  for line in hocr.findall(".//{http://www.w3.org/1999/xhtml}span"):
     if line.attrib['class'] != 'ocr_line':
       continue
-    coords = p.search(line.attrib['title']).group(1).split()
-    # Heuristic - we assume 30% of line bounding box is descenders
-    b = float(coords[3]) - 0.3 * (float(coords[3]) - float(coords[1]))
-    base = height - b * 72 / dpi
+    linebox = p1.search(line.attrib['title']).group(1).split()
+    try:
+      baseline = p2.search(line.attrib['title']).group(1).split()
+    except AttributeError:
+      baseline = [ 0, 0 ]
+    linebox = [float(i) for i in linebox]
+    baseline = [float(i) for i in baseline]
     for word in line:
-      if word.attrib['class'] != 'ocr_word' or word.text is None:
+      if word.attrib['class'] != 'ocrx_word' or word.text is None:
         continue
-      default_width = pdf.stringWidth(word.text.strip(), 'invisible', 8)
-      if default_width <= 0:
+      font_width = pdf.stringWidth(word.text.strip(), 'invisible', 8)
+      if font_width <= 0:
         continue
-      coords = p.search(word.attrib['title']).group(1).split()
-      left = float(coords[0]) * 72 / dpi
-      right = float(coords[2]) * 72 / dpi
+      box = p1.search(word.attrib['title']).group(1).split()
+      box = [float(i) for i in box]
+      b = polyval(baseline, (box[0] + box[2]) / 2 - linebox[0]) + linebox[3]
       text = pdf.beginText()
       text.setTextRenderMode(3)  # double invisible
       text.setFont('invisible', 8)
-      text.setTextOrigin(left, base)
-      text.setHorizScale(100.0 * (right - left) / default_width)
+      text.setTextOrigin(box[0] * 72 / dpi, height - b * 72 / dpi)
+      box_width = (box[2] - box[0]) * 72 / dpi
+      text.setHorizScale(100.0 * box_width / font_width)
       text.textLine(word.text.strip())
       pdf.drawText(text)
+
+def polyval(poly, x):
+  return x * poly[0] + poly[1]
 
 # Glyphless variation of vedaal's invisible font retrieved from
 # http://www.angelfire.com/pr/pgpf/if.html, which says:
@@ -114,8 +119,6 @@ w3R/aE28KsfY2J+RPNp+j+KaOoCey4h+Dd48b9O5G0v2K7j0AM6s+5WQ/E0wVoK+pA6/3bup7bJf
 CMGjwvxTsr74/f/F95m3TH9x8o0/TU//N+7/D/ScVcA=
 """
   ttf = cStringIO.StringIO(zlib.decompress(base64.decodestring(font)))
-  from reportlab.pdfbase import pdfmetrics
-  from reportlab.pdfbase.ttfonts import TTFont
   pdfmetrics.registerFont(TTFont('invisible', ttf))
 
 if __name__ == "__main__":
