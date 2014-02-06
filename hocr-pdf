@@ -37,13 +37,13 @@ def export_pdf(playground, default_dpi):
   pdf = Canvas(sys.stdout, pageCompression=1)
   pdf.setCreator('hocr-tools')
   pdf.setTitle(os.path.basename(playground))
-  images = glob.glob(os.path.join(playground, '*.jpg'))
+  images = sorted(glob.glob(os.path.join(playground, '*.jpg')))
   dpi = default_dpi
   for image in images:
     im = Image.open(image)
     w, h = im.size
     try:
-      dpi = im.info['dpi']
+      dpi = im.info['dpi'][0]
     except KeyError:
       pass
     width = w * 72 / dpi
@@ -72,9 +72,18 @@ def add_text_layer(pdf, image, height, dpi):
     linebox = [float(i) for i in linebox]
     baseline = [float(i) for i in baseline]
     for word in line:
-      if word.attrib['class'] != 'ocrx_word' or word.text is None:
+      if word.attrib['class'] != 'ocrx_word':
         continue
-      font_width = pdf.stringWidth(word.text.strip(), 'invisible', 8)
+      if word.text is not None:
+        rawtext = word.text.strip()
+      else:
+        try:
+          innerword = word[0]
+          if innerword.text is not None:
+            rawtext = innerword.text.strip()
+        except:
+          continue
+      font_width = pdf.stringWidth(rawtext, 'invisible', 8)
       if font_width <= 0:
         continue
       box = p1.search(word.attrib['title']).group(1).split()
@@ -86,7 +95,7 @@ def add_text_layer(pdf, image, height, dpi):
       text.setTextOrigin(box[0] * 72 / dpi, height - b * 72 / dpi)
       box_width = (box[2] - box[0]) * 72 / dpi
       text.setHorizScale(100.0 * box_width / font_width)
-      text.textLine(word.text.strip())
+      text.textLine(rawtext)
       pdf.drawText(text)
 
 def polyval(poly, x):
