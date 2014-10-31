@@ -16,5 +16,5 @@ Included command line programs:
   * hocr-split -- split an hOCR file into individual pages
   * hocr-merge-dc -- merge Dublin Core meta data into the hOCR HTML header
 
-See the [CommandLine] Wiki page for more information.
+See the [Command Line](CommandLine) Wiki page for more information.
 
