@@ -5,8 +5,7 @@
 import sys,os,string,re,getopt
 import xml
 from PIL import Image
-from xml.dom.ext.reader import HtmlLib
-from xml.xpath import Evaluate as xquery
+from lxml import html
 
 def assoc(key,list):
     for k,v in list:
@@ -14,12 +13,12 @@ def assoc(key,list):
     return None
 
 def get_text(node):
-    textnodes = xquery(".//text()",node)
+    textnodes = node.xpath('.//text()')
     s = string.join([node.nodeValue for node in textnodes])
     return re.sub(r'\s+',' ',s)
 
 def get_prop(node,name):
-    title = node.getAttributeNS(None,'title')
+    title = node.get("title")
     props = title.split(';')
     for prop in props:
         (key,args) = prop.split(None,1)
@@ -40,8 +39,8 @@ if len(args)>1: raise "too many args"
 if len(args)==1: stream = open(args[0])
 else: stream = sys.stdin
 
-doc = HtmlLib.Reader().fromString(stream.read())
-pages = xquery("//*[@class='ocr_page']",doc)
+doc = html.fromstring(stream.read())
+pages = doc.xpath('//*[@class="ocr_page"]')
 for page in pages:
     iname = get_prop(page,'file')
     if basename:
@@ -51,7 +50,7 @@ for page in pages:
         sys.exit(1)
     image = Image.open(iname)
     print image
-    lines = xquery("//*[@class='%s']"%element,page)
+    lines = page.xpath("//*[@class='%s']"%element)
     lcount = 1
     for line in lines:
         bbox = [int(x) for x in get_prop(line,'bbox').split()]
