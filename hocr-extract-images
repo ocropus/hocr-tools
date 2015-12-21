@@ -1,9 +1,8 @@
 #!/usr/bin/python
 
-# extract the images within all the ocr_line elements within the hOCR file
+# extract the images and texts within all the ocr_line elements within the hOCR file
 
-import sys,os,string,re,getopt
-import xml
+import sys,os,string,re,getopt,codecs
 from PIL import Image
 from lxml import html
 
@@ -12,10 +11,10 @@ def assoc(key,list):
         if k==key: return v
     return None
 
-#def get_text(node):
-#    textnodes = node.xpath('.//text()')
-#    s = string.join([node.nodeValue for node in textnodes])
-#    return re.sub(r'\s+',' ',s)
+def get_text(node):
+    textnodes = node.xpath('.//text()')
+    s = string.join([text for text in textnodes])
+    return re.sub(r'\s+',' ',s)
 
 def get_prop(node,name):
     title = node.get("title")
@@ -34,6 +33,10 @@ print args
 basename = assoc('-b',optlist)
 pattern = assoc('-p',optlist) or 'line-%03d.png'
 element = assoc('-e',optlist) or 'ocr_line'
+
+tpattern = pattern + '.txt'
+if pattern[-4] == '.':
+    tpattern = pattern[:-3] + 'txt'
 
 if len(args)>1: raise "too many args"
 if len(args)==1: stream = open(args[0])
@@ -58,4 +61,7 @@ for page in pages:
         assert bbox[1]<bbox[3]
         lineimage = image.crop(bbox)
         lineimage.save(pattern%lcount)
+        f = codecs.open(tpattern%lcount, 'w', 'utf-8')
+        f.write(get_text(line))
+        f.close
         lcount += 1
