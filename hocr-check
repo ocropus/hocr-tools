@@ -3,8 +3,7 @@
 # check the given file for conformance with the hOCR format spec
 
 import sys,os,string,re,getopt
-from xml.dom.ext.reader import HtmlLib
-from xml.xpath import Evaluate as xquery
+from lxml import html
 
 ################################################################
 ### misc library code
@@ -18,7 +17,7 @@ def assoc(key,list):
 ### node properties
 
 def get_prop(node,name):
-    title = node.getAttributeNS(None,'title')
+    title = node.get('title')
     if not title: return None
     props = title.split(';')
     for prop in props:
@@ -66,50 +65,50 @@ nooverlap = (assoc('-o',optlist)=='')
 if len(args)>0: stream = open(args[0])
 elif len(args)>1: raise "can only check one file at a time"
 else: stream = sys.stdin
-doc = HtmlLib.Reader().fromString(stream.read())
+doc = html.fromstring(stream.read())
 
 ################################################################
 ### XML structure checks
 ################################################################
 
 # check for presence of meta information
-assert xquery("//META[@name='ocr-id']",doc)!=[]
-assert xquery("//META[@name='ocr-recognized']",doc)!=[]
+assert doc.xpath("//meta[@name='ocr-id']")!=[]
+assert doc.xpath("//meta[@name='ocr-recognized']")!=[]
 
 # check for presence of page
-assert xquery("//*[@class='ocr_page']",doc)!=[]
+assert doc.xpath("//*[@class='ocr_page']")!=[]
 
 # check that lines are inside pages
-lines = xquery("//*[@class='ocr_line']",doc.documentElement)
+lines = doc.xpath("//*[@class='ocr_line']")
 for line in lines:
-    assert xquery("//*[@class='ocr_page']",line)
+    assert line.xpath("//*[@class='ocr_page']")
 
 # check that pars are inside pages
-pars = xquery("//*[@class='ocr_par']",doc.documentElement)
+pars = doc.xpath("//*[@class='ocr_par']")
 for par in pars:
-    assert xquery("//*[@class='ocr_page']",par)
+    assert par.xpath("//*[@class='ocr_page']")
 
 # check that columns are inside pages
-columns = xquery("//*[@class='ocr_column']",doc.documentElement)
+columns = doc.xpath("//*[@class='ocr_column']")
 for column in columns:
-    assert xquery("//*[@class='ocr_page']",column)
+    assert column.xpath("//*[@class='ocr_page']")
 
 ################################################################
 ### geometric checks
 ################################################################    
 
 if not nooverlap:
-    for page in xquery("//*[@class='ocr_page']",doc):
+    for page in doc.xpath("//*[@class='ocr_page']"):
         # check lines
-        objs = xquery("//*[@class='ocr_line']",page)
+        objs = page.xpath("//*[@class='ocr_line']")
         line_bboxes = [get_bbox(obj) for obj in objs if get_prop(obj,'bbox')]
         assert mostly_nonoverlapping(line_bboxes)
         # check paragraphs
-        objs = xquery("//*[@class='ocr_par']",page)
+        objs = page.xpath("//*[@class='ocr_par']")
         par_bboxes = [get_bbox(obj) for obj in objs if get_prop(obj,'bbox')]
         assert mostly_nonoverlapping(par_bboxes)
         # check columns
-        objs = xquery("//*[@class='ocr_column']",page)
+        objs = page.xpath("//*[@class='ocr_column']")
         column_bboxes = [get_bbox(obj) for obj in objs if get_prop(obj,'bbox')]
         assert mostly_nonoverlapping(column_bboxes)
 
