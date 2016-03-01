@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 # extract the text within all the ocr_line elements within the hOCR file
 
