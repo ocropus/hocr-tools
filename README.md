@@ -24,7 +24,7 @@ revisions.)
 
 The format itself is defined here:
 
-    http://docs.google.com/View?docID=dfxcv4vc_67g844kf&revision=_latest
+http://docs.google.com/View?docID=dfxcv4vc_67g844kf&revision=_latest
 
 ## Available Programs
 
