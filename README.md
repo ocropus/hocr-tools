@@ -115,4 +115,4 @@ TODO
 
 Merges the Dublin Core metadata into the hOCR file by encoding the data in its header.
 
->>>>>>> Merge README and README.md, formatting
+
