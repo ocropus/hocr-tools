@@ -21,6 +21,7 @@ def get_prop(node,name):
     props = title.split(';')
     for prop in props:
         (key,args) = prop.split(None,1)
+        args = args.strip('"')
         if key==name: return args
     return None
 
@@ -46,6 +47,8 @@ doc = html.fromstring(stream.read())
 pages = doc.xpath('//*[@class="ocr_page"]')
 for page in pages:
     iname = get_prop(page,'file')
+    if not iname:
+        iname = get_prop(page, 'image')
     if basename:
         iname = os.path.join(basename,os.path.basename(iname))
     if not os.path.exists(iname):
