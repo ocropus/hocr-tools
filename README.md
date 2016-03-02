@@ -1,5 +1,23 @@
 # hocr-tools
 
+  * [About](#about)
+    * [About the code](#about-the-code)
+    * [Pointers](#pointers)
+  * [Installation](#installation)
+    * [System-wide](#system-wide)
+    * [Virtualenv](#virtualenv)
+  * [Available Programs](#available-programs)
+    * [hocr-check](#hocr-check) -- check the hOCR file for errors
+    * [hocr-combine](#hocr-combine) -- combine pages in multiple hOCR files into a single document
+    * [hocr-eval](#hocr-eval) -- compute number of segmentation and OCR errors
+    * [hocr-eval-geom](#hocr-eval-geom) -- compute over, under, and mis-segmentations
+    * [hocr-eval-lines](#hocr-eval-lines) -- compute OCR errors of hOCR output relative to text ground truth
+    * [hocr-extract-images](#hocr-extract-images) -- extract the images and texts within all the ocr_line elements
+    * [hocr-lines](#hocr-lines) -- extract the text within all the ocr_line elements
+    * [hocr-pdf](#hocr-pdf) -- create a searchable PDF from a pile of hOCR and JPEG
+    * [hocr-split](#hocr-split) -- split an hOCR file into individual pages
+    * [hocr-merge-dc](#hocr-merge-dc) -- merge Dublin Core meta data into the hOCR HTML header
+
 ## About
 
 hOCR is a format for representing OCR output, including layout information,
@@ -13,33 +31,49 @@ hOCR markup is independent of the presentation.
 
 There is a [Public Specification](http://docs.google.com/View?docid=dfxcv4vc_67g844kf) for the hOCR Format.
 
-## About the code
+### About the code
 
 Each command line program is self contained; if you have the right
 Python packages installed, it should just work.  (Unfortunately, that
 means some code duplication; we may revisit this issue in later
 revisions.)
 
-## Pointers
+### Pointers
 
 The format itself is defined here:
 
 http://docs.google.com/View?docID=dfxcv4vc_67g844kf&revision=_latest
 
+## Installation
+
+### System-wide
+
+```
+sudo pip install -r requirements.txt
+sudo python setup.py install
+```
+
+### Virtualenv
+
+Once
+
+```
+virtualenv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+Subsequently
+
+```
+source venv/bin/activate
+./hocr-...
+```
+
 ## Available Programs
 
 Included command line programs:
 
-  * [hocr-check](#hocr-check) -- check the hOCR file for errors
-  * [hocr-combine](#hocr-combine) -- combine pages in multiple hOCR files into a single document
-  * [hocr-eval](#hocr-eval) -- compute number of segmentation and OCR errors
-  * [hocr-eval-geom](#hocr-eval-geom) -- compute over, under, and mis-segmentations
-  * [hocr-eval-lines](#hocr-eval-lines) -- compute OCR errors of hOCR output relative to text ground truth
-  * [hocr-extract-images](#hocr-extract-images) -- extract the images and texts within all the ocr_line elements
-  * [hocr-lines](#hocr-lines) -- extract the text within all the ocr_line elements
-  * [hocr-pdf](#hocr-pdf) -- create a searchable PDF from a pile of hOCR and JPEG
-  * [hocr-split](#hocr-split) -- split an hOCR file into individual pages
-  * [hocr-merge-dc](#hocr-merge-dc) -- merge Dublin Core meta data into the hOCR HTML header
 
 ### hocr-check
 
