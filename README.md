@@ -48,8 +48,22 @@ http://docs.google.com/View?docID=dfxcv4vc_67g844kf&revision=_latest
 
 ### System-wide
 
+On a Debian/Ubuntu system, install the dependencies from packages:
+
 ```
-sudo pip install -r requirements.txt
+sudo apt-get install python-lxml python-reportlab python-pil \
+  python-beautifulsoup python-numpy python-scipy python-matplotlib
+```
+
+Or, to fetch dependencies from the [cheese shop](https://pypi.python.org/pypi):
+
+```
+sudo pip install -r requirements.txt  # basic
+```
+
+Then install the dist:
+
+```
 sudo python setup.py install
 ```
 
