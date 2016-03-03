@@ -14,9 +14,9 @@
     * [hocr-eval-lines](#hocr-eval-lines) -- compute OCR errors of hOCR output relative to text ground truth
     * [hocr-extract-g1000](#hocr-extract-g1000) -- extract lines from Google 1000 book sample
     * [hocr-lines](#hocr-lines) -- extract the text within all the ocr_line elements
+    * [hocr-merge-dc](#hocr-merge-dc) -- merge Dublin Core meta data into the hOCR HTML header
     * [hocr-pdf](#hocr-pdf) -- create a searchable PDF from a pile of hOCR and JPEG
     * [hocr-split](#hocr-split) -- split an hOCR file into individual pages
-    * [hocr-merge-dc](#hocr-merge-dc) -- merge Dublin Core meta data into the hOCR HTML header
 
 ## About
 
@@ -92,15 +92,6 @@ hocr-combine file1.html file2.html...
 Combine the OCR pages contained in each HTML file into a single document.
 The document metadata is taken from the first file.
 
-### hocr-split
-
-```
-hocr-split file.html pattern
-```
-
-Split a multipage hOCR file into hOCR files containing one page each.
-The pattern should something like "base-%03d.html"
-
 ### hocr-eval-lines
 
 ```
@@ -147,10 +138,6 @@ Extract lines from [Google 1000 book sample](http://commondatastorage.googleapis
 
 TODO
 
-### hocr-pdf
-
-TODO
-
 ### hocr-merge-dc
 
 ```
@@ -158,3 +145,17 @@ hocr-merge-dc dc.xml hocr.html > hocr-new.html
 ```
 
 Merges the Dublin Core metadata into the hOCR file by encoding the data in its header.
+
+### hocr-pdf
+
+TODO
+
+### hocr-split
+
+```
+hocr-split file.html pattern
+```
+
+Split a multipage hOCR file into hOCR files containing one page each.
+The pattern should something like "base-%03d.html"
+
