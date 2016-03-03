@@ -13,6 +13,7 @@
     * [hocr-eval-geom](#hocr-eval-geom) -- compute over, under, and mis-segmentations
     * [hocr-eval-lines](#hocr-eval-lines) -- compute OCR errors of hOCR output relative to text ground truth
     * [hocr-extract-g1000](#hocr-extract-g1000) -- extract lines from Google 1000 book sample
+    * [hocr-extract-images](#hocr-extract-images) -- extract the images and texts within all the ocr_line elements
     * [hocr-lines](#hocr-lines) -- extract the text within all the ocr_line elements
     * [hocr-merge-dc](#hocr-merge-dc) -- merge Dublin Core meta data into the hOCR HTML header
     * [hocr-pdf](#hocr-pdf) -- create a searchable PDF from a pile of hOCR and JPEG
@@ -140,13 +141,13 @@ It works by aligning segmentation components geometrically, and for each
 segmentation component that can be aligned, computing the string edit distance
 of the text the segmentation component contains.
 
-### hocr-extract-images
-
-TODO
-
 ### hocr-extract-g1000
 
 Extract lines from [Google 1000 book sample](http://commondatastorage.googleapis.com/books/icdar2007/README.txt)
+
+### hocr-extract-images
+
+TODO
 
 ### hocr-lines
 
