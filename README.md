@@ -13,6 +13,8 @@ Included command line programs:
   * hocr-eval -- compute number of segmentation and OCR errors
   * hocr-eval-geom -- compute over, under, and mis-segmentations
   * hocr-eval-lines -- compute OCR errors of hOCR output relative to text ground truth
+  * hocr-extract-images -- extract the images and texts within all the ocr_line elements
+  * hocr-lines -- extract the text within all the ocr_line elements
+  * hocr-pdf -- create a searchable PDF from a pile of hOCR and JPEG
   * hocr-split -- split an hOCR file into individual pages
   * hocr-merge-dc -- merge Dublin Core meta data into the hOCR HTML header
-
