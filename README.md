@@ -89,7 +89,6 @@ source venv/bin/activate
 
 Included command line programs:
 
-
 ### hocr-check
 
 ```
@@ -173,4 +172,3 @@ hocr-split file.html pattern
 
 Split a multipage hOCR file into hOCR files containing one page each.
 The pattern should something like "base-%03d.html"
-
