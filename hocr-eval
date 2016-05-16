@@ -1,11 +1,11 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 # compute statistics about the quality of the geometric segmentation
 # at the level of the given OCR element
 
 import sys,os,codecs,string,re,getopt
-import Image,ImageDraw
+from PIL import Image,ImageDraw
 import xml
 from BeautifulSoup import BeautifulSoup
 from pylab import array,zeros,reshape
