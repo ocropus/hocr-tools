@@ -1,0 +1,9 @@
+<html>
+<head>
+<title>Test multi-page hOCR file</title>
+</head>
+<body>
+<div class="ocr_page">Page 1</div>
+<div class="ocr_page">Page 2</div>
+</body>
+</html>

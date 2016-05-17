@@ -1,23 +1,24 @@
 # hocr-tools
 
-  * [About](#about)
-    * [About the code](#about-the-code)
-    * [Pointers](#pointers)
-  * [Installation](#installation)
-    * [System-wide](#system-wide)
-    * [Virtualenv](#virtualenv)
-  * [Available Programs](#available-programs)
-    * [hocr-check](#hocr-check) -- check the hOCR file for errors
-    * [hocr-combine](#hocr-combine) -- combine pages in multiple hOCR files into a single document
-    * [hocr-eval](#hocr-eval) -- compute number of segmentation and OCR errors
-    * [hocr-eval-geom](#hocr-eval-geom) -- compute over, under, and mis-segmentations
-    * [hocr-eval-lines](#hocr-eval-lines) -- compute OCR errors of hOCR output relative to text ground truth
-    * [hocr-extract-g1000](#hocr-extract-g1000) -- extract lines from Google 1000 book sample
-    * [hocr-extract-images](#hocr-extract-images) -- extract the images and texts within all the ocr_line elements
-    * [hocr-lines](#hocr-lines) -- extract the text within all the ocr_line elements
-    * [hocr-merge-dc](#hocr-merge-dc) -- merge Dublin Core meta data into the hOCR HTML header
-    * [hocr-pdf](#hocr-pdf) -- create a searchable PDF from a pile of hOCR and JPEG
-    * [hocr-split](#hocr-split) -- split an hOCR file into individual pages
+* [About](#about)
+  * [About the code](#about-the-code)
+  * [Pointers](#pointers)
+* [Installation](#installation)
+  * [System-wide](#system-wide)
+  * [Virtualenv](#virtualenv)
+* [Available Programs](#available-programs)
+  * [hocr-check](#hocr-check) -- check the hOCR file for errors
+  * [hocr-combine](#hocr-combine) -- combine pages in multiple hOCR files into a single document
+  * [hocr-eval](#hocr-eval) -- compute number of segmentation and OCR errors
+  * [hocr-eval-geom](#hocr-eval-geom) -- compute over, under, and mis-segmentations
+  * [hocr-eval-lines](#hocr-eval-lines) -- compute OCR errors of hOCR output relative to text ground truth
+  * [hocr-extract-g1000](#hocr-extract-g1000) -- extract lines from Google 1000 book sample
+  * [hocr-extract-images](#hocr-extract-images) -- extract the images and texts within all the ocr_line elements
+  * [hocr-lines](#hocr-lines) -- extract the text within all the ocr_line elements
+  * [hocr-merge-dc](#hocr-merge-dc) -- merge Dublin Core meta data into the hOCR HTML header
+  * [hocr-pdf](#hocr-pdf) -- create a searchable PDF from a pile of hOCR and JPEG
+  * [hocr-split](#hocr-split) -- split an hOCR file into individual pages
+* [Unit tests](#unit-tests)
 
 ## About
 
@@ -162,11 +163,7 @@ Merges the Dublin Core metadata into the hOCR file by encoding the data in its h
 
 ### hocr-pdf
 
-```
-Usage: hocr-pdf <imgdir>
-```
-
-Create a searchable PDF from a pile of hOCR and JPEG
+TODO
 
 ### hocr-split
 
@@ -176,3 +173,51 @@ hocr-split file.html pattern
 
 Split a multipage hOCR file into hOCR files containing one page each.
 The pattern should something like "base-%03d.html"
+
+## Unit tests
+
+The unit tests are written using the [tsht](https://github.com/kba/tsht) framework.
+
+### Running the full test suite:
+
+```sh
+./test/tsht
+```
+
+### Running a single test
+
+```sh
+./test/tsht <path-to/unit-test.tsht>
+```
+
+e.g.
+
+```sh
+./test/tsht hocr-pdf/test-hocr-pdf.tsht
+```
+
+### Writing a test
+
+Please see the documentation in the [tsht](https://github.com/kba/tsht) repository and
+take a look at the existing [unit tests](./test/).
+
+1) Create a new directory under `./test`
+2) Copy any test assets (images, hocr files...) to this directory
+3) Create a file `<name-of-your-test>.tsht` starting from this template:
+
+```sh
+#!/usr/bin/env tsht
+
+# adjust to the number of your tests
+plan 1
+
+# write your tests here
+exec_ok "hocr-foo" "-x" "foo" 
+
+# remove any temporary files
+# rm some-generated-file
+```
+
+
+
+
