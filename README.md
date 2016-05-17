@@ -162,7 +162,11 @@ Merges the Dublin Core metadata into the hOCR file by encoding the data in its h
 
 ### hocr-pdf
 
-TODO
+```
+Usage: hocr-pdf <imgdir>
+```
+
+Create a searchable PDF from a pile of hOCR and JPEG
 
 ### hocr-split
 
