@@ -22,6 +22,9 @@
   * [hocr-pdf](#hocr-pdf) -- create a searchable PDF from a pile of hOCR and JPEG
   * [hocr-split](#hocr-split) -- split an hOCR file into individual pages
 * [Unit tests](#unit-tests)
+  * [Running the full test suite:](#running-the-full-test-suite)
+  * [Running a single test](#running-a-single-test)
+  * [Writing a test](#writing-a-test)
 
 ## About
 
@@ -220,7 +223,3 @@ exec_ok "hocr-foo" "-x" "foo"
 # remove any temporary files
 # rm some-generated-file
 ```
-
-
-
-
