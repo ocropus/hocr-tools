@@ -1,5 +1,8 @@
 # hocr-tools
 
+[![Build Status](https://travis-ci.org/tmbdev/hocr-tools.svg?branch=master)](https://travis-ci.org/tmbdev/hocr-tools)
+
+
 * [About](#about)
   * [About the code](#about-the-code)
   * [Pointers](#pointers)
