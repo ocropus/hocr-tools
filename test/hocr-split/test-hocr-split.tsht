@@ -7,6 +7,6 @@ plan 4
 
 exec_ok hocr-split "$input" "$pattern"
 equals 2 "$(find . -name 'test-*.hocr'|wc -l)" "two files were produced"
-equals 1 "$(grep -c 'ocr_page' test-001.hocr)" "one page in test-001.hocr"
-equals 1 "$(grep -c 'ocr_page' test-002.hocr)" "one page in test-002.hocr"
-rm test-*.hocr
+equals 1 "$(grep -c 'ocr_page' test-001.hocr 2>/dev/null)" "one page in test-001.hocr"
+equals 1 "$(grep -c 'ocr_page' test-002.hocr 2>/dev/null)" "one page in test-002.hocr"
+rm -f test-*.hocr
