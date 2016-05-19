@@ -2,7 +2,11 @@
 
 work="445442158_0126"
 
-which pdfgrep wget >/dev/null || fail "Test requires 'pdfgrep' and 'wget' installed"
+which pdfgrep wget >/dev/null
+if [[ "$?" != 0 ]];then
+    fail "Test requires 'pdfgrep' and 'wget' installed"
+    exit
+fi
 exec_ok wget --quiet "http://digi.bib.uni-mannheim.de/fileadmin/digi/445442158/hocr/${work}.hocr"
 exec_ok wget --quiet "http://digi.bib.uni-mannheim.de/fileadmin/digi/445442158/max/${work}.jpg"
 hocr-pdf . > "${work}.pdf"
