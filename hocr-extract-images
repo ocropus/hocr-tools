@@ -25,9 +25,14 @@ def get_prop(node,name):
         if key==name: return args
     return None
 
-if len(sys.argv)<2 and sys.stdin.isatty():
+def print_usage():
     print "usage: %s [-b image-dir] [-p file-pattern] [-e element-name] hocr-file"%sys.argv[0]
     sys.exit(0)
+
+if len(sys.argv)>1 and (sys.argv[1] == '-h' or sys.argv[1] == '--help'):
+    print_usage()
+if len(sys.argv)<2 and sys.stdin.isatty():
+    print_usage()
 optlist,args = getopt.getopt(sys.argv[1:],"b:p:e:")
 print args
 
