@@ -20,10 +20,17 @@ def get_text(node):
 ### main program
 ################################################################
 
-if len(sys.argv)!=3:
+def print_usage():
     sys.stderr.write("split a multipage hOCR file into single pages\n\n")
     sys.stderr.write("usage: %s file.html pattern\n" % sys.argv[0])
     sys.stderr.write("   where 'pattern' is something like 'base-%%03d.html'\n")
+
+if len(sys.argv)>1 and (sys.argv[1] == '-h' or sys.argv[1] == '-help'):
+    print_usage()
+    sys.exit(0)
+
+if len(sys.argv)!=3:
+    print_usage()
     sys.exit(1)
 
 pattern = sys.argv[2]
