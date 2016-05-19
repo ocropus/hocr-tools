@@ -10,6 +10,10 @@ def get_text(node):
     s = string.join([text for text in textnodes])
     return re.sub(r'\s+',' ',s)
 
+if len(sys.argv)>1 and (sys.argv[1] == '-h' or sys.argv[1] == '--help'):
+    print "Usage:", sys.argv[0], "file.html"
+    sys.exit(0)
+
 if len(sys.argv)>1: stream = open(sys.argv[1])
 else: stream = sys.stdin
 doc = html.fromstring(stream.read())
