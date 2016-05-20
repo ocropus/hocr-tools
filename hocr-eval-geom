@@ -4,9 +4,7 @@
 # at the level of the given OCR element
 
 import sys,os,string,re,getopt
-import xml
-from xml.dom.ext.reader import HtmlLib
-from xml.xpath import Evaluate as xquery
+from lxml import html
 
 ### general utilities
 
@@ -18,16 +16,19 @@ def assoc(key,list):
 ### XML processing
 
 def get_text(node):
-    textnodes = xquery(".//text()",node)
-    s = string.join([node.nodeValue for node in textnodes])
+    textnodes = node.xpath(".//text()")
+    s = string.join([text for text in textnodes])
     return re.sub(r'\s+',' ',s)
+
 def get_prop(node,name):
-    title = node.getAttributeNS(None,'title')
+    title = node.get('title')
+    if not title: return None
     props = title.split(';')
     for prop in props:
         (key,args) = prop.split(None,1)
         if key==name: return args
     return None
+
 def get_bbox(node):
     bbox = get_prop(node,'bbox')
     if not bbox: return None
@@ -54,11 +55,19 @@ def relative_overlap(u,v):
 ### main program
 ################################################################
 
+def print_usage():
+    print "usage: %s [-e element-name] [-o overlap-threshold] hocr-truth hocr-actual"%sys.argv[0]
+
 ### argument parsing
 
-if len(sys.argv)<3:
-    print "usage: %s [-e element-name] [-o overlap-threshold] hocr-truth hocr-actualf"%sys.argv[0]
+if len(sys.argv)>1 and (sys.argv[1] == '-h' or sys.argv[1] == '--help'):
+    print_usage()
     sys.exit(0)
+
+if len(sys.argv)<3:
+    print_usage()
+    sys.exit(1)
+
 optlist,args = getopt.getopt(sys.argv[1:],"e:o:")
 
 element = assoc('-e',optlist) or 'ocr_line'
@@ -69,10 +78,10 @@ close_match = float(close_match)
 
 ### read the hOCR files
 
-truth_doc = HtmlLib.Reader().fromString(open(args[0]).read())
-actual_doc = HtmlLib.Reader().fromString(open(args[1]).read())
-truth_pages = xquery("//*[@class='ocr_page']",truth_doc)
-actual_pages = xquery("//*[@class='ocr_page']",actual_doc)
+truth_doc = html.fromstring(open(args[0]).read())
+actual_doc = html.fromstring(open(args[1]).read())
+truth_pages = truth_doc.xpath("//*[@class='ocr_page']")
+actual_pages = actual_doc.xpath("//*[@class='ocr_page']")
 assert len(truth_pages) == len(actual_pages)
 pages = zip(truth_pages,actual_pages)
 
@@ -106,8 +115,8 @@ def check_bad_partition(boxes):
     return 0
 
 for truth,actual in pages:
-    tobjs = xquery("//*[@class='%s']"%element,truth)
-    aobjs = xquery("//*[@class='%s']"%element,actual)
+    tobjs = truth.xpath("//*[@class='%s']"%element)
+    aobjs = actual.xpath("//*[@class='%s']"%element)
     tboxes = [get_bbox(n) for n in tobjs]
     if check_bad_partition(tboxes):
         raise "ground truth data is not an acceptable segmentation"
