@@ -4,9 +4,7 @@
 # at the level of the given OCR element
 
 import sys,os,string,re,getopt
-import xml
-from xml.dom.ext.reader import HtmlLib
-from xml.xpath import Evaluate as xquery
+from lxml import html
 from pylab import array,zeros,reshape
 
 ################################################################
@@ -19,8 +17,8 @@ def assoc(key,list):
     return None
 
 def get_text(node):
-    textnodes = xquery(".//text()",node)
-    s = string.join([node.nodeValue for node in textnodes])
+    textnodes = node.xpath(".//text()")
+    s = string.join([text for text in textnodes])
     return re.sub(r'\s+',' ',s)
 
 simp_re = re.compile(r'[^a-zA-Z0-9.,!?:;]+')
@@ -56,16 +54,23 @@ def edit_distance(a,b,threshold=999999):
 ################################################################
 ### main program
 ################################################################
+def print_usage():
+    print "usage: %s [-v] true-lines.txt hocr-actual.html"%sys.argv[0]
+
+if len(sys.argv)>1 and (sys.argv[1] == '-h' or sys.argv[1] == '--help'):
+    print "usage: %s [-v] true-lines.txt hocr-actual.html"%sys.argv[0]
+    sys.exit(0)
 
 if len(sys.argv)<3:
     print "usage: %s [-v] true-lines.txt hocr-actual.html"%sys.argv[0]
-    sys.exit(0)
+    sys.exit(1)
+
 optlist,args = getopt.getopt(sys.argv[1:],"v")
 
 verbose = (assoc('-v',optlist)=='')
 truth_lines = open(args[0]).read().split('\n')
-actual_doc = HtmlLib.Reader().fromString(open(args[1]).read())
-actual_lines = [get_text(node) for node in xquery("//*[@class='ocr_line']",actual_doc)]
+actual_doc = html.fromstring(open(args[1]).read())
+actual_lines = [get_text(node) for node in actual_doc.xpath("//*[@class='ocr_line']")]
 
 truth_lines = [normalize(s) for s in truth_lines]
 truth_lines = [s for s in truth_lines if s!=""]
