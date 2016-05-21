@@ -6,8 +6,7 @@
 
 import sys,os,codecs,string,re,getopt
 from PIL import Image,ImageDraw
-import xml
-from BeautifulSoup import BeautifulSoup
+from lxml import html
 from pylab import array,zeros,reshape
 
 ################################################################
@@ -24,18 +23,21 @@ def assoc(key,list):
 ### XML node processing
 
 def get_prop(node,name):
-    title = node['title']
+    title = node.get('title')
+    if not title: return None
     props = title.split(';')
     for prop in props:
         (key,args) = prop.split(None,1)
         if key==name: return args
     return None
+
 def get_bbox(node):
     bbox = get_prop(node,'bbox')
     if not bbox: return None
     return tuple([int(x) for x in bbox.split()])
+
 def get_text(node):
-    s = node.string
+    s = node.text
     return re.sub(r'\s+',' ',s)
 
 # rectangle properties
@@ -53,13 +55,6 @@ def height(u):
 def area(u):
     # area of a rectangle
     return max(0,u[2]-u[0])*max(0,u[3]-u[1])
-def overlaps(u,v):
-    # predicate: do the two rectangles overlap?
-    return area(intersect(u,v))>0
-def relative_overlap(u,v):
-    m = max(area(u),area(v))
-    i = area(intersect(u,v))
-    return float(i)/m
 def erode(u,tx,ty):
     x = 2*tx+1
     y = 2*ty+1
@@ -114,9 +109,16 @@ def remove_tex(text):
 
 ### argument parsing
 
-if len(sys.argv)<3:
+def print_usage():
     print "usage: %s hocr-true.html hocr-actual.html"%sys.argv[0]
+
+if len(sys.argv)>1 and (sys.argv[1] == '-h' or sys.argv[1] == '--help'):
+    print_usage()
     sys.exit(0)
+
+if len(sys.argv)<3:
+    print_usage()
+    sys.exit(1)
 
 optlist,args = getopt.getopt(sys.argv[1:],"dve:o:i:")
 debug = (assoc('-d',optlist)=='')
@@ -132,18 +134,12 @@ if(imgfile):
     draw=ImageDraw.Draw(im)
 
 # get pages from inputs
-gtfile = codecs.open(args[0],encoding='utf-8')
-truth_doc = gtfile.read()
-gtfile.close()
-ocrfile = codecs.open(args[1],encoding='utf-8')
-actual_doc = ocrfile.read()
-ocrfile.close()
+truth_doc = html.fromstring(args[0])
+actual_doc = html.fromstring(args[1])
 
-# parse pages using beautiful soup
-gtsoup = BeautifulSoup(truth_doc,convertEntities='html')
-truth_pages = gtsoup('div','ocr_page')
-ocrsoup = BeautifulSoup(actual_doc,convertEntities='html')
-actual_pages = ocrsoup('div','ocr_page')
+# parse pages
+truth_pages = truth_doc.xpath("//*[@class='ocr_page']")
+actual_pages = actual_doc.xpath("//*[@class='ocr_page']")
 
 # zip ground-truth and ocr result pages
 assert len(truth_pages) == len(actual_pages)
@@ -163,8 +159,8 @@ VPIX=5
 used = {}
 
 for truth,actual in pages:
-    true_lines = truth('span','ocr_line')
-    actual_lines = actual('span','ocr_line')
+    true_lines = truth.xpath("//*[@class='ocr_line']")
+    actual_lines = actual.xpath("//*[@class='ocr_line']")
     tx=[min(HPIX,(100-HTOL)*width(get_bbox(line))/100) for line in true_lines]
     ty=[min(VPIX,(100-VTOL)*height(get_bbox(line))/100) for line in true_lines]
     for index,true_line in enumerate(true_lines):
