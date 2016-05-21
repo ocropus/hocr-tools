@@ -57,9 +57,17 @@ def mostly_nonoverlapping(boxes,significant_overlap=0.2):
 ### main
 ################################################################
 
-if len(sys.argv)<1:
+def print_usage():
     print "usage:",sys.argv[0],"[-o] file.html"
+
+if len(sys.argv)>1 and (sys.argv[1] == '-h' or sys.argv[1] == '--help'):
+    print_usage()
+    sys.exit(0)
+
+if len(sys.argv)<1:
+    print_usage()
     sys.exit(1)
+    
 optlist,args = getopt.getopt(sys.argv[1:],"o")
 nooverlap = (assoc('-o',optlist)=='')
 if len(args)>0: stream = open(args[0])

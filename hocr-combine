@@ -7,9 +7,16 @@ from lxml import html, etree
 ### main program
 ################################################################
 
-if len(sys.argv)<2:
+def print_usage():
     sys.stderr.write("combine multiple hOCR documents into one\n\n")
     sys.stderr.write("usage: %s file1.html file2.html...\n"%sys.argv[0])
+
+if len(sys.argv)>1 and (sys.argv[1] == '-h' or sys.argv[1] == '--help'):
+    print_usage()
+    sys.exit(0)
+
+if len(sys.argv)<2 or sys.argv[1] == '-h' or sys.argv[1] == '--help':
+    print_usage()
     sys.exit(1)
 
 doc = html.fromstring(open(sys.argv[1]).read())
