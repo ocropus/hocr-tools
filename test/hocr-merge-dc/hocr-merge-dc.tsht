@@ -1,0 +1,13 @@
+#!/usr/bin/env tsht
+
+plan 4
+
+hocr_file='../legacy/sample.html'
+
+output=$(hocr-merge-dc dcsample2.xml "$hocr_file")
+not_ok "$?" "Command succeeded"
+# ok "$output" "Output produced"
+match "name='DC.title' value='Nomad'" "$(cat "$hocr_file")"
+not_match "name='DC.title' value='UKOLN'" "$(cat "$hocr_file")"
+match 'name="DC.title" value="UKOLN"' "$output"
+# match "
