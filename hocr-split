@@ -4,7 +4,6 @@
 
 import sys,os,string,re
 import xml
-import copy
 from lxml import html, etree
 
 ################################################################
@@ -14,7 +13,7 @@ from lxml import html, etree
 if len(sys.argv)!=3:
     sys.stderr.write("split a multipage hOCR file into single pages\n\n")
     sys.stderr.write("usage: %s file.html pattern\n" % sys.argv[0])
-    sys.stderr.write("   where 'pattern' is something like 'base-%%03d.html'\n")
+    sys.stderr.write("   where 'pattern' is something like 'base-%03d.html'\n")
     sys.exit(1)
 
 pattern = sys.argv[2]
@@ -22,22 +21,16 @@ assert re.search('%[0-9]*d',pattern)
 
 stream = open(sys.argv[1])
 doc = html.fromstring(stream.read())
-
-template = copy.deepcopy(doc)
 pages = doc.xpath("//*[@class='ocr_page']")
 assert pages!=[]
-container = pages[0].getparent()
 
-def write_template_with_page(new_page,index):
-    pages = container.xpath("//*[@class='ocr_page']")
-    for page in pages: container.remove(page)
+container = pages[0].getparent()
+index = 1
+for new_page in pages:
+    container_pages = container.xpath("//*[@class='ocr_page']")
+    for page in container_pages: container.remove(page)
     container.append(new_page)
     stream = open(pattern % index, "w")
     stream.write(etree.tostring(doc, pretty_print=True))
     stream.close()
-
-pages = template.xpath("//*[@class='ocr_page']")
-index = 1
-for page in pages:
-    write_template_with_page(page, index)
     index += 1
