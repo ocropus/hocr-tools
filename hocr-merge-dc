@@ -2,9 +2,11 @@
 
 import sys,os,string,re
 import xml
-from xml.dom.ext.reader import Sax2
-from xml.dom.ext.reader import HtmlLib
-from xml.xpath import Compile,Evaluate
+#from xml.dom.ext.reader import Sax2
+#import xml.sax
+#from xml.dom.ext.reader import HtmlLib
+#from xml.xpath import Compile,Evaluate
+from lxml import html, etree
 
 dcknown = [
     "dc:title","dc:creator","dc:subject",
@@ -15,46 +17,57 @@ dcknown = [
 ]
 
 def get_text(node):
-    textnodes = Evaluate(".//text()",node)
-    s = string.join([node.nodeValue for node in textnodes])
+    textnodes = node.xpath(".//text()")
+    s = string.join([text for text in textnodes])
     return re.sub(r'\s+',' ',s)
 
-if len(sys.argv)<2:
+def print_usage():
     sys.stderr.write("merge Dublin Core metadata into hOCR header files\n\n")
     sys.stderr.write("usage: %s dc.xml hocr.html\n"%sys.argv[0])
+
+if len(sys.argv)>1 and (sys.argv[1] == '-h' or sys.argv[1] == '--help'):
+    print_usage()
+    sys.exit(0)
+
+if len(sys.argv)<2:
+    print_usage()
     sys.exit(1)
 
 s = open(sys.argv[1]).read()
-dc_doc = Sax2.Reader().fromString(s)
-dc_context = xml.xpath.Context.Context(dc_doc)
-dc_context.setNamespaces({"dc":"http://purl.org/dc/elements/1.1/"})
+dc_doc = etree.fromstring(s)
+#Sax2.Reader().fromString(s)
+#dc_context = xml.xpath.Context.Context(dc_doc)
+#dc_context.setNamespaces({"dc":"http://purl.org/dc/elements/1.1/"})
 
-s = open(sys.argv[2]).read()
-hocr_doc = HtmlLib.Reader().fromString(s)
+#s = open(sys.argv[2]).read()
+#hocr_doc = HtmlLib.Reader().fromString(s)
+hocr_doc = html.fromstring(open(sys.argv[2]).read())
+
 
 ### remove all existing META tags representing Dublin Core metadata
 
-hocr_meta = Evaluate("//HEAD",hocr_doc)
+hocr_meta = hocr_doc.xpath("//HEAD|//head");
 assert hocr_meta!=[]
 hocr_meta = hocr_meta[0]
 
-hocr_nodes = Evaluate("//HEAD//META[starts-with(@name,'DC.')]",hocr_doc)
+hocr_nodes = hocr_doc.xpath("//HEAD//META[starts-with(@name,'DC.')]")
 for node in hocr_nodes:
-    node.parentNode.removeChild(node)
+    node.getparent().remove(node)
 
 ### find all the Dublin Core tags in the Dublin Core metadata
 
-dc_nodes = Evaluate("//dc:*",dc_doc,dc_context)
+dc_nodes = dc_doc.xpath("//dc:*", namespaces={"dc":"http://purl.org/dc/elements/1.1/"})
+#Evaluate("//dc:*",dc_doc,dc_context)
 for node in dc_nodes:
-    if node.nodeName in dcknown:
-        name = re.sub(r'^dc:','DC.',node.nodeName)
+    if node.tag in dcknown:
+        name = re.sub(r'^dc:','DC.',node.tag)
         value = get_text(node)
         value = re.sub("[\t\r\n'\"]"," ",value).strip()
         value = value[:500]
         # hnode = hocr_doc.importNode(node,1)
-        hnode = hocr_doc.createElement("META")
-        hnode.setAttribute("name",name)
-        hnode.setAttribute("value",value)
-        hocr_meta.appendChild(hnode)
+        hnode = hocr_doc.Element("META", "name", name, "value", value)
+        #hnode.setAttribute("name",name)
+        #hnode.setAttribute("value",value)
+        hocr_meta.append(hnode)
 
-xml.dom.ext.PrettyPrint(hocr_doc,sys.stdout)
+print(etree.tostring(hocr_doc, pretty_print=True))
