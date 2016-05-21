@@ -203,7 +203,7 @@ The unit tests are written using the [tsht](https://github.com/kba/tsht) framewo
 e.g.
 
 ```sh
-./test/tsht hocr-pdf/test-hocr-pdf.tsht
+./test/tsht test/hocr-pdf/test-hocr-pdf.tsht
 ```
 
 ### Writing a test
