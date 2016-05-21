@@ -1,4 +1,4 @@
-BeautifulSoup==3.2.1
 Pillow==3.1.1
 lxml==3.5.0
 reportlab==3.3.0
+matplotlib==1.5.1
