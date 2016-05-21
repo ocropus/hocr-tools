@@ -142,7 +142,7 @@ if(imgfile):
 
 # get pages from inputs
 truth_doc = html.fromstring(args[0])
-actual_doc = html.fromstring(args[0])
+actual_doc = html.fromstring(args[1])
 
 # parse pages
 truth_pages = truth_doc.xpath("//*[@class='ocr_page']")
@@ -166,8 +166,8 @@ VPIX=5
 used = {}
 
 for truth,actual in pages:
-    true_lines = xquery("//*[@class='ocr_line']",truth)
-    actual_lines = xquery("//*[@class='ocr_line']",actual)
+    true_lines = truth.xpath("//*[@class='ocr_line']")
+    actual_lines = actual.xpath("//*[@class='ocr_line']")
     tx=[min(HPIX,(100-HTOL)*width(get_bbox(line))/100) for line in true_lines]
     ty=[min(VPIX,(100-VTOL)*height(get_bbox(line))/100) for line in true_lines]
     for index,true_line in enumerate(true_lines):
