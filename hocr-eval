@@ -55,13 +55,6 @@ def height(u):
 def area(u):
     # area of a rectangle
     return max(0,u[2]-u[0])*max(0,u[3]-u[1])
-def overlaps(u,v):
-    # predicate: do the two rectangles overlap?
-    return area(intersect(u,v))>0
-def relative_overlap(u,v):
-    m = max(area(u),area(v))
-    i = area(intersect(u,v))
-    return float(i)/m
 def erode(u,tx,ty):
     x = 2*tx+1
     y = 2*ty+1
