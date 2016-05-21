@@ -1,0 +1,6 @@
+#!/usr/bin/env tsht
+
+for f in check combine eval eval-geom eval-lines extract-g1000 extract-images lines merge-dc pdf split;do
+    exec_ok "hocr-$f" "--help"
+    exec_ok "hocr-$f" "-h"
+done

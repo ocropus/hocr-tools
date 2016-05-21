@@ -1,0 +1,11 @@
+language: python
+cache:
+  directories:
+    - /home/travis/virtualenv/python2.7/lib/python2.7/site-packages
+install:
+  - pip install -r requirements.txt
+  - python setup.py install
+  - pip install pep8
+script: 
+  - ./test/tsht
+  - pep8 hocr-* setup.py; true

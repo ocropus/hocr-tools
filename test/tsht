@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# Unless TSHTLIB is already set
+if [[ -z "$TSHTLIB" ]];then
+
+    # Set TSHTLIB to the `.tshs` directory relative to this script
+    TSHTLIB="$(cd "$(dirname "$0")" && pwd)/.tsht"
+
+    # Unless TSHTLIB exists, try to clone it
+    if [[ ! -e "$TSHTLIB" ]];then
+        echo "# $TSHTLIB does not exist, cloning"
+        git clone --depth 1 'http://github.com/kba/tsht' "$TSHTLIB"
+        if [[ ! -d "$TSHTLIB" ]];then
+            echo "Failed to clone tsht framework!"
+            exit 201
+        fi
+    fi
+fi
+
+# Export TSHTLIB and execute the test-runner
+export TSHTLIB
+exec "$TSHTLIB/tsht-runner.sh" "$@"

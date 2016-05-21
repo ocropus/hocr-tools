@@ -1,0 +1,6 @@
+#!/usr/bin/env tsht
+
+plan 2
+
+file_exists sample.hocr
+exec_ok hocr-check sample.hocr
