@@ -2,10 +2,6 @@
 
 import sys,os,string,re
 import xml
-#from xml.dom.ext.reader import Sax2
-#import xml.sax
-#from xml.dom.ext.reader import HtmlLib
-#from xml.xpath import Compile,Evaluate
 from lxml import html, etree
 
 dcknown = [
@@ -33,41 +29,33 @@ if len(sys.argv)<2:
     print_usage()
     sys.exit(1)
 
-s = open(sys.argv[1]).read()
-dc_doc = etree.fromstring(s)
-#Sax2.Reader().fromString(s)
-#dc_context = xml.xpath.Context.Context(dc_doc)
-#dc_context.setNamespaces({"dc":"http://purl.org/dc/elements/1.1/"})
-
-#s = open(sys.argv[2]).read()
-#hocr_doc = HtmlLib.Reader().fromString(s)
+dc_doc = etree.fromstring(open(sys.argv[1]).read())
 hocr_doc = html.fromstring(open(sys.argv[2]).read())
 
 
 ### remove all existing META tags representing Dublin Core metadata
 
-hocr_meta = hocr_doc.xpath("//HEAD|//head");
+hocr_meta = hocr_doc.xpath("//HEAD|//head")
 assert hocr_meta!=[]
 hocr_meta = hocr_meta[0]
 
-hocr_nodes = hocr_doc.xpath("//HEAD//META[starts-with(@name,'DC.')]")
+hocr_nodes = hocr_doc.xpath("//head//meta[starts-with(@name,'DC.')]")
 for node in hocr_nodes:
     node.getparent().remove(node)
 
 ### find all the Dublin Core tags in the Dublin Core metadata
 
 dc_nodes = dc_doc.xpath("//dc:*", namespaces={"dc":"http://purl.org/dc/elements/1.1/"})
-#Evaluate("//dc:*",dc_doc,dc_context)
 for node in dc_nodes:
-    if node.tag in dcknown:
-        name = re.sub(r'^dc:','DC.',node.tag)
+    nt = re.sub(r'^{http://purl.org/dc/elements/1.1/}', 'dc:', node.tag)
+    if nt in dcknown:
+        name = re.sub(r'^dc:','DC.',nt)
         value = get_text(node)
         value = re.sub("[\t\r\n'\"]"," ",value).strip()
         value = value[:500]
-        # hnode = hocr_doc.importNode(node,1)
-        hnode = hocr_doc.Element("META", "name", name, "value", value)
-        #hnode.setAttribute("name",name)
-        #hnode.setAttribute("value",value)
+        hnode = etree.Element("meta", nsmap = {'DC': 'http://purl.org/dc/elements/1.1'})
+        hnode.attrib['name'] = name
+        hnode.attrib['value'] = value
         hocr_meta.append(hnode)
 
 print(etree.tostring(hocr_doc, pretty_print=True))
