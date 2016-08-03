@@ -157,7 +157,13 @@ TODO
 
 ### hocr-lines
 
-TODO
+```
+hocr-lines [FILE]
+```
+
+Extract the text within all the ocr_line elements within the hOCR file
+given by FILE. If called without any file, `hocr-lines` reads
+hOCR data from stdin.
 
 ### hocr-merge-dc
 
@@ -222,7 +228,7 @@ take a look at the existing [unit tests](./test/).
 plan 1
 
 # write your tests here
-exec_ok "hocr-foo" "-x" "foo" 
+exec_ok "hocr-foo" "-x" "foo"
 
 # remove any temporary files
 # rm some-generated-file
