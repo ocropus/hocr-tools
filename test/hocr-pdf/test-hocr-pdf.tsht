@@ -7,7 +7,7 @@ if [[ "$?" != 0 ]];then
     pass "Test requires 'pdfgrep' and 'wget' installed"
     exit
 fi
-exec_ok wget --quiet "http://digi.bib.uni-mannheim.de/fileadmin/digi/445442158/hocr/${work}.hocr"
+exec_ok wget --quiet "http://digi.bib.uni-mannheim.de/fileadmin/digi/445442158/tess/${work}.hocr"
 exec_ok wget --quiet "http://digi.bib.uni-mannheim.de/fileadmin/digi/445442158/max/${work}.jpg"
 hocr-pdf . > "${work}.pdf"
 file_not_empty "${work}.pdf"
