@@ -20,4 +20,4 @@ doc = html.fromstring(stream.read())
 lines = doc.xpath("//*[@class='ocr_line']")
 
 for line in lines:
-    print get_text(line)
+    print get_text(line).encode("utf-8")
