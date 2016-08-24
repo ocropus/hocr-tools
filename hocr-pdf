@@ -81,6 +81,8 @@ def add_text_layer(pdf, image, height, dpi):
           innerword = word[0]
           if innerword.text is not None:
             rawtext = innerword.text.strip()
+          else:
+            continue  
         except:
           continue
       font_width = pdf.stringWidth(rawtext, 'invisible', 8)
