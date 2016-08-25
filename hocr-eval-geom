@@ -101,7 +101,7 @@ def boxstats(truths,actuals):
         if len(matching)<1:
             missing += 1
         elif len(matching)>1:
-            raise "multiple close matches: your segmentation files are bad"
+            raise AttributeError("Multiple close matches: your segmentation files are bad")
         else:
             error += 1.0-matching[0]
             count += 1
@@ -119,8 +119,8 @@ for truth,actual in pages:
     aobjs = actual.xpath("//*[@class='%s']"%element)
     tboxes = [get_bbox(n) for n in tobjs]
     if check_bad_partition(tboxes):
-        raise "ground truth data is not an acceptable segmentation"
+        raise ValueError("Ground truth data is not an acceptable segmentation")
     aboxes = [get_bbox(n) for n in aobjs]
     if check_bad_partition(aboxes):
-        raise "actual data is not an acceptable segmentation"
+        raise ValueError("Actual data is not an acceptable segmentation")
     print boxstats(tboxes,aboxes),boxstats(aboxes,tboxes)
