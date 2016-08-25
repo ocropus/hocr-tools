@@ -111,56 +111,56 @@ class docHandler(xml.sax.handler.ContentHandler):
         self.element = element
         self.regex = regex
     def startDocument(self):
-	self.total = 0
-	self.pageno = -1
-	self.text = None
-	self.depth = 0
-	self.start = -1
+        self.total = 0
+        self.pageno = -1
+        self.text = None
+        self.depth = 0
+        self.start = -1
         self.copied = {}
     def endDocument(self):
-	pass
+        pass
     def startElement(self,name,attrs):
-	self.depth += 1
-	if attrs.get("class","")=="ocr_page":
-	    self.lineno = -1
-	    self.pageno += 1
+        self.depth += 1
+        if attrs.get("class","")=="ocr_page":
+            self.lineno = -1
+            self.pageno += 1
             self.page = image_list[self.pageno]
-	    self.image = Image.open(self.page)
-	if attrs.get("class","")==self.element:
-	    self.lineno += 1
-	    props = attrs.get("title","")
-	    self.bbox = get_prop(props,"bbox")
-	    self.start = self.depth
-	    self.text = u""
+            self.image = Image.open(self.page)
+        if attrs.get("class","")==self.element:
+            self.lineno += 1
+            props = attrs.get("title","")
+            self.bbox = get_prop(props,"bbox")
+            self.start = self.depth
+            self.text = u""
     def endElement(self,name):
-	if self.depth==self.start:
-	    if len(self.text)>=min_len and \
+        if self.depth==self.start:
+            if len(self.text)>=min_len and \
                     len(self.text)<=max_len and \
                     re.match(self.regex,self.text) and \
                     check_dict(dict,self.text):
-		print self.page,self.bbox,self.text.encode("utf-8")
-		w,h = self.image.size
-		x0,y0,x1,y1 = [int(s) for s in self.bbox.split()]
-		assert y0<y1 and x0<x1 and x1<=w and y1<=h
-		x0 = max(0,x0-pad)
-		y0 = max(0,y0-pad)
-		x1 = min(w,x1+pad)
-		y1 = min(h,y1+pad)
-		limage = self.image.crop((x0,y0,x1,y1))
-		base = output_pattern%(self.pageno,self.lineno)
+                print self.page,self.bbox,self.text.encode("utf-8")
+                w,h = self.image.size
+                x0,y0,x1,y1 = [int(s) for s in self.bbox.split()]
+                assert y0<y1 and x0<x1 and x1<=w and y1<=h
+                x0 = max(0,x0-pad)
+                y0 = max(0,y0-pad)
+                x1 = min(w,x1+pad)
+                y1 = min(h,y1+pad)
+                limage = self.image.crop((x0,y0,x1,y1))
+                base = output_pattern%(self.pageno,self.lineno)
                 basedir = os.path.dirname(base)
                 if not os.path.exists(basedir):  os.mkdir(basedir)
                 limage.save(base+"."+output_format)
-		write_string(base+".txt",self.text)
-		write_string(base+".bbox",self.bbox)
-		self.total += 1
-		if self.total>=max_lines: sys.exit(0)
-	    self.text = None
-	    self.start = -1
-	self.depth -= 1
+                write_string(base+".txt",self.text)
+                write_string(base+".bbox",self.bbox)
+                self.total += 1
+                if self.total>=max_lines: sys.exit(0)
+            self.text = None
+            self.start = -1
+        self.depth -= 1
     def characters(self,str,start,end):
-	if self.text!=None:
-	    self.text += str[start:end]
+        if self.text!=None:
+            self.text += str[start:end]
 
 parser = xml.sax.make_parser()
 stream = os.popen("tidy -q -wrap 9999 -asxhtml < %s 2> /tmp/tidy_errs"%hocr,"r")
