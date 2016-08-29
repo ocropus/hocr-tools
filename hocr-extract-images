@@ -2,7 +2,7 @@
 
 # extract the images and texts within all the ocr_line elements within the hOCR file
 
-import sys,os,string,re,getopt,codecs
+import sys,os,re,getopt,codecs
 from PIL import Image
 from lxml import html
 
@@ -13,7 +13,7 @@ def assoc(key,list):
 
 def get_text(node):
     textnodes = node.xpath('.//text()')
-    s = string.join([text for text in textnodes])
+    s = ''.join([text for text in textnodes])
     return re.sub(r'\s+',' ',s)
 
 def get_prop(node,name):
@@ -35,7 +35,6 @@ if len(sys.argv)<2 and sys.stdin.isatty():
     print_usage()
     sys.exit(0)
 optlist,args = getopt.getopt(sys.argv[1:],"b:p:e:")
-print args
 
 basename = assoc('-b',optlist)
 pattern = assoc('-p',optlist) or 'line-%03d.png'
@@ -49,10 +48,9 @@ if len(args)>1:
     print("Error: Too many args")
     print_usage()
     sys.exit(1)
-if len(args)==1: stream = open(args[0])
-else: stream = sys.stdin
+if len(args)==1: doc = html.parse(args[0])
+else: doc = html.parse(sys.stdin)
 
-doc = html.fromstring(stream.read())
 pages = doc.xpath('//*[@class="ocr_page"]')
 for page in pages:
     iname = get_prop(page,'file')
@@ -64,7 +62,7 @@ for page in pages:
         print "not found:",iname
         sys.exit(1)
     image = Image.open(iname)
-    print image
+    #  print image
     lines = page.xpath("//*[@class='%s']"%element)
     lcount = 1
     for line in lines:

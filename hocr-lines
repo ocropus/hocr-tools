@@ -14,10 +14,9 @@ if len(sys.argv)>1 and (sys.argv[1] == '-h' or sys.argv[1] == '--help'):
     print "Usage:", sys.argv[0], "file.html"
     sys.exit(0)
 
-if len(sys.argv)>1: stream = open(sys.argv[1])
-else: stream = sys.stdin
-doc = html.fromstring(stream.read())
-lines = doc.xpath("//*[@class='ocr_line']")
+if len(sys.argv)>1: doc = html.parse(sys.argv[1])
+else: doc = html.parse(sys.stdin)
 
+lines = doc.xpath("//*[@class='ocr_line']")
 for line in lines:
     print get_text(line)
