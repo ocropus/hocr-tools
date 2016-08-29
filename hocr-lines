@@ -2,12 +2,12 @@
 
 # extract the text within all the ocr_line elements within the hOCR file
 
-import sys,os,string,re
+import sys,os,re
 from lxml import html
 
 def get_text(node):
     textnodes = node.xpath(".//text()")
-    s = string.join([text for text in textnodes])
+    s = ''.join([text for text in textnodes])
     return re.sub(r'\s+',' ',s)
 
 if len(sys.argv)>1 and (sys.argv[1] == '-h' or sys.argv[1] == '--help'):

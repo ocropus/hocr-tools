@@ -3,7 +3,7 @@
 # compute statistics about the quality of the geometric segmentation
 # at the level of the given OCR element
 
-import sys,os,string,re,getopt
+import sys,os,re,getopt
 from lxml import html
 from pylab import array,zeros,reshape
 
@@ -18,7 +18,7 @@ def assoc(key,list):
 
 def get_text(node):
     textnodes = node.xpath(".//text()")
-    s = string.join([text for text in textnodes])
+    s = ''.join([text for text in textnodes])
     return re.sub(r'\s+',' ',s)
 
 simp_re = re.compile(r'[^a-zA-Z0-9.,!?:;]+')
