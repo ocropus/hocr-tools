@@ -41,8 +41,8 @@ There is a [Public Specification](http://docs.google.com/View?docid=dfxcv4vc_67g
 
 ### About the code
 
-Each command line program is self contained; if you have the right
-Python packages installed, it should just work.  (Unfortunately, that
+Each command line program is self contained; if you have Python 2.7 with the
+required packages installed, it should just work.  (Unfortunately, that
 means some code duplication; we may revisit this issue in later
 revisions.)
 
