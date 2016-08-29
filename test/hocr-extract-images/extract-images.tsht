@@ -1,8 +1,0 @@
-#!/usr/bin/env tsht
-
-after () {
-    rm words-from-test*
-}
-
-exec_ok hocr-extract-images -p "words-from-test-%03d.png" -b ../legacy -e "ocrx_word" ../legacy/tess.hocr
-equals $(ls words-from-test*png|wc -l) 503 "All lines extracted"
