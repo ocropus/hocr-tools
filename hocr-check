@@ -70,13 +70,12 @@ if len(sys.argv)<1:
     
 optlist,args = getopt.getopt(sys.argv[1:],"o")
 nooverlap = (assoc('-o',optlist)=='')
-if len(args)>0: stream = open(args[0])
+if len(args)>0: doc = html.parse(args[0])
 elif len(args)>1:
     print("Can only check one file at a time")
     print_usage()
     sys.exit(1)
-else: stream = sys.stdin
-doc = html.fromstring(stream.read())
+else: doc = html.parse(sys.stdin)
 
 ################################################################
 ### XML structure checks

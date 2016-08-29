@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import sys,os,string,re
+import sys,os,re
 import xml
 from lxml import html, etree
 
@@ -14,7 +14,7 @@ dcknown = [
 
 def get_text(node):
     textnodes = node.xpath(".//text()")
-    s = string.join([text for text in textnodes])
+    s = "".join([text for text in textnodes])
     return re.sub(r'\s+',' ',s)
 
 def print_usage():
