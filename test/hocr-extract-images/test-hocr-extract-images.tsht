@@ -2,7 +2,7 @@
 
 plan 10
 
-TESTDATA="../legacy"
+TESTDATA="../testdata"
 
 test_extract() {
     base="$1"

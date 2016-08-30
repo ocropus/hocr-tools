@@ -2,7 +2,7 @@
 
 plan 2
 
-TESTDATA="../legacy"
+TESTDATA="../testdata"
 
 exec_ok hocr-check "$TESTDATA/sample.html"
 cat "$TESTDATA/sample.html" | hocr-check && ok "Check from stdin"
