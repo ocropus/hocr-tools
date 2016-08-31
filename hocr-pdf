@@ -147,6 +147,6 @@ CMGjwvxTsr74/f/F95m3TH9x8o0/TU//N+7/D/ScVcA=
 
 if __name__ == "__main__":
   if len(sys.argv) == 1:
-    print(("Usage: %s <imgdir>\n" % os.path.basename(sys.argv[0])))
+    print("Usage: %s <imgdir>\n" % os.path.basename(sys.argv[0]))
   else:
     export_pdf(sys.argv[1], 300)
