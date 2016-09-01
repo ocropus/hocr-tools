@@ -24,5 +24,11 @@ setup(
         'Topic :: Scientific/Engineering :: Image Recognition',
         'Topic :: Utilities',
     ],
+    install_requires = [
+        'Pillow',
+        'lxml',
+        'reportlab',
+        'matplotlib',
+    ],
     scripts = [c for c in glob.glob("hocr-*")]
 )
