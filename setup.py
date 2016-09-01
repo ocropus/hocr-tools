@@ -9,7 +9,8 @@ setup(
     version = VERSION,
     description = 'Advanced tools for hOCR integration',
     author = 'Thomas Breuel',
-    author_email = 'tmbdev@gmail.com',
+    maintainer = 'Konstantin Baierer',
+    maintainer_email = 'konstantin.baierer@gmail.com',
     url = 'https://github.com/tmbdev/hocr-tools',
     download_url = 'https://github.com/tmbdev/hocr-tools/tarball/v' + VERSION,
     classifiers = [
