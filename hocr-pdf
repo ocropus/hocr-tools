@@ -20,7 +20,7 @@
 import sys
 import glob
 import os.path
-import cStringIO
+import io
 import base64
 import zlib
 import re
@@ -31,10 +31,21 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from xml.etree.ElementTree import ElementTree, ParseError
 
+class StdoutWrapper:
+    """
+    Wrapper around stdout that ensures 'bytes' data is decoded
+    to 'latin1' (0x00 - 0xff) before writing out. This is necessary for
+    the invisible font to be injected as bytes but written out as a string.
+    """
+    def write(self, data, *args, **kwargs):
+        if bytes != str and isinstance(data, bytes):
+            data = data.decode('latin1')
+        sys.stdout.write(data)
+
 def export_pdf(playground, default_dpi):
   """Create a searchable PDF from a pile of HOCR + JPEG"""
   load_invisible_font()
-  pdf = Canvas(sys.stdout, pageCompression=1)
+  pdf = Canvas(StdoutWrapper(), pageCompression=1)
   pdf.setCreator('hocr-tools')
   pdf.setTitle(os.path.basename(playground))
   images = sorted(glob.glob(os.path.join(playground, '*.jpg')))
@@ -128,8 +139,10 @@ pL26nlWN2K+W1LhRjxlVGKmRTFYVo7CiJug09E+GJb+QocMCPMWBK1wvEOfRFF2U0klK8CppqqvG
 pylRc2Zn+XDQWZIL8iO5KC9S+1RekOex1uOyZGR/w/Hf1lhzqVfFsxE39B/ws7Rm3N3nDrhPuMfc
 w3R/aE28KsfY2J+RPNp+j+KaOoCey4h+Dd48b9O5G0v2K7j0AM6s+5WQ/E0wVoK+pA6/3bup7bJf
 CMGjwvxTsr74/f/F95m3TH9x8o0/TU//N+7/D/ScVcA=
-"""
-  ttf = cStringIO.StringIO(zlib.decompress(base64.decodestring(font)))
+""".encode('latin1')
+  uncompressed = bytearray(zlib.decompress(base64.decodestring(font)))
+  ttf = io.BytesIO(uncompressed)
+  setattr(ttf ,"name", "(invisible.ttf)")
   pdfmetrics.registerFont(TTFont('invisible', ttf))
 
 if __name__ == "__main__":

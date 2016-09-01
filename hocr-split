@@ -26,8 +26,7 @@ if len(sys.argv)!=3:
 pattern = sys.argv[2]
 assert re.search('%[0-9]*d',pattern)
 
-stream = open(sys.argv[1])
-doc = html.fromstring(stream.read())
+doc = html.parse(sys.argv[1])
 pages = doc.xpath("//*[@class='ocr_page']")
 assert pages!=[]
 
@@ -37,7 +36,5 @@ for new_page in pages:
     container_pages = container.xpath("//*[@class='ocr_page']")
     for page in container_pages: container.remove(page)
     container.append(new_page)
-    stream = open(pattern % index, "w")
-    stream.write(etree.tostring(doc, pretty_print=True))
-    stream.close()
+    doc.write((pattern % index), pretty_print=True)
     index += 1
