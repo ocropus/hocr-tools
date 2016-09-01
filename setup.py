@@ -1,15 +1,17 @@
 #!/usr/bin/env python
 
+VERSION = '1.0.0'
+
 import glob
 from setuptools import setup
 setup(
     name = "hocr_tools",
-    version = "1.2.2",
+    version = VERSION,
     description = 'Advanced tools for hOCR integration',
     author = 'Thomas Breuel',
     author_email = 'tmbdev@gmail.com',
     url = 'https://github.com/tmbdev/hocr-tools',
-    download_url = 'https://github.com/tmbdev/hocr-tools/tarball/1.2.2',
+    download_url = 'https://github.com/tmbdev/hocr-tools/tarball/v' + VERSION,
     classifiers = [
         'Development Status :: 5 - Production/Stable',
         'Environment :: Console',
