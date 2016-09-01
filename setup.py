@@ -5,7 +5,7 @@ VERSION = '1.0.0'
 import glob
 from setuptools import setup
 setup(
-    name = "hocr_tools",
+    name = "hocr-tools",
     version = VERSION,
     description = 'Advanced tools for hOCR integration',
     author = 'Thomas Breuel',
