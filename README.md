@@ -1,6 +1,6 @@
 # hocr-tools
 
-[![Build Status](https://travis-ci.org/tmbdev/hocr-tools.svg?branch=master)](https://travis-ci.org/tmbdev/hocr-tools)
+[![Build Status](https://travis-ci.org/UB-Mannheim/hocr-tools.svg?branch=master)](https://travis-ci.org/UB-Mannheim/hocr-tools) [![PyPI](https://img.shields.io/pypi/v/hocr-tools.svg?maxAge=2592000)](https://pypi.python.org/pypi/hocr-tools) [![license](https://img.shields.io/badge/license-Apache%202.0-yellow.svg?style=flat)](https://github.com/tmbdev/hocr-tools/blob/master/LICENSE)
 
 
 * [About](#about)
