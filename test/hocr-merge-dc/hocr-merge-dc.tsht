@@ -2,7 +2,7 @@
 
 plan 4
 
-hocr_file='../legacy/sample.html'
+hocr_file='../testdata/sample.html'
 
 output=$(hocr-merge-dc dcsample2.xml "$hocr_file")
 not_ok "$?" "Command succeeded"

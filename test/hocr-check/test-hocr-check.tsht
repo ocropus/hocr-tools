@@ -2,5 +2,7 @@
 
 plan 2
 
-file_exists sample.hocr
-exec_ok hocr-check sample.hocr
+TESTDATA="../testdata"
+
+exec_ok hocr-check "$TESTDATA/sample.html"
+cat "$TESTDATA/sample.html" | hocr-check && ok "Check from stdin"

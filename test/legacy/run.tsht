@@ -1,5 +1,0 @@
-#!/usr/bin/env tsht
-
-exec_ok hocr-check sample.html
-exec_ok hocr-extract-images -p "words-from-test-%03d.png" -e "ocrx_word" tess.hocr
-rm words-from-test*

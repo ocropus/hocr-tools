@@ -1,0 +1,28 @@
+#!/usr/bin/env tsht
+
+plan 10
+
+TESTDATA="../testdata"
+
+test_extract() {
+    base="$1"
+    level="$2"
+    number="$3"
+
+    echo "# $level argument"
+    exec_ok hocr-extract-images -p "$base-%03d.png" -b "$TESTDATA" -e "$level" "$TESTDATA/tess.hocr"
+    equals $number "$(ls $base*png|wc -l)" "$level: number of images == $number"
+    equals $number "$(ls $base*txt|wc -l)" "$level: number of texts == $number"
+    rm $base*
+
+    echo "# $level stdin"
+    cat "$TESTDATA/tess.hocr" | hocr-extract-images -p "$base-%03d.png" -b "$TESTDATA" -e "$level"
+    equals $number "$(ls $base*png|wc -l)" "$level: number of images == $number"
+    equals $number "$(ls $base*txt|wc -l)" "$level: number of texts == $number"
+    rm $base*
+}
+
+test_extract 'page' 'ocr_page' 1
+test_extract 'line' 'ocr_line' 37
+test_extract 'word' 'ocrx_word' 503
+equals 503 "$(wc -w < "$TESTDATA/sample.txt")" "Indeed 503 words in sample"
