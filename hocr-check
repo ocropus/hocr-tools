@@ -99,17 +99,17 @@ test_ok(doc.xpath("//*[@class='ocr_page']")!=[], "has a page")
 # check that lines are inside pages
 lines = doc.xpath("//*[@class='ocr_line']")
 for line_idx, line in enumerate(lines):
-    test_ok(line.xpath("//*[@class='ocr_page']"), "ocr_line %2d in a ocr_page"%(line_idx))
+    test_ok(line.xpath("./ancestor::*[@class='ocr_page']"), "ocr_line %2d in an ocr_page"%(line_idx))
 
 # check that pars are inside pages
 pars = doc.xpath("//*[@class='ocr_par']")
 for par_idx, par in enumerate(pars):
-    test_ok(par.xpath("//*[@class='ocr_page']"), "ocr_par %2d in a ocr_page"%(par_idx))
+    test_ok(par.xpath("./ancestor::*[@class='ocr_page']"), "ocr_par %2d in an ocr_page"%(par_idx))
 
 # check that columns are inside pages
 columns = doc.xpath("//*[@class='ocr_column']")
 for column_idx, column in enumerate(columns):
-    test_ok(column.xpath("//*[@class='ocr_page']"), "ocr_column %2d in a ocr_page"%(column_idx))
+    test_ok(column.xpath("./ancestor::*[@class='ocr_page']"), "ocr_column %2d in an ocr_page"%(column_idx))
 
 ################################################################
 ### geometric checks
