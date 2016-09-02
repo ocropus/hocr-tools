@@ -1,8 +1,29 @@
 #!/usr/bin/env tsht
-
-plan 2
-
 TESTDATA="../testdata"
 
-exec_ok hocr-check "$TESTDATA/sample.html"
-cat "$TESTDATA/sample.html" | hocr-check && ok "Check from stdin"
+plan $(( 2 + $(find . -name '*ok-*.html'|wc -l)))
+
+hocr-check "$TESTDATA/sample.html" 2>/dev/null ; not_ok $? "Check from filename"
+cat "$TESTDATA/sample.html" | hocr-check 2>/dev/null ; not_ok $? "Check from stdin"
+
+list_failed () {
+    local IFS=$'\n'
+    [[ $# = 0 ]] && return
+    echo
+    echo -e "$*" |sed 's/^/#    /'
+}
+
+find . -mindepth 1 -type d | while read dir;do
+    echo "# $dir: valid examples"
+    find "$dir" -name 'ok-*html'| while read ok_hocr;do
+        IFS=$'\n'
+        failed=($(hocr-check "$ok_hocr" 2>&1|grep '^not ok'))
+        equals "${#failed[@]}" 0 "'hocr-check $ok_hocr' (failed: ${#failed[@]})$(list_failed "${failed[@]}")"
+    done
+    echo "# $dir: invalid examples"
+    find "$dir" -name 'notok-*html'| while read ok_hocr;do
+        IFS=$'\n'
+        failed=($(hocr-check "$ok_hocr" 2>&1|grep '^not ok'))
+        not_equals "${#failed[@]}" 0 "'hocr-check $ok_hocr' (failed: ${#failed[@]})"
+    done
+done
