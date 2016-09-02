@@ -9,6 +9,14 @@ from lxml import html
 ### misc library code
 ################################################################
 
+TEST_COUNTER = 0
+def test_ok(v, msg):
+    global TEST_COUNTER
+    TEST_COUNTER += 1
+    if not v:
+        sys.stderr.write("not ")
+    sys.stderr.write("ok " + str(TEST_COUNTER) + " - " + msg + "\n")
+
 def assoc(key,list):
     for k,v in list:
         if k==key: return v
@@ -82,26 +90,26 @@ else: doc = html.parse(sys.stdin)
 ################################################################
 
 # check for presence of meta information
-assert doc.xpath("//meta[@name='ocr-id']")!=[]
-assert doc.xpath("//meta[@name='ocr-recognized']")!=[]
+test_ok(doc.xpath("//meta[@name='ocr-id']")!=[], "//meta[@name='ocr-id']")
+test_ok(doc.xpath("//meta[@name='ocr-recognized']")!=[], "//meta[@name='ocr-recognized']")
 
 # check for presence of page
-assert doc.xpath("//*[@class='ocr_page']")!=[]
+test_ok(doc.xpath("//*[@class='ocr_page']")!=[], "has a page")
 
 # check that lines are inside pages
 lines = doc.xpath("//*[@class='ocr_line']")
-for line in lines:
-    assert line.xpath("//*[@class='ocr_page']")
+for line_idx, line in enumerate(lines):
+    test_ok(line.xpath("//*[@class='ocr_page']"), "ocr_line %2d in a ocr_page"%(line_idx))
 
 # check that pars are inside pages
 pars = doc.xpath("//*[@class='ocr_par']")
-for par in pars:
-    assert par.xpath("//*[@class='ocr_page']")
+for par_idx, par in enumerate(pars):
+    test_ok(par.xpath("//*[@class='ocr_page']"), "ocr_par %2d in a ocr_page"%(par_idx))
 
 # check that columns are inside pages
 columns = doc.xpath("//*[@class='ocr_column']")
-for column in columns:
-    assert column.xpath("//*[@class='ocr_page']")
+for column_idx, column in enumerate(columns):
+    test_ok(column.xpath("//*[@class='ocr_page']"), "ocr_column %2d in a ocr_page"%(column_idx))
 
 ################################################################
 ### geometric checks
@@ -112,15 +120,15 @@ if not nooverlap:
         # check lines
         objs = page.xpath("//*[@class='ocr_line']")
         line_bboxes = [get_bbox(obj) for obj in objs if get_prop(obj,'bbox')]
-        assert mostly_nonoverlapping(line_bboxes)
+        test_ok(mostly_nonoverlapping(line_bboxes), 'mostly_nonoverlapping/line')
         # check paragraphs
         objs = page.xpath("//*[@class='ocr_par']")
         par_bboxes = [get_bbox(obj) for obj in objs if get_prop(obj,'bbox')]
-        assert mostly_nonoverlapping(par_bboxes)
+        test_ok(mostly_nonoverlapping(par_bboxes), 'mostly_nonoverlapping/par')
         # check columns
         objs = page.xpath("//*[@class='ocr_column']")
         column_bboxes = [get_bbox(obj) for obj in objs if get_prop(obj,'bbox')]
-        assert mostly_nonoverlapping(column_bboxes)
+        test_ok(mostly_nonoverlapping(column_bboxes), 'mostly_nonoverlapping/column')
 
 ################################################################
 ### TODO
