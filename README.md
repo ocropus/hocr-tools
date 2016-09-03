@@ -7,8 +7,9 @@
   * [About the code](#about-the-code)
   * [Pointers](#pointers)
 * [Installation](#installation)
-  * [System-wide](#system-wide)
-  * [Virtualenv](#virtualenv)
+  * [System-wide with pip](#system-wide-with-pip)
+  * [System-wide from source](#system-wide-from-source)
+  * [virtualenv](#virtualenv)
 * [Available Programs](#available-programs)
   * [hocr-check](#hocr-check) -- check the hOCR file for errors
   * [hocr-combine](#hocr-combine) -- combine pages in multiple hOCR files into a single document
@@ -54,7 +55,16 @@ http://docs.google.com/View?docID=dfxcv4vc_67g844kf&revision=_latest
 
 ## Installation
 
-### System-wide
+### System-wide with pip
+
+You can install hocr-tools along with its dependencies from
+[PyPI](https://pypi.python.org/pypi/hocr-tools):
+
+```sh
+sudo pip install hocr-tools
+```
+
+### System-wide from source
 
 On a Debian/Ubuntu system, install the dependencies from packages:
 
@@ -75,7 +85,7 @@ Then install the dist:
 sudo python setup.py install
 ```
 
-### Virtualenv
+### virtualenv
 
 Once
 
