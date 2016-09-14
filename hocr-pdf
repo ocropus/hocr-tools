@@ -29,7 +29,7 @@ from PIL import Image
 from reportlab.pdfgen.canvas import Canvas
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
-from xml.etree.ElementTree import ElementTree, ParseError
+from lxml import etree
 
 class StdoutWrapper:
     """
@@ -70,11 +70,8 @@ def add_text_layer(pdf, image, height, dpi):
   p1 = re.compile('bbox((\s+\d+){4})')
   p2 = re.compile('baseline((\s+[\d\.\-]+){2})')
   hocrfile = os.path.splitext(image)[0] + ".hocr"
-  hocr = ElementTree()
-  hocr.parse(hocrfile)
-  for line in hocr.findall(".//{http://www.w3.org/1999/xhtml}span"):
-    if line.attrib['class'] != 'ocr_line':
-      continue
+  hocr = etree.parse(hocrfile)
+  for line in hocr.xpath('//*[@class="ocr_line"]'):
     linebox = p1.search(line.attrib['title']).group(1).split()
     try:
       baseline = p2.search(line.attrib['title']).group(1).split()
@@ -82,20 +79,9 @@ def add_text_layer(pdf, image, height, dpi):
       baseline = [ 0, 0 ]
     linebox = [float(i) for i in linebox]
     baseline = [float(i) for i in baseline]
-    for word in line:
-      if word.attrib['class'] != 'ocrx_word':
-        continue
-      if word.text is not None:
-        rawtext = word.text.strip()
-      else:
-        try:
-          innerword = word[0]
-          if innerword.text is not None:
-            rawtext = innerword.text.strip()
-          else:
-            continue  
-        except:
-          continue
+    for word in line.xpath('.//*[@class="ocrx_word"]'):
+      rawtext = word.xpath('./text()')[0]
+      #  sys.stderr.write("WORD: '%s', type '%s'\n" % (rawtext, type(rawtext)))
       font_width = pdf.stringWidth(rawtext, 'invisible', 8)
       if font_width <= 0:
         continue
