@@ -55,7 +55,7 @@ for node in dc_nodes:
         value = value[:500]
         hnode = etree.Element("meta", nsmap = {'DC': 'http://purl.org/dc/elements/1.1'})
         hnode.attrib['name'] = name
-        hnode.attrib['value'] = value
+        hnode.attrib['content'] = value
         hocr_meta.append(hnode)
 
 print(etree.tostring(hocr_doc, pretty_print=True))

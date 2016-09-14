@@ -7,7 +7,7 @@ hocr_file='../testdata/sample.html'
 output=$(hocr-merge-dc dcsample2.xml "$hocr_file")
 not_ok "$?" "Command succeeded"
 # ok "$output" "Output produced"
-match "name='DC.title' value='Nomad'" "$(cat "$hocr_file")"
-not_match "name='DC.title' value='UKOLN'" "$(cat "$hocr_file")"
-match 'name="DC.title" value="UKOLN"' "$output"
+match "name='DC.title' content='Nomad'" "$(cat "$hocr_file")"
+not_match "name='DC.title' content='UKOLN'" "$(cat "$hocr_file")"
+match 'name="DC.title" content="UKOLN"' "$output"
 # match "
