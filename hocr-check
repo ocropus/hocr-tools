@@ -90,7 +90,7 @@ else: doc = html.parse(sys.stdin)
 ################################################################
 
 # check for presence of meta information
-test_ok(doc.xpath("//meta[@name='ocr-id']")!=[], "//meta[@name='ocr-id']")
+test_ok(doc.xpath("//meta[@name='ocr-system']")!=[], "//meta[@name='ocr-system']")
 test_ok(doc.xpath("//meta[@name='ocr-recognized']")!=[], "//meta[@name='ocr-recognized']")
 
 # check for presence of page
