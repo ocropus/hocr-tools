@@ -1,9 +1,10 @@
-<html>
-<head>
-<title>Test multi-page hOCR file</title>
-</head>
-<body>
-<div class="ocr_page">Page 1</div>
-<div class="ocr_page">Page 2</div>
-</body>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <title>Test multi-page hOCR file</title>
+  </head>
+  <body>
+    <div class="ocr_page">Page 1</div>
+    <div class="ocr_page">Page 2</div>
+  </body>
 </html>

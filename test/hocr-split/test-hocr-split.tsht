@@ -9,4 +9,6 @@ exec_ok hocr-split "$input" "$pattern"
 equals 2 "$(find . -name 'test-*.hocr'|wc -l)" "two files were produced"
 equals 1 "$(grep -c 'ocr_page' test-001.hocr 2>/dev/null)" "one page in test-001.hocr"
 equals 1 "$(grep -c 'ocr_page' test-002.hocr 2>/dev/null)" "one page in test-002.hocr"
+equals 1 "$(grep -o 'xml:lang' test-001.hocr 2>/dev/null|wc -l)" "one xml:lang= only, #58"
+equals 1 "$(grep -o 'xml:lang' test-001.hocr 2>/dev/null|wc -l)" "one xmlns= only, #58"
 rm -f test-*.hocr
