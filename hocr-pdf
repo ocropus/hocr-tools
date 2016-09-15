@@ -29,7 +29,7 @@ from PIL import Image
 from reportlab.pdfgen.canvas import Canvas
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
-from lxml import etree
+from lxml import etree, html
 
 class StdoutWrapper:
     """
@@ -70,7 +70,7 @@ def add_text_layer(pdf, image, height, dpi):
   p1 = re.compile('bbox((\s+\d+){4})')
   p2 = re.compile('baseline((\s+[\d\.\-]+){2})')
   hocrfile = os.path.splitext(image)[0] + ".hocr"
-  hocr = etree.parse(hocrfile)
+  hocr = etree.parse(hocrfile, html.XHTMLParser())
   for line in hocr.xpath('//*[@class="ocr_line"]'):
     linebox = p1.search(line.attrib['title']).group(1).split()
     try:
@@ -80,8 +80,9 @@ def add_text_layer(pdf, image, height, dpi):
     linebox = [float(i) for i in linebox]
     baseline = [float(i) for i in baseline]
     for word in line.xpath('.//*[@class="ocrx_word"]'):
-      rawtext = word.xpath('./text()')[0]
-      #  sys.stderr.write("WORD: '%s', type '%s'\n" % (rawtext, type(rawtext)))
+      rawtext = word.text_content().strip()
+      if rawtext == '':
+          continue
       font_width = pdf.stringWidth(rawtext, 'invisible', 8)
       if font_width <= 0:
         continue
