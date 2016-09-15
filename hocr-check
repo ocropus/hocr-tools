@@ -106,10 +106,10 @@ pars = doc.xpath("//*[@class='ocr_par']")
 for par_idx, par in enumerate(pars):
     test_ok(par.xpath("./ancestor::*[@class='ocr_page']"), "ocr_par %2d in an ocr_page"%(par_idx))
 
-# check that columns are inside pages
-columns = doc.xpath("//*[@class='ocr_column']")
-for column_idx, column in enumerate(columns):
-    test_ok(column.xpath("./ancestor::*[@class='ocr_page']"), "ocr_column %2d in an ocr_page"%(column_idx))
+# check that careas are inside pages
+careas = doc.xpath("//*[@class='ocr_carea']")
+for carea_idx, carea in enumerate(careas):
+    test_ok(carea.xpath("./ancestor::*[@class='ocr_page']"), "ocr_carea %2d in an ocr_page"%(carea_idx))
 
 ################################################################
 ### geometric checks
@@ -125,17 +125,17 @@ if not nooverlap:
         objs = page.xpath("//*[@class='ocr_par']")
         par_bboxes = [get_bbox(obj) for obj in objs if get_prop(obj,'bbox')]
         test_ok(mostly_nonoverlapping(par_bboxes), 'mostly_nonoverlapping/par')
-        # check columns
-        objs = page.xpath("//*[@class='ocr_column']")
-        column_bboxes = [get_bbox(obj) for obj in objs if get_prop(obj,'bbox')]
-        test_ok(mostly_nonoverlapping(column_bboxes), 'mostly_nonoverlapping/column')
+        # check careas
+        objs = page.xpath("//*[@class='ocr_carea']")
+        carea_bboxes = [get_bbox(obj) for obj in objs if get_prop(obj,'bbox')]
+        test_ok(mostly_nonoverlapping(carea_bboxes), 'mostly_nonoverlapping/carea')
 
 ################################################################
 ### TODO
 ################################################################
 
 # FIXME add many other checks:
-# - containment of paragraphs, columns, etc.
+# - containment of paragraphs, careas, etc.
 # - ocr-recognized vs. actual tags
 # - warn about text outside ocr_ elements
 # - check title= attribute format
