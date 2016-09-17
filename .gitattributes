@@ -1,0 +1,4 @@
+*.sh eol=lf
+*.tsht eol=lf
+hocr-* eol=lf
+tsht eol=lf
