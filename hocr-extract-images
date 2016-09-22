@@ -2,9 +2,15 @@
 
 # extract the images and texts within all the ocr_line elements within the hOCR file
 
-import sys,os,re,getopt,codecs
-from PIL import Image
+import codecs
+import getopt
+import os
+import re
+import sys
+
 from lxml import html
+from PIL import Image
+
 
 def assoc(key,list):
     for k,v in list:

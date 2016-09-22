@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 
-import sys,os,re
+import os
+import re
+import sys
 import xml
-from lxml import html, etree
+
+from lxml import etree, html
 
 dcknown = [
     "dc:title","dc:creator","dc:subject",
