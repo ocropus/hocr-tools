@@ -2,7 +2,12 @@
 
 # check the given file for conformance with the hOCR format spec
 
-import sys,os,string,re,getopt
+import getopt
+import os
+import re
+import string
+import sys
+
 from lxml import html
 
 ################################################################

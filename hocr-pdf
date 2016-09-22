@@ -17,19 +17,21 @@
 # Create a searchable PDF from a pile of HOCR + JPEG. Tested with
 # Tesseract.
 
-import sys
-import glob
-import os.path
-import io
 import base64
-import zlib
+import glob
+import io
+import os.path
 import re
+import sys
+import zlib
 
-from PIL import Image
-from reportlab.pdfgen.canvas import Canvas
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.pdfgen.canvas import Canvas
+
 from lxml import etree, html
+from PIL import Image
+
 
 class StdoutWrapper:
     """

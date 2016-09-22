@@ -2,8 +2,14 @@
 
 # extract lines from Google 1000 book sample
 
-import string,re,sys,os,shutil,glob
+import glob
+import os
+import re
+import shutil
+import string
+import sys
 import xml.sax
+
 from PIL import Image
 
 usage = """

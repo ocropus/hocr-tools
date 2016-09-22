@@ -3,9 +3,13 @@
 # compute statistics about the quality of the geometric segmentation
 # at the level of the given OCR element
 
-import sys,os,re,getopt
+import getopt
+import os
+import re
+import sys
+
 from lxml import html
-from pylab import array,zeros,reshape
+from pylab import array, reshape, zeros
 
 ################################################################
 ### misc library code

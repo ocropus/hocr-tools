@@ -2,8 +2,12 @@
 
 # split an hOCR file into individual pages
 
-import sys,os,string,re
-from lxml import html, etree
+import os
+import re
+import string
+import sys
+
+from lxml import etree, html
 
 ################################################################
 ### main program

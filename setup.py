@@ -4,6 +4,7 @@ VERSION = '1.0.1'
 
 import glob
 from setuptools import setup
+
 setup(
     name = "hocr-tools",
     version = VERSION,
