@@ -59,7 +59,7 @@ if len(sys.argv)>1 and (sys.argv[1] == '-h' or sys.argv[1] == '--help'):
 
 if len(sys.argv)!=4:
     sys.stderr.write(usage)
-    print "args:",sys.argv
+    print("args:",sys.argv)
     sys.exit(1)
 
 exe,hocr,image_pattern,output_pattern = sys.argv
@@ -145,7 +145,7 @@ class docHandler(xml.sax.handler.ContentHandler):
                     len(self.text)<=max_len and \
                     re.match(self.regex,self.text) and \
                     check_dict(dict,self.text):
-                print self.page,self.bbox,self.text.encode("utf-8")
+                print(self.page,self.bbox,self.text.encode("utf-8"))
                 w,h = self.image.size
                 x0,y0,x1,y1 = [int(s) for s in self.bbox.split()]
                 assert y0<y1 and x0<x1 and x1<=w and y1<=h

@@ -61,7 +61,7 @@ def relative_overlap(u,v):
 ################################################################
 
 def print_usage():
-    print "usage: %s [-e element-name] [-o overlap-threshold] hocr-truth hocr-actual"%sys.argv[0]
+    print("usage: %s [-e element-name] [-o overlap-threshold] hocr-truth hocr-actual"%sys.argv[0])
 
 ### argument parsing
 
@@ -128,4 +128,4 @@ for truth,actual in pages:
     aboxes = [get_bbox(n) for n in aobjs]
     if check_bad_partition(aboxes):
         raise ValueError("Actual data is not an acceptable segmentation")
-    print boxstats(tboxes,aboxes),boxstats(aboxes,tboxes)
+    print(boxstats(tboxes,aboxes),boxstats(aboxes,tboxes))

@@ -72,7 +72,7 @@ def mostly_nonoverlapping(boxes,significant_overlap=0.2):
 ################################################################
 
 def print_usage():
-    print "usage:",sys.argv[0],"[-o] file.html"
+    print("usage:",sys.argv[0],"[-o] file.html")
 
 if len(sys.argv)>1 and (sys.argv[1] == '-h' or sys.argv[1] == '--help'):
     print_usage()
