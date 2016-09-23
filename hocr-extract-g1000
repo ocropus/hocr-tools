@@ -2,6 +2,7 @@
 
 # extract lines from Google 1000 book sample
 
+from __future__ import print_function
 import glob
 import os
 import re

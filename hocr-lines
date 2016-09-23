@@ -2,6 +2,7 @@
 
 # extract the text within all the ocr_line elements within the hOCR file
 
+from __future__ import print_function
 import os
 import re
 import sys
