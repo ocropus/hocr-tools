@@ -4,7 +4,14 @@ TESTDATA="../testdata"
 plan 3
 
 exec_ok "hocr-eval-lines" "-v" "$TESTDATA/sample.txt" "$TESTDATA/sample.html"
-ocrerrors=($(hocr-eval-lines "$TESTDATA/sample.txt" "$TESTDATA/tess.hocr" 2>&1|grep '^ocr_errors 7.0'))
-segerrors=($(hocr-eval-lines "$TESTDATA/sample.txt" "$TESTDATA/tess.hocr" 2>&1|grep '^segmentation_errors 0'))
-equals "${#ocrerrors[@]}" 2 "hocr-eval-lines: check whether detection of ocr_errors is correct"
-equals "${#segerrors[@]}" 2 "hocr-eval-lines: check whether detection of segmentation_errors is correct"
+# Test code, remove it later ==>
+hocr-eval-lines "$TESTDATA/sample.txt" "$TESTDATA/tess.hocr"
+# <==
+
+# Currently Travis shows output like this:
+# ('segmentation_errors', 0)
+# ('ocr_errors', 7.0)
+ocrerrors=$(hocr-eval-lines "$TESTDATA/sample.txt" "$TESTDATA/tess.hocr" 2>&1 | grep -c 'ocr_errors.*7.0')
+segerrors=$(hocr-eval-lines "$TESTDATA/sample.txt" "$TESTDATA/tess.hocr" 2>&1 | grep -c 'segmentation_errors.*0')
+equals 1 $ocrerrors "hocr-eval-lines: check whether detection of ocr_errors is correct"
+equals 1 $segerrors "hocr-eval-lines: check whether detection of segmentation_errors is correct"
