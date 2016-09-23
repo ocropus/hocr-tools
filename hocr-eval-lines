@@ -9,7 +9,7 @@ import re
 import sys
 
 from lxml import html
-from pylab import array, reshape, zeros
+from pylab import array, zeros
 
 ################################################################
 ### misc library code
@@ -73,7 +73,7 @@ optlist,args = getopt.getopt(sys.argv[1:],"v")
 
 verbose = (assoc('-v',optlist)=='')
 truth_lines = open(args[0]).read().split('\n')
-actual_doc = html.fromstring(open(args[1]).read())
+actual_doc = html.parse(args[1])
 actual_lines = [get_text(node) for node in actual_doc.xpath("//*[@class='ocr_line']")]
 
 truth_lines = [normalize(s) for s in truth_lines]
