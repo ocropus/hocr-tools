@@ -2,6 +2,7 @@
 
 # extract the text within all the ocr_line elements within the hOCR file
 
+from __future__ import print_function
 import os
 import re
 import sys
@@ -15,7 +16,7 @@ def get_text(node):
     return re.sub(r'\s+',' ',s)
 
 if len(sys.argv)>1 and (sys.argv[1] == '-h' or sys.argv[1] == '--help'):
-    print "Usage:", sys.argv[0], "file.html"
+    print("Usage:", sys.argv[0], "file.html")
     sys.exit(0)
 
 if len(sys.argv)>1: doc = html.parse(sys.argv[1])
@@ -23,4 +24,4 @@ else: doc = html.parse(sys.stdin)
 
 lines = doc.xpath("//*[@class='ocr_line']")
 for line in lines:
-    print get_text(line).encode("utf-8")
+    print(get_text(line).encode("utf-8"))

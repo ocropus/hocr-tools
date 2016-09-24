@@ -4,6 +4,7 @@
 # compute statistics about the quality of the geometric segmentation
 # at the level of the given OCR element
 
+from __future__ import print_function
 import codecs
 import getopt
 import os
@@ -116,7 +117,7 @@ def remove_tex(text):
 ### argument parsing
 
 def print_usage():
-    print "usage: %s hocr-true.html hocr-actual.html"%sys.argv[0]
+    print("usage: %s hocr-true.html hocr-actual.html"%sys.argv[0])
 
 if len(sys.argv)>1 and (sys.argv[1] == '-h' or sys.argv[1] == '--help'):
     print_usage()
@@ -136,7 +137,7 @@ significant_overlap = float(significant_overlap)
 imgfile =  assoc('-i',optlist)
 if(imgfile):
     im = Image.open(imgfile)
-    print im.size, im.format, im.mode
+    print(im.size, im.format, im.mode)
     draw=ImageDraw.Draw(im)
 
 # get pages from inputs
@@ -184,8 +185,8 @@ for truth,actual in pages:
 
         if (tight_overlap==0) :
             if verbose:
-                print "segmentation_error: area_overlap =",q*1.0/area(bbox),"true_bbox",bbox
-                print "\t",get_text(true_line)
+                print("segmentation_error: area_overlap =",q*1.0/area(bbox),"true_bbox",bbox)
+                print("\t",get_text(true_line))
             segmentation_errors += 1
             
             if candidates!=[]:
@@ -202,19 +203,19 @@ for truth,actual in pages:
         true_text = remove_tex(get_text(true_line))
         actual_text = actual_line
         if debug:
-            print "overlap",q,"true_bbox",bbox
-            print "\t",true_text
-            print "\t",actual_text
+            print("overlap",q,"true_bbox",bbox)
+            print("\t",true_text)
+            print("\t",actual_text)
         error = edit_distance(normalize(true_text),normalize(actual_text))
         if verbose and error>0:
-            print "ocr_error",error,"true_bbox",bbox
-            print "\t",true_text
-            print "\t",actual_text
+            print("ocr_error",error,"true_bbox",bbox)
+            print("\t",true_text)
+            print("\t",actual_text)
         ocr_errors += error
 
-print "segmentation_errors",segmentation_errors
-print "segmentation_ocr_errors",segmentation_ocr_errors
-print "ocr_errors",ocr_errors
+print("segmentation_errors",segmentation_errors)
+print("segmentation_ocr_errors",segmentation_ocr_errors)
+print("ocr_errors",ocr_errors)
 if(imgfile):
     im.save("errors.png")
     im.show("errors.png")
