@@ -4,9 +4,6 @@ TESTDATA="../testdata"
 plan 3
 
 exec_ok "hocr-eval-lines" "-v" "$TESTDATA/sample.txt" "$TESTDATA/sample.html"
-# Test code, remove it later ==>
-hocr-eval-lines "$TESTDATA/sample.txt" "$TESTDATA/tess.hocr"
-# <==
 
 # Currently Travis shows output like this:
 # ('segmentation_errors', 0)
