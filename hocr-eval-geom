@@ -83,8 +83,8 @@ close_match = float(close_match)
 
 ### read the hOCR files
 
-truth_doc = html.fromstring(open(args[0]).read())
-actual_doc = html.fromstring(open(args[1]).read())
+truth_doc = html.parse(args[0])
+actual_doc = html.parse(args[1])
 truth_pages = truth_doc.xpath("//*[@class='ocr_page']")
 actual_pages = actual_doc.xpath("//*[@class='ocr_page']")
 assert len(truth_pages) == len(actual_pages)

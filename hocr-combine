@@ -24,13 +24,13 @@ if len(sys.argv)<2:
     print_usage()
     sys.exit(1)
 
-doc = html.fromstring(open(sys.argv[1]).read())
+doc = html.parse(sys.argv[1])
 
 pages = doc.xpath("//*[@class='ocr_page']")
 container = pages[-1].getparent()
 
 for fname in sys.argv[2:]:
-    doc2 = html.fromstring(open(fname).read())
+    doc2 = html.parse(fname)
     pages = doc2.xpath("//*[@class='ocr_page']")
     for page in pages:
         page = doc.importNode(page,1)
