@@ -5,10 +5,16 @@ plan 3
 
 exec_ok "hocr-eval-lines" "-v" "$TESTDATA/sample.txt" "$TESTDATA/sample.html"
 
+ocr_eval_lines_out=$(hocr-eval-lines "$TESTDATA/sample.txt" "$TESTDATA/tess.hocr")
+
+match "ocr_errors 7.0" "$ocr_eval_lines_out" \
+    "check whether detection of ocr_errors is correct"
+
+match 'segmentation_errors 0' "$ocr_eval_lines_out" \
+    "check whether detection of segmentation_errors is correct"
+
 # Currently Travis shows output like this:
 # ('segmentation_errors', 0)
 # ('ocr_errors', 7.0)
-ocrerrors=$(hocr-eval-lines "$TESTDATA/sample.txt" "$TESTDATA/tess.hocr" 2>&1 | grep -c 'ocr_errors.*7.0')
-segerrors=$(hocr-eval-lines "$TESTDATA/sample.txt" "$TESTDATA/tess.hocr" 2>&1 | grep -c 'segmentation_errors.*0')
-equals 1 $ocrerrors "hocr-eval-lines: check whether detection of ocr_errors is correct"
-equals 1 $segerrors "hocr-eval-lines: check whether detection of segmentation_errors is correct"
+not_match "\('segmentation_errors'" "$ocr_eval_lines_out" \
+    "Output is a string not a stringified tuple"
