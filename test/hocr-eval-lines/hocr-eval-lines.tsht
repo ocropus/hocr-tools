@@ -1,7 +1,7 @@
 #!/usr/bin/env tsht
 TESTDATA="../testdata"
 
-plan 3
+plan 4
 
 exec_ok "hocr-eval-lines" "-v" "$TESTDATA/sample.txt" "$TESTDATA/sample.html"
 
@@ -13,7 +13,7 @@ match "ocr_errors 7.0" "$ocr_eval_lines_out" \
 match 'segmentation_errors 0' "$ocr_eval_lines_out" \
     "check whether detection of segmentation_errors is correct"
 
-# Currently Travis shows output like this:
+# Travis showed output like this because of wrong 'print' syntax for 3.x
 # ('segmentation_errors', 0)
 # ('ocr_errors', 7.0)
 not_match "\('segmentation_errors'" "$ocr_eval_lines_out" \
