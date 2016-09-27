@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-VERSION = '1.0.1'
+VERSION = '1.1.0'
 
 import glob
 from setuptools import setup
@@ -21,6 +21,8 @@ setup(
         'License :: OSI Approved :: Apache Software License',
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
         'Topic :: Multimedia :: Graphics :: Graphics Conversion',
         'Topic :: Scientific/Engineering :: Image Recognition',
         'Topic :: Utilities',
