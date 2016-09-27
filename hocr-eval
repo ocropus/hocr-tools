@@ -141,8 +141,8 @@ if(imgfile):
     draw=ImageDraw.Draw(im)
 
 # get pages from inputs
-truth_doc = html.fromstring(args[0])
-actual_doc = html.fromstring(args[1])
+truth_doc = html.parse(args[0])
+actual_doc = html.parse(args[1])
 
 # parse pages
 truth_pages = truth_doc.xpath("//*[@class='ocr_page']")
