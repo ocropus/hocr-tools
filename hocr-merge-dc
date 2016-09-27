@@ -33,7 +33,7 @@ if len(sys.argv)<2:
     print_usage()
     sys.exit(1)
 
-dc_doc = etree.fromstring(open(sys.argv[1]).read())
+dc_doc = etree.parse(sys.argv[1], html.XHTMLParser())
 hocr_doc = html.parse(sys.argv[2])
 
 
