@@ -4,21 +4,14 @@
 # at the level of the given OCR element
 
 from __future__ import print_function
-import getopt
 import os
 import re
 import sys
+import argparse
 
 from lxml import html
 
 ### general utilities
-
-def assoc(key,list):
-    for k,v in list:
-        if k==key: return v
-    return None
-
-### XML processing
 
 def get_text(node):
     textnodes = node.xpath(".//text()")
@@ -60,31 +53,20 @@ def relative_overlap(u,v):
 ### main program
 ################################################################
 
-def print_usage():
-    print("usage: %s [-e element-name] [-o overlap-threshold] hocr-truth hocr-actual"%sys.argv[0])
-
 ### argument parsing
 
-if len(sys.argv)>1 and (sys.argv[1] == '-h' or sys.argv[1] == '--help'):
-    print_usage()
-    sys.exit(0)
-
-if len(sys.argv)<3:
-    print_usage()
-    sys.exit(1)
-
-optlist,args = getopt.getopt(sys.argv[1:],"e:o:")
-
-element = assoc('-e',optlist) or 'ocr_line'
-significant_overlap = assoc('-o',optlist) or 0.1
-significant_overlap = float(significant_overlap)
-close_match = assoc('-c',optlist) or 0.9
-close_match = float(close_match)
+parser = argparse.ArgumentParser(description="Compute statistics about the quality of the geometric segmentation at the level of the given OCR element", epilog="The output is a 4-tuple (multiple,missing,error,count) for the truth compared with the actual and then again another 4-tuple in the other direction")
+parser.add_argument("truth", help="hocr file with ground truth", type=argparse.FileType('r'), default=sys.stdin)
+parser.add_argument("actual", help="hocr file from the actual recognition", type=argparse.FileType('r'), default=sys.stdin)
+parser.add_argument("-e", "--element", default="ocr_line", help="OCR element to look at, default: %(default)s")
+parser.add_argument("-o", "--significant_overlap", type=float, default=0.1, help="default: %(default)s")
+parser.add_argument("-c", "--close_match", type=float, default=0.9, help="default: %(default)s")
+args = parser.parse_args()
 
 ### read the hOCR files
 
-truth_doc = html.parse(args[0])
-actual_doc = html.parse(args[1])
+truth_doc = html.parse(args.truth)
+actual_doc = html.parse(args.actual)
 truth_pages = truth_doc.xpath("//*[@class='ocr_page']")
 actual_pages = actual_doc.xpath("//*[@class='ocr_page']")
 assert len(truth_pages) == len(actual_pages)
@@ -100,9 +82,9 @@ def boxstats(truths,actuals):
     for t in truths:
         overlapping = [a for a in actuals if overlaps(a,t)]
         oas = [relative_overlap(t,a) for a in overlapping]
-        if len([o for o in oas if o > significant_overlap])>1:
+        if len([o for o in oas if o > args.significant_overlap])>1:
             multiple += 1
-        matching = [o for o in oas if o > close_match]
+        matching = [o for o in oas if o > args.close_match]
         if len(matching)<1:
             missing += 1
         elif len(matching)>1:
@@ -115,13 +97,13 @@ def boxstats(truths,actuals):
 def check_bad_partition(boxes):
     for i in range(len(boxes)):
         for j in range(i+1,len(boxes)):
-            if relative_overlap(boxes[i],boxes[j])>significant_overlap:
+            if relative_overlap(boxes[i],boxes[j])>args.significant_overlap:
                 return 1
     return 0
 
 for truth,actual in pages:
-    tobjs = truth.xpath("//*[@class='%s']"%element)
-    aobjs = actual.xpath("//*[@class='%s']"%element)
+    tobjs = truth.xpath("//*[@class='%s']"%args.element)
+    aobjs = actual.xpath("//*[@class='%s']"%args.element)
     tboxes = [get_bbox(n) for n in tobjs]
     if check_bad_partition(tboxes):
         raise ValueError("Ground truth data is not an acceptable segmentation")
