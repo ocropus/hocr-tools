@@ -33,7 +33,6 @@ for fname in sys.argv[2:]:
     doc2 = html.parse(fname)
     pages = doc2.xpath("//*[@class='ocr_page']")
     for page in pages:
-        page = doc.importNode(page,1)
         container.append(page)
 
-print(etree.tostring(doc, pretty_print=True))
+print(etree.tostring(doc, pretty_print=True).decode('UTF-8'))
