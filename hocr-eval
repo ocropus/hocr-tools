@@ -44,7 +44,8 @@ def get_bbox(node):
     return tuple([int(x) for x in bbox.split()])
 
 def get_text(node):
-    s = node.text
+    textnodes = node.xpath(".//text()")
+    s = "".join([text for text in textnodes])
     return re.sub(r'\s+',' ',s)
 
 # rectangle properties

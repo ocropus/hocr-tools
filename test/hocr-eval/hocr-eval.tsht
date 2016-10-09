@@ -1,0 +1,8 @@
+#!/usr/bin/env tsht
+TESTDATA="../testdata"
+
+plan 3
+
+exec_ok "hocr-eval" "$TESTDATA/sample.html" "$TESTDATA/sample.html"
+exec_ok "hocr-eval" -d -v "$TESTDATA/sample.html" "$TESTDATA/sample.html"
+exec_ok "hocr-eval" "-e ocr_line -o 0.05" "$TESTDATA/tess.hocr" "$TESTDATA/sample.html"
