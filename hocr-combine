@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
+import argparse
 import os
 import re
 import string
@@ -12,24 +13,15 @@ from lxml import etree, html
 ### main program
 ################################################################
 
-def print_usage():
-    sys.stderr.write("combine multiple hOCR documents into one\n\n")
-    sys.stderr.write("usage: %s file1.html file2.html...\n"%sys.argv[0])
+parser = argparse.ArgumentParser(description="combine multiple hOCR documents into one")
+parser.add_argument("files", help="hOCR files", type=argparse.FileType('r'),  nargs='+', default=sys.stdin)
+args = parser.parse_args()
 
-if len(sys.argv)>1 and (sys.argv[1] == '-h' or sys.argv[1] == '--help'):
-    print_usage()
-    sys.exit(0)
-
-if len(sys.argv)<2:
-    print_usage()
-    sys.exit(1)
-
-doc = html.parse(sys.argv[1])
-
+doc = html.parse(args.files[0])
 pages = doc.xpath("//*[@class='ocr_page']")
 container = pages[-1].getparent()
 
-for fname in sys.argv[2:]:
+for fname in args.files[1:]:
     doc2 = html.parse(fname)
     pages = doc2.xpath("//*[@class='ocr_page']")
     for page in pages:
