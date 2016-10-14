@@ -4,10 +4,10 @@
 # at the level of the given OCR element
 
 from __future__ import print_function
+import argparse
 import os
 import re
 import sys
-import argparse
 
 from lxml import html
 
