@@ -18,6 +18,7 @@
 # Tesseract.
 
 from __future__ import print_function
+import argparse
 import base64
 import glob
 import io
@@ -136,7 +137,7 @@ CMGjwvxTsr74/f/F95m3TH9x8o0/TU//N+7/D/ScVcA=
   pdfmetrics.registerFont(TTFont('invisible', ttf))
 
 if __name__ == "__main__":
-  if len(sys.argv) == 1:
-    print("Usage: %s <imgdir>\n" % os.path.basename(sys.argv[0]))
-  else:
-    export_pdf(sys.argv[1], 300)
+  parser = argparse.ArgumentParser(description="Create a searchable PDF from a pile of hOCR and JPEG")
+  parser.add_argument("imgdir", help="directory with the hOCR and JPEG files (corresponding JPEG and hOCR files have to have the same name with their respective file ending)")
+  args = parser.parse_args()
+  export_pdf(args.imgdir, 300)
