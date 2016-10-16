@@ -3,18 +3,18 @@
 # extract the text within all the ocr_line elements within the hOCR file
 
 from __future__ import print_function
+import argparse
 import os
 import re
 import sys
 
 from lxml import html
 
-if len(sys.argv)>1 and (sys.argv[1] == '-h' or sys.argv[1] == '--help'):
-    print("Usage:", sys.argv[0], "file.html")
-    sys.exit(0)
+parser = argparse.ArgumentParser(description='extract the text within all the ocr_line elements within the hOCR file')
+parser.add_argument('file',nargs='?',default='-')
+args = parser.parse_args()
 
-if len(sys.argv)>1: doc = html.parse(sys.argv[1])
-else: doc = html.parse(sys.stdin)
+doc = html.parse(args.file)
 
 for line in doc.xpath("//*[@class='ocr_line']"):
     print(re.sub(r'\s+', '\x20', line.text_content()).strip())
