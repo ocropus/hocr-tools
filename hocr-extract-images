@@ -3,8 +3,8 @@
 # extract the images and texts within all the ocr_line elements within the hOCR file
 
 from __future__ import print_function
+import argparse
 import codecs
-import getopt
 import os
 import re
 import sys
@@ -12,11 +12,6 @@ import sys
 from lxml import html
 from PIL import Image
 
-
-def assoc(key,list):
-    for k,v in list:
-        if k==key: return v
-    return None
 
 def get_text(node):
     textnodes = node.xpath('.//text()')
@@ -32,52 +27,39 @@ def get_prop(node,name):
         if key==name: return args
     return None
 
-def print_usage():
-    print("Usage: %s [-b image-dir] [-p file-pattern] [-e element-name] [hocr-file]"%sys.argv[0])
+parser = argparse.ArgumentParser(description="Extract the images and texts within all the ocr_line elements within the hOCR file")
+parser.add_argument("file", help="hOCR file", type=argparse.FileType('r'), nargs='?', default=sys.stdin)
+parser.add_argument("-b", "--basename", help="image-dir")
+parser.add_argument("-p", "--pattern", help="file-pattern, default: %(default)s", default="line-%03d.png")
+parser.add_argument("-e", "--element", help="element-name, default: %(default)s", default="ocr_line")
+args = parser.parse_args()
 
-if len(sys.argv)>1 and (sys.argv[1] == '-h' or sys.argv[1] == '--help'):
-    print_usage()
-    sys.exit(0)
-if len(sys.argv)<2 and sys.stdin.isatty():
-    print_usage()
-    sys.exit(0)
-optlist,args = getopt.getopt(sys.argv[1:],"b:p:e:")
+tpattern = args.pattern + '.txt'
+if args.pattern[-4] == '.':
+    tpattern = args.pattern[:-3] + 'txt'
 
-basename = assoc('-b',optlist)
-pattern = assoc('-p',optlist) or 'line-%03d.png'
-element = assoc('-e',optlist) or 'ocr_line'
-
-tpattern = pattern + '.txt'
-if pattern[-4] == '.':
-    tpattern = pattern[:-3] + 'txt'
-
-if len(args)>1:
-    print("Error: Too many args")
-    print_usage()
-    sys.exit(1)
-if len(args)==1: doc = html.parse(args[0])
-else: doc = html.parse(sys.stdin)
+doc = html.parse(args.file)
 
 pages = doc.xpath('//*[@class="ocr_page"]')
 for page in pages:
     iname = get_prop(page,'file')
     if not iname:
         iname = get_prop(page, 'image')
-    if basename:
-        iname = os.path.join(basename,os.path.basename(iname))
+    if args.basename:
+        iname = os.path.join(args.basename,os.path.basename(iname))
     if not os.path.exists(iname):
         print("not found:",iname)
         sys.exit(1)
     image = Image.open(iname)
     #  print image
-    lines = page.xpath("//*[@class='%s']"%element)
+    lines = page.xpath("//*[@class='%s']"%args.element)
     lcount = 1
     for line in lines:
         bbox = [int(x) for x in get_prop(line,'bbox').split()]
         assert bbox[0]<bbox[2]
         assert bbox[1]<bbox[3]
         lineimage = image.crop(bbox)
-        lineimage.save(pattern%lcount)
+        lineimage.save(args.pattern%lcount)
         f = codecs.open(tpattern%lcount, 'w', 'utf-8')
         f.write(get_text(line))
         f.close
