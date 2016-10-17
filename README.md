@@ -5,7 +5,6 @@
 
 * [About](#about)
   * [About the code](#about-the-code)
-  * [Pointers](#pointers)
 * [Installation](#installation)
   * [System-wide with pip](#system-wide-with-pip)
   * [System-wide from source](#system-wide-from-source)
