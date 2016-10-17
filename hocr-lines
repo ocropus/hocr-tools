@@ -9,12 +9,6 @@ import sys
 
 from lxml import html
 
-def get_text(node):
-    t = re.sub(r'\s+', '\x20', node.text_content()).strip()
-    if isinstance(t, str) and bytes == str:
-        t = t.encode('utf8')
-    return t
-
 if len(sys.argv)>1 and (sys.argv[1] == '-h' or sys.argv[1] == '--help'):
     print("Usage:", sys.argv[0], "file.html")
     sys.exit(0)
@@ -23,5 +17,4 @@ if len(sys.argv)>1: doc = html.parse(sys.argv[1])
 else: doc = html.parse(sys.stdin)
 
 for line in doc.xpath("//*[@class='ocr_line']"):
-    #  get_text(line)
-    print(get_text(line))
+    print(re.sub(r'\s+', '\x20', line.text_content()).strip())
