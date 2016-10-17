@@ -38,7 +38,7 @@ Furthermore, unlike previous OCR formats, the recognized text and OCR-related
 information co-exist in the same file and survives editing and manipulation.
 hOCR markup is independent of the presentation.
 
-There is a [Public Specification](http://docs.google.com/View?docid=dfxcv4vc_67g844kf) for the hOCR Format.
+There is a [Public Specification](http://hocr.info) for the hOCR Format.
 
 ### About the code
 
@@ -46,12 +46,6 @@ Each command line program is self contained; if you have Python 2.7 with the
 required packages installed, it should just work.  (Unfortunately, that
 means some code duplication; we may revisit this issue in later
 revisions.)
-
-### Pointers
-
-The format itself is defined here:
-
-http://docs.google.com/View?docID=dfxcv4vc_67g844kf&revision=_latest
 
 ## Installation
 
