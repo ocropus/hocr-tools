@@ -1,0 +1,11 @@
+#!/usr/bin/env tsht
+TESTDATA="../testdata"
+
+plan 3
+
+nilpotent=$(hocr-eval-geom $TESTDATA/sample.html $TESTDATA/sample.html)
+
+exec_ok "hocr-eval-geom" "$TESTDATA/sample.html" "$TESTDATA/sample.html"
+exec_ok "hocr-eval-geom" "-e ocr_line -o 0.05 -c 0.88" "$TESTDATA/tess.hocr" "$TESTDATA/sample.html"
+
+match "\(0, 0, 0.0, " "$nilpotent" "check that no errors are found when comparing the sample file with itself"
