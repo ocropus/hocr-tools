@@ -163,7 +163,13 @@ Extract lines from [Google 1000 book sample](http://commondatastorage.googleapis
 
 ### hocr-extract-images
 
-TODO
+```
+hocr-extract-images [-b BASENAME] [-p PATTERN] [-e ELEMENT] [file]
+```
+
+Extract the images and texts within all the ocr_line elements within the hOCR file.
+The `BASENAME` is the image directory, the default pattern is `line-%03d.png` and
+the default element is `ocr_line`.
 
 ### hocr-lines
 
