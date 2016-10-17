@@ -1,14 +1,12 @@
 #!/usr/bin/env tsht
 TESTDATA="../testdata"
+LINESFILE="./tess.lines"
 
 plan 3
 
-ocr_lines_command=$(hocr-lines "$TESTDATA/tess.hocr")
-nlines=37
-
-exec_ok "hocr-lines" "$TESTDATA/tess.hocr"
-
-equals $nlines "$(hocr-lines $TESTDATA/tess.hocr|wc -l)" "number of lines == $nlines"
-
-match "1 Down the Rabbit-Hole" "$(hocr-lines $TESTDATA/tess.hocr | head -n 1)" \
-    "check first line"
+after () {
+    rm -f "$LINESFILE"
+}
+hocr-lines "$TESTDATA/tess.hocr" > "$LINESFILE" || fail 'hocr-lines'
+equals 37 $(wc -l "$LINESFILE") 'number of lines == 37'
+equals "1 Down the Rabbit-Hole" "$(head -n1 "$LINESFILE")" "check first line"
