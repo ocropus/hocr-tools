@@ -5,6 +5,7 @@
 #
 
 FROM python:2
+ENV PYTHONIOENCODING utf8
 
 RUN apt-get update && apt-get install -y pdfgrep
 
