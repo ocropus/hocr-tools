@@ -14,7 +14,7 @@ from lxml import etree, html
 ################################################################
 
 parser = argparse.ArgumentParser(description="combine multiple hOCR documents into one")
-parser.add_argument("files", help="hOCR files", type=argparse.FileType('r'),  nargs='+', default=sys.stdin)
+parser.add_argument("files", help="hOCR files", type=argparse.FileType('r'),  nargs='+')
 args = parser.parse_args()
 
 doc = html.parse(args.files[0])

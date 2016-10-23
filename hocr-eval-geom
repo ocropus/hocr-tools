@@ -56,8 +56,8 @@ def relative_overlap(u,v):
 ### argument parsing
 
 parser = argparse.ArgumentParser(description="Compute statistics about the quality of the geometric segmentation at the level of the given OCR element", epilog="The output is a 4-tuple (multiple,missing,error,count) for the truth compared with the actual and then again another 4-tuple in the other direction")
-parser.add_argument("truth", help="hocr file with ground truth", type=argparse.FileType('r'), default=sys.stdin)
-parser.add_argument("actual", help="hocr file from the actual recognition", type=argparse.FileType('r'), default=sys.stdin)
+parser.add_argument("truth", help="hocr file with ground truth", type=argparse.FileType('r'))
+parser.add_argument("actual", help="hocr file from the actual recognition", type=argparse.FileType('r'))
 parser.add_argument("-e", "--element", default="ocr_line", help="OCR element to look at, default: %(default)s")
 parser.add_argument("-o", "--significant_overlap", type=float, default=0.1, help="default: %(default)s")
 parser.add_argument("-c", "--close_match", type=float, default=0.9, help="default: %(default)s")
