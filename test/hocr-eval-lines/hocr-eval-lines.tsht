@@ -7,7 +7,7 @@ exec_ok "hocr-eval-lines" "-v" "$TESTDATA/sample.txt" "$TESTDATA/sample.html"
 
 ocr_eval_lines_out=$(hocr-eval-lines "$TESTDATA/sample.txt" "$TESTDATA/tess.hocr")
 
-match "ocr_errors 7.0" "$ocr_eval_lines_out" \
+match "ocr_errors 7" "$ocr_eval_lines_out" \
     "check whether detection of ocr_errors is correct"
 
 match 'segmentation_errors 0' "$ocr_eval_lines_out" \
