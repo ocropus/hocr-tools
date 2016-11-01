@@ -3,7 +3,7 @@
 # check the given file for conformance with the hOCR format spec
 
 from __future__ import print_function
-import getopt
+import argparse
 import os
 import re
 import string
@@ -22,11 +22,6 @@ def test_ok(v, msg):
     if not v:
         sys.stderr.write("not ")
     sys.stderr.write("ok " + str(TEST_COUNTER) + " - " + msg + "\n")
-
-def assoc(key,list):
-    for k,v in list:
-        if k==key: return v
-    return None
 
 ### node properties
 
@@ -71,25 +66,12 @@ def mostly_nonoverlapping(boxes,significant_overlap=0.2):
 ### main
 ################################################################
 
-def print_usage():
-    print("usage:",sys.argv[0],"[-o] file.html")
+parser = argparse.ArgumentParser(description="Check the given file for conformance with the hOCR format spec")
+parser.add_argument("file", help="hOCR file to check", type=argparse.FileType('r'), nargs='?', default=sys.stdin)
+parser.add_argument("-o", "--nooverlap", help="Disable the overlap checks", action="store_true")
+args = parser.parse_args()
 
-if len(sys.argv)>1 and (sys.argv[1] == '-h' or sys.argv[1] == '--help'):
-    print_usage()
-    sys.exit(0)
-
-if len(sys.argv)<1:
-    print_usage()
-    sys.exit(1)
-    
-optlist,args = getopt.getopt(sys.argv[1:],"o")
-nooverlap = (assoc('-o',optlist)=='')
-if len(args)>0: doc = html.parse(args[0])
-elif len(args)>1:
-    print("Can only check one file at a time")
-    print_usage()
-    sys.exit(1)
-else: doc = html.parse(sys.stdin)
+doc = html.parse(args.file)
 
 ################################################################
 ### XML structure checks
@@ -121,7 +103,7 @@ for carea_idx, carea in enumerate(careas):
 ### geometric checks
 ################################################################    
 
-if not nooverlap:
+if not args.nooverlap:
     for page in doc.xpath("//*[@class='ocr_page']"):
         # check lines
         objs = page.xpath("//*[@class='ocr_line']")

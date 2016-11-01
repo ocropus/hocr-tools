@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
+import argparse
 import os
 import re
 import sys
@@ -21,20 +22,14 @@ def get_text(node):
     s = "".join([text for text in textnodes])
     return re.sub(r'\s+',' ',s)
 
-def print_usage():
-    sys.stderr.write("merge Dublin Core metadata into hOCR header files\n\n")
-    sys.stderr.write("usage: %s dc.xml hocr.html\n"%sys.argv[0])
 
-if len(sys.argv)>1 and (sys.argv[1] == '-h' or sys.argv[1] == '--help'):
-    print_usage()
-    sys.exit(0)
+parser = argparse.ArgumentParser(description="merge Dublin Core metadata into hOCR header files")
+parser.add_argument("dc", help="XML file with Dublin Core metadata", type=argparse.FileType('r'))
+parser.add_argument("hocr", help="hocr file", type=argparse.FileType('r'))
+args = parser.parse_args()
 
-if len(sys.argv)<2:
-    print_usage()
-    sys.exit(1)
-
-dc_doc = etree.parse(sys.argv[1], html.XHTMLParser())
-hocr_doc = html.parse(sys.argv[2])
+dc_doc = etree.parse(args.dc, html.XHTMLParser())
+hocr_doc = html.parse(args.hocr)
 
 
 ### remove all existing META tags representing Dublin Core metadata
