@@ -17,7 +17,7 @@ usage = """
 ... hocr image_pattern output_prefix
 
 Process Google 1000 books volumes and prepares line or word images
-for alignment using OCRopus.  
+for alignment using OCRopus.
 
 Run ocroscript align-... Volume_0000/0000/0000.{png,txt}
 
@@ -25,11 +25,11 @@ Arguments:
 
     hocr: hocr source file
 
-    image_pattern: either a glob pattern that results in a list 
+    image_pattern: either a glob pattern that results in a list
         of image files in order, or @filename for a file containing
         a list of image files in order; DON'T FORGET TO QUOTE THIS
 
-    output_pattern: output images are of the form 
+    output_pattern: output images are of the form
         output_pattern%(pageno,lineno)
 
 Environment Variables:
