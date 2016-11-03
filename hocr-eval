@@ -88,14 +88,14 @@ def edit_distance(a,b,threshold=99999):
     distances[:,0] = array(range(m+1))
     distances[0,:] = array(range(n+1))
     for i in range(1,m+1):
-        for j in range(1,n+1):        
+        for j in range(1,n+1):
             if a[i-1] == b[j-1]:
                 cij = 0
             else:
                 cij = 1
             d = min(
-                distances[i-1,j] + 1, 
-                distances[i,j-1] + 1, 
+                distances[i-1,j] + 1,
+                distances[i,j-1] + 1,
                 distances[i-1,j-1] + cij
             )
             if d>=threshold: return d
@@ -189,7 +189,7 @@ for truth,actual in pages:
                 print("segmentation_error: area_overlap =",q*1.0/area(bbox),"true_bbox",bbox)
                 print("\t",get_text(true_line))
             segmentation_errors += 1
-            
+
             if candidates!=[]:
                 true_text = remove_tex(get_text(true_line))
                 segmentation_ocr_errors += edit_distance(normalize(true_text),normalize(actual_line))

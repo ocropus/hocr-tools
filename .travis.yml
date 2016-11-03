@@ -12,6 +12,6 @@ install:
   - pip install -r requirements.txt
   - python setup.py install
   # - pip install pep8
-script: 
+script:
   -  PYTHONIOENCODING=UTF-8 ./test/tsht
   # - pep8 hocr-* setup.py; true
