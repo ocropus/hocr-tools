@@ -25,7 +25,7 @@ def get_text(node):
 
 parser = argparse.ArgumentParser(description="merge Dublin Core metadata into hOCR header files")
 parser.add_argument("dc", help="XML file with Dublin Core metadata", type=argparse.FileType('r'))
-parser.add_argument("hocr", help="hocr file", type=argparse.FileType('r'))
+parser.add_argument("hocr", help="hOCR file", type=argparse.FileType('r'))
 args = parser.parse_args()
 
 dc_doc = etree.parse(args.dc, html.XHTMLParser())

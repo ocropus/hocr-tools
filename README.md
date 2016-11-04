@@ -227,7 +227,7 @@ Please see the documentation in the [tsht](https://github.com/kba/tsht) reposito
 take a look at the existing [unit tests](./test/).
 
 1) Create a new directory under `./test`
-2) Copy any test assets (images, hocr files...) to this directory
+2) Copy any test assets (images, hOCR files...) to this directory
 3) Create a file `<name-of-your-test>.tsht` starting from this template:
 
 ```sh

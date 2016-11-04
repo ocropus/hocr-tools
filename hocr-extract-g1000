@@ -23,7 +23,7 @@ Run ocroscript align-... Volume_0000/0000/0000.{png,txt}
 
 Arguments:
 
-    hocr: hocr source file
+    hocr: hOCR source file
 
     image_pattern: either a glob pattern that results in a list
         of image files in order, or @filename for a file containing
