@@ -31,7 +31,6 @@ setup(
         'Pillow',
         'lxml',
         'reportlab',
-        'matplotlib',
     ],
     scripts = [c for c in glob.glob("hocr-*")]
 )
