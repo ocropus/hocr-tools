@@ -79,7 +79,7 @@ doc = html.parse(args.file)
 
 # check for presence of meta information
 test_ok(doc.xpath("//meta[@name='ocr-system']")!=[], "//meta[@name='ocr-system']")
-test_ok(doc.xpath("//meta[@name='ocr-capabilites']")!=[], "//meta[@name='ocr-capabilites']")
+test_ok(doc.xpath("//meta[@name='ocr-capabilites']")!=[], "//meta[@name='ocr-capabilities']")
 
 # check for presence of page
 test_ok(doc.xpath("//*[@class='ocr_page']")!=[], "has a page")
