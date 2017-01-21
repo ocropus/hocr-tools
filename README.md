@@ -1,6 +1,6 @@
 # hocr-tools
 
-[![Build Status](https://travis-ci.org/UB-Mannheim/hocr-tools.svg?branch=master)](https://travis-ci.org/UB-Mannheim/hocr-tools) [![PyPI](https://img.shields.io/pypi/v/hocr-tools.svg?maxAge=2592000)](https://pypi.python.org/pypi/hocr-tools) [![license](https://img.shields.io/badge/license-Apache%202.0-yellow.svg?style=flat)](https://github.com/tmbdev/hocr-tools/blob/master/LICENSE)
+[![Build Status](https://travis-ci.org/UB-Mannheim/hocr-tools.svg?branch=master)](https://travis-ci.org/UB-Mannheim/hocr-tools) [![PyPI](https://img.shields.io/pypi/v/hocr-tools.svg?maxAge=86400)](https://pypi.python.org/pypi/hocr-tools) [![license](https://img.shields.io/badge/license-Apache%202.0-yellow.svg?style=flat)](https://github.com/tmbdev/hocr-tools/blob/master/LICENSE)
 
 
 * [About](#about)
@@ -21,6 +21,7 @@
   * [hocr-merge-dc](#hocr-merge-dc) -- merge Dublin Core meta data into the hOCR HTML header
   * [hocr-pdf](#hocr-pdf) -- create a searchable PDF from a pile of hOCR and JPEG
   * [hocr-split](#hocr-split) -- split an hOCR file into individual pages
+  * [hocr-wordfreq](#hocr-wordfreq) -- calculating word frequency in a hOCR file
 * [Unit tests](#unit-tests)
   * [Running the full test suite:](#running-the-full-test-suite)
   * [Running a single test](#running-a-single-test)
@@ -198,6 +199,14 @@ hocr-split file.html pattern
 
 Split a multipage hOCR file into hOCR files containing one page each.
 The pattern should something like "base-%03d.html"
+
+### hocr-wordfreq
+
+```
+hocr-wordfreq file.html
+```
+
+Outputs a list of the most frequent words in a hOCR file with their number of occurences.
 
 ## Unit tests
 
