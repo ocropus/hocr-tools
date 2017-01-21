@@ -9,7 +9,10 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-i', '--case-insensitive', action='store_false',
         default=True, help="Ignore case")
 parser.add_argument('-n', '--max', type=int, default=10, help="Number of hits")
-parser.add_argument('hocr_in', help="HOCR file to count frequency for")
+parser.add_argument('hocr_in',
+                    help="hOCR file to count frequency for (default: standard input)",
+                    type=argparse.FileType('r'),
+                    nargs='?', default=sys.stdin)
 args = parser.parse_args()
 
 doc = html.parse(args.hocr_in)
