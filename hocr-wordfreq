@@ -1,0 +1,26 @@
+#!/usr/bin/python
+
+import sys
+import re
+import argparse
+from lxml import html
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-i', '--case-insensitive', action='store_false',
+        default=True, help="Ignore case")
+parser.add_argument('-n', '--max', type=int, default=10, help="Number of hits")
+parser.add_argument('hocr_in', help="HOCR file to count frequency for")
+args = parser.parse_args()
+
+doc = html.parse(args.hocr_in)
+text = doc.find('//body').text_content().strip()
+if args.case_insensitive:
+    text = text.lower()
+wc = {}
+for word in re.split('\W+', text):
+    if word == '': continue
+    wc[word] = wc[word]+1 if word in wc else 1
+
+for idx, word in enumerate(sorted(wc, reverse=True, key=wc.get)):
+    if idx > args.max: break
+    print("%-5d\t%s"%(wc[word], word))
