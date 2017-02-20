@@ -1,14 +1,15 @@
 #!/usr/bin/python
 
+from __future__ import print_function
 import sys
 import re
 import argparse
 from lxml import html
 
-parser = argparse.ArgumentParser()
+parser = argparse.ArgumentParser(description='Calculating word frequency in a hOCR file')
 parser.add_argument('-i', '--case-insensitive', action='store_false',
         default=True, help="Ignore case")
-parser.add_argument('-n', '--max', type=int, default=10, help="Number of hits")
+parser.add_argument('-n', '--max', type=int, default=10, help="Number of hits, default: %(default)s")
 parser.add_argument('hocr_in',
                     help="hOCR file to count frequency for (default: standard input)",
                     type=argparse.FileType('r'),
