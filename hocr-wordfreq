@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 from __future__ import print_function
 import sys
@@ -21,7 +21,7 @@ text = doc.find('//body').text_content().strip()
 if args.case_insensitive:
     text = text.lower()
 wc = {}
-for word in re.split('\W+', text):
+for word in re.compile('\W+', re.UNICODE).split(text):
     if word == '': continue
     wc[word] = wc[word]+1 if word in wc else 1
 
