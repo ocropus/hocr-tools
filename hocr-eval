@@ -5,8 +5,8 @@
 # at the level of the given OCR element
 
 from __future__ import print_function
+import argparse
 import codecs
-import getopt
 import os
 import re
 import string
@@ -18,13 +18,6 @@ from PIL import Image, ImageDraw
 ################################################################
 ### library
 ################################################################
-
-### general utility functions
-
-def assoc(key,list):
-    for k,v in list:
-        if k==key: return v
-    return None
 
 ### XML node processing
 
@@ -120,33 +113,25 @@ def remove_tex(text):
 
 ### argument parsing
 
-def print_usage():
-    print("usage: %s hocr-true.html hocr-actual.html"%sys.argv[0])
+parser = argparse.ArgumentParser()
+parser.add_argument("truth", help="hOCR file with ground truth", type=argparse.FileType('r'))
+parser.add_argument("actual", help="hOCR file from the actual recognition", type=argparse.FileType('r'))
+parser.add_argument("-d", "--debug", action="store_true")
+parser.add_argument("-v", "--verbose", action="store_true")
+#not yet supported:
+#parser.add_argument("-e", "--element", default="ocr_line", help="%(default)s")
+#parser.add_argument("-o", "--significant_overlap", type=float, default=0.1, help="default: %(default)s")
+parser.add_argument("-i", "--imgfile", type=argparse.FileType('r'))
+args = parser.parse_args()
 
-if len(sys.argv)>1 and (sys.argv[1] == '-h' or sys.argv[1] == '--help'):
-    print_usage()
-    sys.exit(0)
-
-if len(sys.argv)<3:
-    print_usage()
-    sys.exit(1)
-
-optlist,args = getopt.getopt(sys.argv[1:],"dve:o:i:")
-debug = (assoc('-d',optlist)=='')
-verbose = (assoc('-v',optlist)=='')
-element = assoc('-e',optlist) or 'ocr_line'
-significant_overlap = assoc('-o',optlist) or 0.1
-significant_overlap = float(significant_overlap)
-
-imgfile =  assoc('-i',optlist)
-if(imgfile):
-    im = Image.open(imgfile)
+if(args.imgfile):
+    im = Image.open(args.imgfile)
     print(im.size, im.format, im.mode)
     draw=ImageDraw.Draw(im)
 
 # get pages from inputs
-truth_doc = html.parse(args[0])
-actual_doc = html.parse(args[1])
+truth_doc = html.parse(args.truth)
+actual_doc = html.parse(args.actual)
 
 # parse pages
 truth_pages = truth_doc.xpath("//*[@class='ocr_page']")
@@ -188,7 +173,7 @@ for truth,actual in pages:
                 tight_overlap = True
 
         if (tight_overlap==0) :
-            if verbose:
+            if args.verbose:
                 print("segmentation_error: area_overlap =",q*1.0/area(bbox),"true_bbox",bbox)
                 print("\t",get_text(true_line))
             segmentation_errors += 1
@@ -199,19 +184,19 @@ for truth,actual in pages:
             else:
                 segmentation_ocr_errors += len(get_text(true_line))
 
-            if(imgfile):
+            if(args.imgfile):
                 draw.rectangle(bbox,outline="#ff0000")
                 if candidates!=[]:
                     draw.rectangle(actual_bbox,outline="#0000ff")
             continue
         true_text = remove_tex(get_text(true_line))
         actual_text = actual_line
-        if debug:
+        if args.debug:
             print("overlap",q,"true_bbox",bbox)
             print("\t",true_text)
             print("\t",actual_text)
         error = edit_distance(normalize(true_text),normalize(actual_text))
-        if verbose and error>0:
+        if args.verbose and error>0:
             print("ocr_error",error,"true_bbox",bbox)
             print("\t",true_text)
             print("\t",actual_text)
@@ -220,6 +205,6 @@ for truth,actual in pages:
 print("segmentation_errors",segmentation_errors)
 print("segmentation_ocr_errors",segmentation_ocr_errors)
 print("ocr_errors",ocr_errors)
-if(imgfile):
+if(args.imgfile):
     im.save("errors.png")
     im.show("errors.png")
