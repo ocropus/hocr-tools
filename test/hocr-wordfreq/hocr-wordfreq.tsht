@@ -4,10 +4,10 @@ TESTDATA="../testdata"
 plan 4
 
 normal=$(hocr-wordfreq $TESTDATA/sample.html | head -n 1)
-casesensitive=$(hocr-wordfreq -i $TESTDATA/sample.html | head -n 1)
+caseinsensitive=$(hocr-wordfreq -i $TESTDATA/sample.html | head -n 1)
 
 exec_ok "hocr-wordfreq" "$TESTDATA/sample.html"
 exec_ok "hocr-wordfreq" "-i" "-n 30" "$TESTDATA/sample.html"
 
-match "24\s*the" "$normal" "check that no errors are found when comparing the sample file with itself"
-match "23\s*the" "$casesensitive" "check that no errors are found when comparing the sample file with itself"
+match "23\s*the" "$normal" "check that the expected frequency matches for the normal case"
+match "24\s*the" "$caseinsensitive" "check that the expected frequency matches when counting case insensitive"
