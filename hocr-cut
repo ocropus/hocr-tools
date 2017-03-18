@@ -1,0 +1,95 @@
+#!/usr/bin/env python
+
+from __future__ import print_function
+import argparse
+import os
+import re
+import sys
+
+from lxml import html
+from PIL import Image, ImageDraw
+
+
+def get_prop(node,name):
+    title = node.get('title')
+    if not title: return None
+    props = title.split(';')
+    for prop in props:
+        (key,args) = prop.split(None,1)
+        if key==name: return args
+    return None
+
+def get_bbox(node):
+    bbox = get_prop(node,'bbox')
+    if not bbox: return None
+    return tuple([int(x) for x in bbox.split()])
+
+
+parser = argparse.ArgumentParser(description='Cut a page (horizontally) into two pages in the middle such that the most of the bounding boxes are separated nicely, e.g. cutting double pages or double columns')
+parser.add_argument('file', nargs='?', default=sys.stdin)
+parser.add_argument('-d', '--debug', action="store_true")
+args = parser.parse_args()
+
+doc = html.parse(args.file)
+
+pages = doc.xpath("//*[@class='ocr_page']")
+
+for page in pages:
+
+    bbox = get_bbox(page)
+    middle = bbox[2]/2
+
+    left_ends = []
+    right_starts = []
+    for line in doc.xpath("//*[@class='ocr_line']"):
+        b = get_bbox(line)
+        if (b[0]>middle):
+            #print("in the right halve")
+            right_starts.append(b[0])
+        elif (b[2]<middle):
+            #print("in the left have")
+            left_ends.append(b[2])
+        elif (b[2]-middle>middle-b[1]):
+            #print("in the right halve")
+            right_starts.append(b[0])
+        else:
+            #print("in the left halve")
+            left_ends.append(b[2])
+
+    left_ends.sort()
+    right_starts.sort()
+    n = len(left_ends)
+    m = len(right_starts)
+    middle_left = left_ends[n//2]
+    middle_right = right_starts[m//2]
+
+    middle = (middle_left+middle_right)/2
+    print("Cutting at",middle)
+
+    filename = get_prop(page,'image')
+    im = Image.open(filename)
+
+    if filename[-4] == ".":
+        name = filename[:-3]
+        suffix = filename[-3:]
+    else:
+        name = filename
+        suffix = ""
+
+    if (args.debug):
+      dr = ImageDraw.Draw(im)
+      dr.line((middle, 0, middle, im.size[1]), fill=0, width=3)
+      debug_output = name + "cut." + suffix
+      im.save(debug_output)
+      print("debug output is saved in", debug_output)
+
+    left = im.crop((0, 0, middle, im.size[1]))
+    left_name = name + "left." + suffix
+    left.save(left_name)
+    print("left page is saved in", left_name)
+    right = im.crop((middle, 0, im.size[0], im.size[1]))
+    right_name = name + "right." + suffix
+    right.save(right_name)
+    print("right page is saved in", right_name)
+
+
