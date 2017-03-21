@@ -36,6 +36,18 @@ pages = doc.xpath("//*[@class='ocr_page']")
 
 for page in pages:
 
+    try:
+        filename = get_prop(page,'image')
+        image = Image.open(filename)
+        debug_image = Image.open(filename)
+        dr = ImageDraw.Draw(debug_image)
+        image_found = True
+    except:
+        print("Warning: Image not found!")
+        args.debug = False
+        image_found = False
+    
+
     bbox = get_bbox(page)
     middle = bbox[2]/2
 
@@ -44,17 +56,21 @@ for page in pages:
     for line in doc.xpath("//*[@class='ocr_line']"):
         b = get_bbox(line)
         if (b[0]>middle):
-            #print("in the right halve")
-            right_starts.append(b[0])
+            pos="right"
         elif (b[2]<middle):
-            #print("in the left have")
-            left_ends.append(b[2])
+            pos="left"
         elif (b[2]-middle>middle-b[1]):
-            #print("in the right halve")
-            right_starts.append(b[0])
+            pos="right"
         else:
-            #print("in the left halve")
+            pos="left"
+        if (pos=="right"):
+            right_starts.append(b[0])
+            if (args.debug):
+               dr.rectangle(b, fill=32)
+        else:
             left_ends.append(b[2])
+            if (args.debug):
+                dr.rectangle(b, fill=96)
 
     left_ends.sort()
     right_starts.sort()
@@ -66,30 +82,31 @@ for page in pages:
     middle = (middle_left+middle_right)/2
     print("Cutting at",middle)
 
-    filename = get_prop(page,'image')
-    im = Image.open(filename)
 
-    if filename[-4] == ".":
-        name = filename[:-3]
-        suffix = filename[-3:]
-    else:
-        name = filename
-        suffix = ""
+    if (image_found):
 
-    if (args.debug):
-      dr = ImageDraw.Draw(im)
-      dr.line((middle, 0, middle, im.size[1]), fill=0, width=3)
-      debug_output = name + "cut." + suffix
-      im.save(debug_output)
-      print("debug output is saved in", debug_output)
+        if filename[-4] == ".":
+            name = filename[:-3]
+            suffix = filename[-3:]
+        else:
+            name = filename
+            suffix = ""
 
-    left = im.crop((0, 0, middle, im.size[1]))
-    left_name = name + "left." + suffix
-    left.save(left_name)
-    print("left page is saved in", left_name)
-    right = im.crop((middle, 0, im.size[0], im.size[1]))
-    right_name = name + "right." + suffix
-    right.save(right_name)
-    print("right page is saved in", right_name)
+        if (args.debug):
+          dr.line((middle_left, 0, middle_left, debug_image.size[1]), fill=64, width=3)
+          dr.line((middle_right, 0, middle_right, debug_image.size[1]), fill=64, width=3)
+          dr.line((middle, 0, middle, debug_image.size[1]), fill=128, width=5)
+          debug_output = name + "cut." + suffix
+          debug_image.save(debug_output)
+          print("debug output is saved in", debug_output)
+
+        left = image.crop((0, 0, middle, image.size[1]))
+        left_name = name + "left." + suffix
+        left.save(left_name)
+        print("left page is saved in", left_name)
+        right = image.crop((middle, 0, image.size[0], image.size[1]))
+        right_name = name + "right." + suffix
+        right.save(right_name)
+        print("right page is saved in", right_name)
 
 
