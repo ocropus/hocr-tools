@@ -1,6 +1,7 @@
 # hocr-tools
 
-[![Build Status](https://travis-ci.org/UB-Mannheim/hocr-tools.svg?branch=master)](https://travis-ci.org/UB-Mannheim/hocr-tools) [![PyPI](https://img.shields.io/pypi/v/hocr-tools.svg?maxAge=86400)](https://pypi.python.org/pypi/hocr-tools) [![license](https://img.shields.io/badge/license-Apache%202.0-yellow.svg?style=flat)](https://github.com/tmbdev/hocr-tools/blob/master/LICENSE)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/bb25a0d5fd4c4f8c95c5acd11ffe9da5)](https://www.codacy.com/app/UB-Mannheim/hocr-tools?utm_source=github.com&utm_medium=referral&utm_content=tmbdev/hocr-tools&utm_campaign=badger)
+[![Build Status](https://travis-ci.org/UB-Mannheim/hocr-tools.svg?branch=master)](https://travis-ci.org/UB-Mannheim/hocr-tools) [![PyPI](https://img.shields.io/pypi/v/hocr-tools.svg?maxAge=86400)](https://pypi.python.org/pypi/hocr-tools) [![pyversions](https://img.shields.io/pypi/pyversions/hocr-tools.svg)](https://pypi.python.org/pypi/hocr-tools) [![license](https://img.shields.io/badge/license-Apache%202.0-yellow.svg?style=flat)](https://github.com/tmbdev/hocr-tools/blob/master/LICENSE)
 
 
 * [About](#about)
@@ -21,7 +22,7 @@
   * [hocr-merge-dc](#hocr-merge-dc) -- merge Dublin Core meta data into the hOCR HTML header
   * [hocr-pdf](#hocr-pdf) -- create a searchable PDF from a pile of hOCR and JPEG
   * [hocr-split](#hocr-split) -- split an hOCR file into individual pages
-  * [hocr-wordfreq](#hocr-wordfreq) -- calculating word frequency in a hOCR file
+  * [hocr-wordfreq](#hocr-wordfreq) -- calculate word frequency in an hOCR file
 * [Unit tests](#unit-tests)
   * [Running the full test suite:](#running-the-full-test-suite)
   * [Running a single test](#running-a-single-test)
@@ -111,7 +112,7 @@ Perform consistency checks on the hOCR file.
 ### hocr-combine
 
 ```
-hocr-combine file1.html file2.html...
+hocr-combine file1.html [file2.html ...]
 ```
 
 Combine the OCR pages contained in each HTML file into a single document.
@@ -203,10 +204,14 @@ The pattern should something like "base-%03d.html"
 ### hocr-wordfreq
 
 ```
-hocr-wordfreq file.html
+hocr-wordfreq [-h] [-i] [-n MAX] [file.html]
 ```
 
-Outputs a list of the most frequent words in a hOCR file with their number of occurences.
+Outputs a list of the most frequent words in an hOCR file with their number of occurrences.
+If called without any file, `hocr-wordfreq` reads hOCR data (for example from `hocr-combine`) from stdin.
+
+By default, the first 10 words are shown, but any number can be requested with `-n`.
+Use `-i` to ignore upper and lower case.
 
 ## Unit tests
 
