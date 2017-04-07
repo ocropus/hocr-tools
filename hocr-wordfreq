@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 from __future__ import print_function
 import sys
@@ -6,10 +6,15 @@ import re
 import argparse
 from lxml import html
 
-parser = argparse.ArgumentParser(description='Calculating word frequency in a hOCR file')
-parser.add_argument('-i', '--case-insensitive', action='store_false',
-        default=True, help="Ignore case")
-parser.add_argument('-n', '--max', type=int, default=10, help="Number of hits, default: %(default)s")
+parser = argparse.ArgumentParser(description='Calculate word frequency in an hOCR file')
+parser.add_argument('-i', '--case-insensitive', action='store_true',
+                    default=False, help="ignore case")
+parser.add_argument('-s', '--spaces', action='store_true',
+                    default=False, help="split on spaces only")
+parser.add_argument('-y', '--dehyphenate', action='store_true',
+                    default=False, help="try to dehyphenate the text before analyis")
+parser.add_argument('-n', '--max', type=int, default=10,
+                    help="number of hits (default: %(default)s)")
 parser.add_argument('hocr_in',
                     help="hOCR file to count frequency for (default: standard input)",
                     type=argparse.FileType('r'),
@@ -20,8 +25,18 @@ doc = html.parse(args.hocr_in)
 text = doc.find('//body').text_content().strip()
 if args.case_insensitive:
     text = text.lower()
+if args.dehyphenate:
+    #delete blank lines
+    text = re.sub(r"^\s*$\r?\n", "", text)
+    #dehyphenate
+    text = re.sub(r"-\r?\n", "", text)
+    #replace line breaks with a space
+    text = re.sub(r"\r?\n", " ", text)
 wc = {}
-for word in re.split('\W+', text):
+separators = re.compile('\W+', re.UNICODE)
+if args.spaces:
+    separators = re.compile('\s+', re.UNICODE)
+for word in separators.split(text):
     if word == '': continue
     wc[word] = wc[word]+1 if word in wc else 1
 

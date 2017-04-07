@@ -5,6 +5,6 @@ plan 2
 
 exec_ok "hocr-combine" "$TESTDATA/sample.html" "$TESTDATA/sample.html"
 
-nlines_sample=$(cat "$TESTDATA/sample.html" | grep -c ocr_line)
-nlines_result=$(hocr-combine "$TESTDATA/sample.html" "$TESTDATA/sample.html" | grep -c ocr_line)
+nlines_sample=$(cat "$TESTDATA/sample.html" | grep -c "class=['\"]ocr_line['\"]")
+nlines_result=$(hocr-combine "$TESTDATA/sample.html" "$TESTDATA/sample.html" | grep -c "class=['\"]ocr_line['\"]")
 equals "$((2*$nlines_sample))" $nlines_result "check whether number ocr_lines in self-combined result is doubled"

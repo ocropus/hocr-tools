@@ -83,7 +83,12 @@ def add_text_layer(pdf, image, height, dpi):
       baseline = [ 0, 0 ]
     linebox = [float(i) for i in linebox]
     baseline = [float(i) for i in baseline]
-    for word in line.xpath('.//*[@class="ocrx_word"]'):
+    xpath_elements = './/*[@class="ocrx_word"]'
+    if (not(line.xpath('boolean(' + xpath_elements + ')'))):
+      #if there are no words elements present,
+      #we switch to lines as elements
+      xpath_elements = '.'
+    for word in line.xpath(xpath_elements):
       rawtext = word.text_content().strip()
       if rawtext == '':
           continue
