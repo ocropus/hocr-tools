@@ -207,14 +207,16 @@ The pattern should something like "base-%03d.html"
 ### hocr-wordfreq
 
 ```
-hocr-wordfreq [-h] [-i] [-n MAX] [file.html]
+hocr-wordfreq [-h] [-i] [-n MAX] [-s] [-y] [file.html]
 ```
 
 Outputs a list of the most frequent words in an hOCR file with their number of occurrences.
 If called without any file, `hocr-wordfreq` reads hOCR data (for example from `hocr-combine`) from stdin.
 
 By default, the first 10 words are shown, but any number can be requested with `-n`.
-Use `-i` to ignore upper and lower case.
+Use `-i` to ignore upper and lower case, `-s` to split on spaces only which will then
+lead to words also containing punctations, and `-y` tries to dehyphenate the text
+(separation of words at line break with a hyphen) before analysis.
 
 ## Unit tests
 
