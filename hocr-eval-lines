@@ -15,85 +15,97 @@ from lxml import html
 ### misc library code
 ################################################################
 
+
 def get_text(node):
     textnodes = node.xpath(".//text()")
     s = ''.join([text for text in textnodes])
-    return re.sub(r'\s+',' ',s)
+    return re.sub(r'\s+', ' ', s)
+
 
 simp_re = re.compile(r'[^a-zA-Z0-9.,!?:;]+')
 
+
 def normalize(s):
-    s = simp_re.sub(' ',s)
+    s = simp_re.sub(' ', s)
     s = s.strip()
     return s
 
-def edit_distance(a,b,threshold=999999):
-    if a==b: return 0
+
+def edit_distance(a, b, threshold=999999):
+    if a == b: return 0
     m = len(a)
     n = len(b)
-    distances = [[threshold for j in range(n+1)] for i in range(m+1)]
+    distances = [[threshold for j in range(n + 1)] for i in range(m + 1)]
     # distances is a 2-dimensional array such that distances[i][j]
     # will be equal to the edit distance of the first i characters
     # of a and the first j characters of b.
-    for i in range(m+1):
+    for i in range(m + 1):
         distances[i][0] = i
-    for j in range(n+1):
+    for j in range(n + 1):
         distances[0][j] = j
-    for i in range(1,m+1):
-        for j in range(1,n+1):
-            if a[i-1] == b[j-1]:
+    for i in range(1, m + 1):
+        for j in range(1, n + 1):
+            if a[i - 1] == b[j - 1]:
                 cij = 0
             else:
                 cij = 1
-            d = min(
-                distances[i-1][j] + 1,
-                distances[i][j-1] + 1,
-                distances[i-1][j-1] + cij
-            )
-            if d>=threshold: return d
+            d = min(distances[i - 1][j] + 1, distances[i][j - 1] + 1,
+                    distances[i - 1][j - 1] + cij)
+            if d >= threshold: return d
             distances[i][j] = d
     return distances[m][n]
+
 
 ################################################################
 ### main program
 ################################################################
 
-parser = argparse.ArgumentParser(description="Compute statistics about the quality of the geometric segmentation at the level of the given OCR element")
-parser.add_argument("tfile", help="text file with the true lines", type=argparse.FileType('r'))
-parser.add_argument("hfile", help="hOCR file with the actually recognized lines", type=argparse.FileType('r'))
+parser = argparse.ArgumentParser(
+    description=
+    "Compute statistics about the quality of the geometric segmentation at the level of the given OCR element"
+)
+parser.add_argument(
+    "tfile", help="text file with the true lines", type=argparse.FileType('r'))
+parser.add_argument(
+    "hfile",
+    help="hOCR file with the actually recognized lines",
+    type=argparse.FileType('r'))
 parser.add_argument("-v", "--verbose", action="store_true")
 args = parser.parse_args()
 
 truth_lines = args.tfile.read().split('\n')
 actual_doc = html.parse(args.hfile)
-actual_lines = [get_text(node) for node in actual_doc.xpath("//*[@class='ocr_line']")]
+actual_lines = [
+    get_text(node) for node in actual_doc.xpath("//*[@class='ocr_line']")
+]
 
 truth_lines = [normalize(s) for s in truth_lines]
-truth_lines = [s for s in truth_lines if s!=""]
+truth_lines = [s for s in truth_lines if s != ""]
 actual_lines = [normalize(s) for s in actual_lines]
-actual_lines = [s for s in actual_lines if s!=""]
+actual_lines = [s for s in actual_lines if s != ""]
 
-remaining = []+truth_lines
+remaining = [] + truth_lines
 ocr_errors = 0
 for actual_line in actual_lines:
     min_d = 999999
     min_i = -1
     for index in range(len(remaining)):
         true_line = remaining[index]
-        d = edit_distance(true_line,actual_line,min_d)
-        if d<min_d:
+        d = edit_distance(true_line, actual_line, min_d)
+        if d < min_d:
             min_d = d
             min_i = index
-    if args.verbose and min_d>0:
-        print("distance",min_d)
-        print("\t"+actual_line)
-        print("\t"+remaining[min_i])
-    assert min_i>=0
+    if args.verbose and min_d > 0:
+        print("distance", min_d)
+        print("\t" + actual_line)
+        print("\t" + remaining[min_i])
+    assert min_i >= 0
     del remaining[min_i]
     ocr_errors += min_d
 
 segmentation_errors = 0
-for s in remaining: segmentation_errors += len(s)
+for s in remaining:
+    segmentation_errors += len(s)
 
-print("segmentation_errors",segmentation_errors)
-print("ocr_errors",ocr_errors)
+print("segmentation_errors", segmentation_errors)
+print("ocr_errors", ocr_errors)

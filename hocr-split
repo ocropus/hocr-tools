@@ -15,22 +15,24 @@ from lxml import etree, html
 ### main program
 ################################################################
 
-parser = argparse.ArgumentParser(description="split a multipage hOCR file into single pages")
+parser = argparse.ArgumentParser(
+    description="split a multipage hOCR file into single pages")
 parser.add_argument("file", help="hOCR file", type=argparse.FileType('r'))
 parser.add_argument("pattern", help="naming pattern, e.g. 'base-%%03d.html'")
 args = parser.parse_args()
 
-assert re.search('%[0-9]*d',args.pattern)
+assert re.search('%[0-9]*d', args.pattern)
 
 doc = etree.parse(args.file, html.XHTMLParser())
 pages = doc.xpath("//*[@class='ocr_page']")
-assert pages!=[]
+assert pages != []
 
 container = pages[0].getparent()
 index = 1
 for new_page in pages:
     container_pages = container.xpath("//*[@class='ocr_page']")
-    for page in container_pages: container.remove(page)
+    for page in container_pages:
+        container.remove(page)
     container.append(new_page)
     doc.write((args.pattern % index), pretty_print=True)
     index += 1

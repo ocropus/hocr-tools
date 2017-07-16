@@ -10,32 +10,34 @@ import xml
 from lxml import etree, html
 
 dcknown = [
-    "dc:title","dc:creator","dc:subject",
-    "dc:description","dc:publisher",
-    "dc:contributor","dc:date","dc:type","dc:format",
-    "dc:identifier","dc:source","dc:language","dc:relation",
-    "dc:coverage","dc:rights"
+    "dc:title", "dc:creator", "dc:subject", "dc:description", "dc:publisher",
+    "dc:contributor", "dc:date", "dc:type", "dc:format", "dc:identifier",
+    "dc:source", "dc:language", "dc:relation", "dc:coverage", "dc:rights"
 ]
+
 
 def get_text(node):
     textnodes = node.xpath(".//text()")
     s = "".join([text for text in textnodes])
-    return re.sub(r'\s+',' ',s)
+    return re.sub(r'\s+', ' ', s)
 
 
-parser = argparse.ArgumentParser(description="merge Dublin Core metadata into hOCR header files")
-parser.add_argument("dc", help="XML file with Dublin Core metadata", type=argparse.FileType('r'))
+parser = argparse.ArgumentParser(
+    description="merge Dublin Core metadata into hOCR header files")
+parser.add_argument(
+    "dc",
+    help="XML file with Dublin Core metadata",
+    type=argparse.FileType('r'))
 parser.add_argument("hocr", help="hOCR file", type=argparse.FileType('r'))
 args = parser.parse_args()
 
 dc_doc = etree.parse(args.dc, html.XHTMLParser())
 hocr_doc = html.parse(args.hocr)
 
-
 ### remove all existing META tags representing Dublin Core metadata
 
 hocr_meta = hocr_doc.xpath("//HEAD|//head")
-assert hocr_meta!=[]
+assert hocr_meta != []
 hocr_meta = hocr_meta[0]
 
 hocr_nodes = hocr_doc.xpath("//head//meta[starts-with(@name,'DC.')]")
@@ -44,15 +46,17 @@ for node in hocr_nodes:
 
 ### find all the Dublin Core tags in the Dublin Core metadata
 
-dc_nodes = dc_doc.xpath("//dc:*", namespaces={"dc":"http://purl.org/dc/elements/1.1/"})
+dc_nodes = dc_doc.xpath(
+    "//dc:*", namespaces={"dc": "http://purl.org/dc/elements/1.1/"})
 for node in dc_nodes:
     nt = re.sub(r'^{http://purl.org/dc/elements/1.1/}', 'dc:', node.tag)
     if nt in dcknown:
-        name = re.sub(r'^dc:','DC.',nt)
+        name = re.sub(r'^dc:', 'DC.', nt)
         value = get_text(node)
-        value = re.sub("[\t\r\n'\"]"," ",value).strip()
+        value = re.sub("[\t\r\n'\"]", " ", value).strip()
         value = value[:500]
-        hnode = etree.Element("meta", nsmap = {'DC': 'http://purl.org/dc/elements/1.1'})
+        hnode = etree.Element(
+            "meta", nsmap={'DC': 'http://purl.org/dc/elements/1.1'})
         hnode.attrib['name'] = name
         hnode.attrib['content'] = value
         hocr_meta.append(hnode)

@@ -16,6 +16,8 @@ from lxml import html
 ################################################################
 
 TEST_COUNTER = 0
+
+
 def test_ok(v, msg):
     global TEST_COUNTER
     TEST_COUNTER += 1
@@ -23,52 +25,77 @@ def test_ok(v, msg):
         sys.stderr.write("not ")
     sys.stderr.write("ok " + str(TEST_COUNTER) + " - " + msg + "\n")
 
+
 ### node properties
 
-def get_prop(node,name):
+
+def get_prop(node, name):
     title = node.get('title')
     if not title: return None
     props = title.split(';')
     for prop in props:
-        (key,args) = prop.split(None,1)
-        if key==name: return args
+        (key, args) = prop.split(None, 1)
+        if key == name: return args
     return None
+
+
 def get_bbox(node):
-    bbox = get_prop(node,'bbox')
+    bbox = get_prop(node, 'bbox')
     if not bbox: return None
     return tuple([int(x) for x in bbox.split()])
 
+
 ### rectangle properties
 
-def intersect(u,v):
+
+def intersect(u, v):
     # intersection of two rectangles
-    r = (max(u[0],v[0]),max(u[1],v[1]),min(u[2],v[2]),min(u[3],v[3]))
+    r = (max(u[0], v[0]), max(u[1], v[1]), min(u[2], v[2]), min(u[3], v[3]))
     return r
+
+
 def area(u):
     # area of a rectangle
-    return max(0,u[2]-u[0])*max(0,u[3]-u[1])
-def overlaps(u,v):
-    # predicate: do the two rectangles overlap?
-    return area(intersect(u,v))>0
-def relative_overlap(u,v):
-    m = max(area(u),area(v))
-    i = area(intersect(u,v))
-    return float(i)/m
+    return max(0, u[2] - u[0]) * max(0, u[3] - u[1])
 
-def mostly_nonoverlapping(boxes,significant_overlap=0.2):
+
+def overlaps(u, v):
+    # predicate: do the two rectangles overlap?
+    return area(intersect(u, v)) > 0
+
+
+def relative_overlap(u, v):
+    m = max(area(u), area(v))
+    i = area(intersect(u, v))
+    return float(i) / m
+
+
+def mostly_nonoverlapping(boxes, significant_overlap=0.2):
     for i in range(len(boxes)):
-        for j in range(i+1,len(boxes)):
-            if relative_overlap(boxes[i],boxes[j])>significant_overlap:
+        for j in range(i + 1, len(boxes)):
+            if relative_overlap(boxes[i], boxes[j]) > significant_overlap:
                 return 0
     return 1
+
 
 ################################################################
 ### main
 ################################################################
 
-parser = argparse.ArgumentParser(description="Check the given file for conformance with the hOCR format spec")
-parser.add_argument("file", help="hOCR file to check", type=argparse.FileType('r'), nargs='?', default=sys.stdin)
-parser.add_argument("-o", "--nooverlap", help="Disable the overlap checks", action="store_true")
+parser = argparse.ArgumentParser(
+    description="Check the given file for conformance with the hOCR format spec"
+)
+parser.add_argument(
+    "file",
+    help="hOCR file to check",
+    type=argparse.FileType('r'),
+    nargs='?',
+    default=sys.stdin)
+parser.add_argument(
+    "-o",
+    "--nooverlap",
+    help="Disable the overlap checks",
+    action="store_true")
 args = parser.parse_args()
 
 doc = html.parse(args.file)
@@ -78,26 +105,36 @@ doc = html.parse(args.file)
 ################################################################
 
 # check for presence of meta information
-test_ok(doc.xpath("//meta[@name='ocr-system']")!=[], "//meta[@name='ocr-system']")
-test_ok(doc.xpath("//meta[@name='ocr-capabilities']")!=[], "//meta[@name='ocr-capabilities']")
+test_ok(
+    doc.xpath("//meta[@name='ocr-system']") != [],
+    "//meta[@name='ocr-system']")
+test_ok(
+    doc.xpath("//meta[@name='ocr-capabilities']") != [],
+    "//meta[@name='ocr-capabilities']")
 
 # check for presence of page
-test_ok(doc.xpath("//*[@class='ocr_page']")!=[], "has a page")
+test_ok(doc.xpath("//*[@class='ocr_page']") != [], "has a page")
 
 # check that lines are inside pages
 lines = doc.xpath("//*[@class='ocr_line']")
 for line_idx, line in enumerate(lines):
-    test_ok(line.xpath("./ancestor::*[@class='ocr_page']"), "ocr_line %2d in an ocr_page"%(line_idx))
+    test_ok(
+        line.xpath("./ancestor::*[@class='ocr_page']"),
+        "ocr_line %2d in an ocr_page" % (line_idx))
 
 # check that pars are inside pages
 pars = doc.xpath("//*[@class='ocr_par']")
 for par_idx, par in enumerate(pars):
-    test_ok(par.xpath("./ancestor::*[@class='ocr_page']"), "ocr_par %2d in an ocr_page"%(par_idx))
+    test_ok(
+        par.xpath("./ancestor::*[@class='ocr_page']"),
+        "ocr_par %2d in an ocr_page" % (par_idx))
 
 # check that careas are inside pages
 careas = doc.xpath("//*[@class='ocr_carea']")
 for carea_idx, carea in enumerate(careas):
-    test_ok(carea.xpath("./ancestor::*[@class='ocr_page']"), "ocr_carea %2d in an ocr_page"%(carea_idx))
+    test_ok(
+        carea.xpath("./ancestor::*[@class='ocr_page']"),
+        "ocr_carea %2d in an ocr_page" % (carea_idx))
 
 ################################################################
 ### geometric checks
@@ -107,16 +144,18 @@ if not args.nooverlap:
     for page in doc.xpath("//*[@class='ocr_page']"):
         # check lines
         objs = page.xpath("//*[@class='ocr_line']")
-        line_bboxes = [get_bbox(obj) for obj in objs if get_prop(obj,'bbox')]
-        test_ok(mostly_nonoverlapping(line_bboxes), 'mostly_nonoverlapping/line')
+        line_bboxes = [get_bbox(obj) for obj in objs if get_prop(obj, 'bbox')]
+        test_ok(
+            mostly_nonoverlapping(line_bboxes), 'mostly_nonoverlapping/line')
         # check paragraphs
         objs = page.xpath("//*[@class='ocr_par']")
-        par_bboxes = [get_bbox(obj) for obj in objs if get_prop(obj,'bbox')]
+        par_bboxes = [get_bbox(obj) for obj in objs if get_prop(obj, 'bbox')]
         test_ok(mostly_nonoverlapping(par_bboxes), 'mostly_nonoverlapping/par')
         # check careas
         objs = page.xpath("//*[@class='ocr_carea']")
-        carea_bboxes = [get_bbox(obj) for obj in objs if get_prop(obj,'bbox')]
-        test_ok(mostly_nonoverlapping(carea_bboxes), 'mostly_nonoverlapping/carea')
+        carea_bboxes = [get_bbox(obj) for obj in objs if get_prop(obj, 'bbox')]
+        test_ok(
+            mostly_nonoverlapping(carea_bboxes), 'mostly_nonoverlapping/carea')
 
 ################################################################
 ### TODO

@@ -41,80 +41,86 @@ class StdoutWrapper:
     to 'latin1' (0x00 - 0xff) before writing out. This is necessary for
     the invisible font to be injected as bytes but written out as a string.
     """
+
     def write(self, data, *args, **kwargs):
         if bytes != str and isinstance(data, bytes):
             data = data.decode('latin1')
         sys.stdout.write(data)
 
+
 def export_pdf(playground, default_dpi):
-  """Create a searchable PDF from a pile of HOCR + JPEG"""
-  load_invisible_font()
-  pdf = Canvas(StdoutWrapper(), pageCompression=1)
-  pdf.setCreator('hocr-tools')
-  pdf.setTitle(os.path.basename(playground))
-  images = sorted(glob.glob(os.path.join(playground, '*.jpg')))
-  dpi = default_dpi
-  for image in images:
-    im = Image.open(image)
-    w, h = im.size
-    try:
-      dpi = im.info['dpi'][0]
-    except KeyError:
-      pass
-    width = w * 72 / dpi
-    height = h * 72 / dpi
-    pdf.setPageSize((width, height))
-    pdf.drawImage(image, 0, 0, width=width, height=height)
-    add_text_layer(pdf, image, height, dpi)
-    pdf.showPage()
-  pdf.save()
+    """Create a searchable PDF from a pile of HOCR + JPEG"""
+    load_invisible_font()
+    pdf = Canvas(StdoutWrapper(), pageCompression=1)
+    pdf.setCreator('hocr-tools')
+    pdf.setTitle(os.path.basename(playground))
+    images = sorted(glob.glob(os.path.join(playground, '*.jpg')))
+    dpi = default_dpi
+    for image in images:
+        im = Image.open(image)
+        w, h = im.size
+        try:
+            dpi = im.info['dpi'][0]
+        except KeyError:
+            pass
+        width = w * 72 / dpi
+        height = h * 72 / dpi
+        pdf.setPageSize((width, height))
+        pdf.drawImage(image, 0, 0, width=width, height=height)
+        add_text_layer(pdf, image, height, dpi)
+        pdf.showPage()
+    pdf.save()
+
 
 def add_text_layer(pdf, image, height, dpi):
-  """Draw an invisible text layer for OCR data"""
-  p1 = re.compile('bbox((\s+\d+){4})')
-  p2 = re.compile('baseline((\s+[\d\.\-]+){2})')
-  hocrfile = os.path.splitext(image)[0] + ".hocr"
-  hocr = etree.parse(hocrfile, html.XHTMLParser())
-  for line in hocr.xpath('//*[@class="ocr_line"]'):
-    linebox = p1.search(line.attrib['title']).group(1).split()
-    try:
-      baseline = p2.search(line.attrib['title']).group(1).split()
-    except AttributeError:
-      baseline = [ 0, 0 ]
-    linebox = [float(i) for i in linebox]
-    baseline = [float(i) for i in baseline]
-    xpath_elements = './/*[@class="ocrx_word"]'
-    if (not(line.xpath('boolean(' + xpath_elements + ')'))):
-      #if there are no words elements present,
-      #we switch to lines as elements
-      xpath_elements = '.'
-    for word in line.xpath(xpath_elements):
-      rawtext = word.text_content().strip()
-      if rawtext == '':
-          continue
-      font_width = pdf.stringWidth(rawtext, 'invisible', 8)
-      if font_width <= 0:
-        continue
-      box = p1.search(word.attrib['title']).group(1).split()
-      box = [float(i) for i in box]
-      b = polyval(baseline, (box[0] + box[2]) / 2 - linebox[0]) + linebox[3]
-      text = pdf.beginText()
-      text.setTextRenderMode(3)  # double invisible
-      text.setFont('invisible', 8)
-      text.setTextOrigin(box[0] * 72 / dpi, height - b * 72 / dpi)
-      box_width = (box[2] - box[0]) * 72 / dpi
-      text.setHorizScale(100.0 * box_width / font_width)
-      text.textLine(rawtext)
-      pdf.drawText(text)
+    """Draw an invisible text layer for OCR data"""
+    p1 = re.compile('bbox((\s+\d+){4})')
+    p2 = re.compile('baseline((\s+[\d\.\-]+){2})')
+    hocrfile = os.path.splitext(image)[0] + ".hocr"
+    hocr = etree.parse(hocrfile, html.XHTMLParser())
+    for line in hocr.xpath('//*[@class="ocr_line"]'):
+        linebox = p1.search(line.attrib['title']).group(1).split()
+        try:
+            baseline = p2.search(line.attrib['title']).group(1).split()
+        except AttributeError:
+            baseline = [0, 0]
+        linebox = [float(i) for i in linebox]
+        baseline = [float(i) for i in baseline]
+        xpath_elements = './/*[@class="ocrx_word"]'
+        if (not (line.xpath('boolean(' + xpath_elements + ')'))):
+            #if there are no words elements present,
+            #we switch to lines as elements
+            xpath_elements = '.'
+        for word in line.xpath(xpath_elements):
+            rawtext = word.text_content().strip()
+            if rawtext == '':
+                continue
+            font_width = pdf.stringWidth(rawtext, 'invisible', 8)
+            if font_width <= 0:
+                continue
+            box = p1.search(word.attrib['title']).group(1).split()
+            box = [float(i) for i in box]
+            b = polyval(baseline,
+                        (box[0] + box[2]) / 2 - linebox[0]) + linebox[3]
+            text = pdf.beginText()
+            text.setTextRenderMode(3)  # double invisible
+            text.setFont('invisible', 8)
+            text.setTextOrigin(box[0] * 72 / dpi, height - b * 72 / dpi)
+            box_width = (box[2] - box[0]) * 72 / dpi
+            text.setHorizScale(100.0 * box_width / font_width)
+            text.textLine(rawtext)
+            pdf.drawText(text)
+
 
 def polyval(poly, x):
-  return x * poly[0] + poly[1]
+    return x * poly[0] + poly[1]
+
 
 # Glyphless variation of vedaal's invisible font retrieved from
 # http://www.angelfire.com/pr/pgpf/if.html, which says:
 # 'Invisible font' is unrestricted freeware. Enjoy, Improve, Distribute freely
 def load_invisible_font():
-  font = """
+    font = """
 eJzdlk1sG0UUx/+zs3btNEmrUKpCPxikSqRS4jpfFURUagmkEQQoiRXgAl07Y3vL2mvt2ml8APXG
 hQPiUEGEVDhWVHyIC1REPSAhBOWA+BCgSoULUqsKcWhVBKjhzfPU+VCi3Flrdn7vzZv33ryZ3TUE
 gC6chsTx8fHck1ONd98D0jnS7jn26GPjyMIleZhk9fT0wcHFl1/9GRDPkTxTqHg1dMkzJH9CbbTk
@@ -136,13 +142,19 @@ pylRc2Zn+XDQWZIL8iO5KC9S+1RekOex1uOyZGR/w/Hf1lhzqVfFsxE39B/ws7Rm3N3nDrhPuMfc
 w3R/aE28KsfY2J+RPNp+j+KaOoCey4h+Dd48b9O5G0v2K7j0AM6s+5WQ/E0wVoK+pA6/3bup7bJf
 CMGjwvxTsr74/f/F95m3TH9x8o0/TU//N+7/D/ScVcA=
 """.encode('latin1')
-  uncompressed = bytearray(zlib.decompress(base64.decodestring(font)))
-  ttf = io.BytesIO(uncompressed)
-  setattr(ttf ,"name", "(invisible.ttf)")
-  pdfmetrics.registerFont(TTFont('invisible', ttf))
+    uncompressed = bytearray(zlib.decompress(base64.decodestring(font)))
+    ttf = io.BytesIO(uncompressed)
+    setattr(ttf, "name", "(invisible.ttf)")
+    pdfmetrics.registerFont(TTFont('invisible', ttf))
+
 
 if __name__ == "__main__":
-  parser = argparse.ArgumentParser(description="Create a searchable PDF from a pile of hOCR and JPEG")
-  parser.add_argument("imgdir", help="directory with the hOCR and JPEG files (corresponding JPEG and hOCR files have to have the same name with their respective file ending)")
-  args = parser.parse_args()
-  export_pdf(args.imgdir, 300)
+    parser = argparse.ArgumentParser(
+        description="Create a searchable PDF from a pile of hOCR and JPEG")
+    parser.add_argument(
+        "imgdir",
+        help=
+        "directory with the hOCR and JPEG files (corresponding JPEG and hOCR files have to have the same name with their respective file ending)"
+    )
+    args = parser.parse_args()
+    export_pdf(args.imgdir, 300)
