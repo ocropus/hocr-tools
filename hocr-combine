@@ -10,7 +10,7 @@ import sys
 from lxml import etree, html
 
 ################################################################
-### main program
+# main program
 ################################################################
 
 parser = argparse.ArgumentParser(
