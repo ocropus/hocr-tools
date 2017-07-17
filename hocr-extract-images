@@ -16,22 +16,40 @@ from PIL import Image
 def get_text(node):
     textnodes = node.xpath('.//text()')
     s = ''.join([text for text in textnodes])
-    return re.sub(r'\s+',' ',s)
+    return re.sub(r'\s+', ' ', s)
 
-def get_prop(node,name):
+
+def get_prop(node, name):
     title = node.get("title")
     props = title.split(';')
     for prop in props:
-        (key,args) = prop.split(None,1)
+        (key, args) = prop.split(None, 1)
         args = args.strip('"')
-        if key==name: return args
+        if key == name: return args
     return None
 
-parser = argparse.ArgumentParser(description="Extract the images and texts within all the ocr_line elements within the hOCR file")
-parser.add_argument("file", help="hOCR file", type=argparse.FileType('r'), nargs='?', default=sys.stdin)
+
+parser = argparse.ArgumentParser(
+    description=
+    "Extract the images and texts within all the ocr_line elements within the hOCR file"
+)
+parser.add_argument(
+    "file",
+    help="hOCR file",
+    type=argparse.FileType('r'),
+    nargs='?',
+    default=sys.stdin)
 parser.add_argument("-b", "--basename", help="image-dir")
-parser.add_argument("-p", "--pattern", help="file-pattern, default: %(default)s", default="line-%03d.png")
-parser.add_argument("-e", "--element", help="element-name, default: %(default)s", default="ocr_line")
+parser.add_argument(
+    "-p",
+    "--pattern",
+    help="file-pattern, default: %(default)s",
+    default="line-%03d.png")
+parser.add_argument(
+    "-e",
+    "--element",
+    help="element-name, default: %(default)s",
+    default="ocr_line")
 args = parser.parse_args()
 
 tpattern = args.pattern + '.txt'
@@ -42,25 +60,25 @@ doc = html.parse(args.file)
 
 pages = doc.xpath('//*[@class="ocr_page"]')
 for page in pages:
-    iname = get_prop(page,'file')
+    iname = get_prop(page, 'file')
     if not iname:
         iname = get_prop(page, 'image')
     if args.basename:
-        iname = os.path.join(args.basename,os.path.basename(iname))
+        iname = os.path.join(args.basename, os.path.basename(iname))
     if not os.path.exists(iname):
-        print("not found:",iname)
+        print("not found:", iname)
         sys.exit(1)
     image = Image.open(iname)
     #  print image
-    lines = page.xpath("//*[@class='%s']"%args.element)
+    lines = page.xpath("//*[@class='%s']" % args.element)
     lcount = 1
     for line in lines:
-        bbox = [int(x) for x in get_prop(line,'bbox').split()]
-        assert bbox[0]<bbox[2]
-        assert bbox[1]<bbox[3]
+        bbox = [int(x) for x in get_prop(line, 'bbox').split()]
+        assert bbox[0] < bbox[2]
+        assert bbox[1] < bbox[3]
         lineimage = image.crop(bbox)
-        lineimage.save(args.pattern%lcount)
-        f = codecs.open(tpattern%lcount, 'w', 'utf-8')
+        lineimage.save(args.pattern % lcount)
+        f = codecs.open(tpattern % lcount, 'w', 'utf-8')
         f.write(get_text(line))
         f.close
         lcount += 1
