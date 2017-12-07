@@ -5,14 +5,12 @@
 
 from __future__ import print_function
 import argparse
-import os
 import re
-import sys
 
 from lxml import html
 
 ################################################################
-### misc library code
+# misc library code
 ################################################################
 
 
@@ -32,7 +30,8 @@ def normalize(s):
 
 
 def edit_distance(a, b, threshold=999999):
-    if a == b: return 0
+    if a == b:
+        return 0
     m = len(a)
     n = len(b)
     distances = [[threshold for j in range(n + 1)] for i in range(m + 1)]
@@ -49,23 +48,27 @@ def edit_distance(a, b, threshold=999999):
                 cij = 0
             else:
                 cij = 1
-            d = min(distances[i - 1][j] + 1, distances[i][j - 1] + 1,
-                    distances[i - 1][j - 1] + cij)
-            if d >= threshold: return d
+            d = min(
+                distances[i - 1][j] + 1,
+                distances[i][j - 1] + 1,
+                distances[i - 1][j - 1] + cij
+            )
+            if d >= threshold:
+                return d
             distances[i][j] = d
     return distances[m][n]
 
+################################################################
+# main program
+################################################################
 
-################################################################
-### main program
-################################################################
 
 parser = argparse.ArgumentParser(
-    description=
-    "Compute statistics about the quality of the geometric segmentation at the level of the given OCR element"
-)
+    description="Compute statistics about the quality of the geometric segmentation at the level of the given OCR element")
 parser.add_argument(
-    "tfile", help="text file with the true lines", type=argparse.FileType('r'))
+    "tfile",
+    help="text file with the true lines",
+    type=argparse.FileType('r'))
 parser.add_argument(
     "hfile",
     help="hOCR file with the actually recognized lines",
@@ -75,9 +78,8 @@ args = parser.parse_args()
 
 truth_lines = args.tfile.read().split('\n')
 actual_doc = html.parse(args.hfile)
-actual_lines = [
-    get_text(node) for node in actual_doc.xpath("//*[@class='ocr_line']")
-]
+actual_lines = [get_text(node)
+                for node in actual_doc.xpath("//*[@class='ocr_line']")]
 
 truth_lines = [normalize(s) for s in truth_lines]
 truth_lines = [s for s in truth_lines if s != ""]

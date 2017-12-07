@@ -36,10 +36,11 @@ from PIL import Image
 
 
 class StdoutWrapper:
-    """
-    Wrapper around stdout that ensures 'bytes' data is decoded
+    """Wrapper around stdout that ensures 'bytes' data is decoded.
+
     to 'latin1' (0x00 - 0xff) before writing out. This is necessary for
     the invisible font to be injected as bytes but written out as a string.
+
     """
 
     def write(self, data, *args, **kwargs):
@@ -48,35 +49,46 @@ class StdoutWrapper:
         sys.stdout.write(data)
 
 
-def export_pdf(playground, default_dpi):
-    """Create a searchable PDF from a pile of HOCR + JPEG"""
+def export_pdf(playground, default_dpi, hocrext,
+               timgs, outfile, nodraw, readdpi):
+    """Create a searchable PDF from a pile of HOCR + IMAGE."""
     load_invisible_font()
-    pdf = Canvas(StdoutWrapper(), pageCompression=1)
+    if outfile == '':
+        pdf = Canvas(StdoutWrapper(), pageCompression=1)
+    else:
+        pdf = Canvas(outfile, pageCompression=1)
     pdf.setCreator('hocr-tools')
     pdf.setTitle(os.path.basename(playground))
-    images = sorted(glob.glob(os.path.join(playground, '*.jpg')))
+    timages = '*.' + timgs
+    images = sorted(glob.glob(os.path.join(playground, timages)))
     dpi = default_dpi
     for image in images:
         im = Image.open(image)
         w, h = im.size
-        try:
-            dpi = im.info['dpi'][0]
-        except KeyError:
-            pass
-        width = w * 72 / dpi
-        height = h * 72 / dpi
+        if readdpi:
+            try:
+                dpi = im.info['dpi'][0]
+            except KeyError:
+                pass
+        width = round(w * 72.0 / dpi, 3)
+        height = round(h * 72.0 / dpi, 3)
         pdf.setPageSize((width, height))
-        pdf.drawImage(image, 0, 0, width=width, height=height)
-        add_text_layer(pdf, image, height, dpi)
+        if not(nodraw):
+            try:
+                pdf.drawImage(image, 0, 0, width=width, height=height)
+            except BaseException:
+                sys.stderr.write(
+                    'image ' + image + ' no draw, only HOCR in page\n')
+        add_text_layer(pdf, hocrext, image, height, dpi)
         pdf.showPage()
     pdf.save()
 
 
-def add_text_layer(pdf, image, height, dpi):
-    """Draw an invisible text layer for OCR data"""
+def add_text_layer(pdf, hocrext, image, height, dpi):
+    """Draw an invisible text layer for OCR data."""
     p1 = re.compile('bbox((\s+\d+){4})')
     p2 = re.compile('baseline((\s+[\d\.\-]+){2})')
-    hocrfile = os.path.splitext(image)[0] + ".hocr"
+    hocrfile = os.path.splitext(image)[0] + "." + hocrext
     hocr = etree.parse(hocrfile, html.XHTMLParser())
     for line in hocr.xpath('//*[@class="ocr_line"]'):
         linebox = p1.search(line.attrib['title']).group(1).split()
@@ -87,9 +99,9 @@ def add_text_layer(pdf, image, height, dpi):
         linebox = [float(i) for i in linebox]
         baseline = [float(i) for i in baseline]
         xpath_elements = './/*[@class="ocrx_word"]'
-        if (not (line.xpath('boolean(' + xpath_elements + ')'))):
-            #if there are no words elements present,
-            #we switch to lines as elements
+        if (not(line.xpath('boolean(' + xpath_elements + ')'))):
+            # if there are no words elements present,
+            # we switch to lines as elements
             xpath_elements = '.'
         for word in line.xpath(xpath_elements):
             rawtext = word.text_content().strip()
@@ -100,13 +112,16 @@ def add_text_layer(pdf, image, height, dpi):
                 continue
             box = p1.search(word.attrib['title']).group(1).split()
             box = [float(i) for i in box]
-            b = polyval(baseline,
-                        (box[0] + box[2]) / 2 - linebox[0]) + linebox[3]
+            b = polyval(
+                baseline,
+                (box[0] + box[2]) / 2 - linebox[0]) + linebox[3]
             text = pdf.beginText()
             text.setTextRenderMode(3)  # double invisible
             text.setFont('invisible', 8)
-            text.setTextOrigin(box[0] * 72 / dpi, height - b * 72 / dpi)
-            box_width = (box[2] - box[0]) * 72 / dpi
+            text.setTextOrigin(
+                round(box[0] * 72.0 / dpi, 3),
+                round(height - b * 72.0 / dpi, 3))
+            box_width = round((box[2] - box[0]) * 72.0 / dpi, 3)
             text.setHorizScale(100.0 * box_width / font_width)
             text.textLine(rawtext)
             pdf.drawText(text)
@@ -115,10 +130,11 @@ def add_text_layer(pdf, image, height, dpi):
 def polyval(poly, x):
     return x * poly[0] + poly[1]
 
-
 # Glyphless variation of vedaal's invisible font retrieved from
 # http://www.angelfire.com/pr/pgpf/if.html, which says:
 # 'Invisible font' is unrestricted freeware. Enjoy, Improve, Distribute freely
+
+
 def load_invisible_font():
     font = """
 eJzdlk1sG0UUx/+zs3btNEmrUKpCPxikSqRS4jpfFURUagmkEQQoiRXgAl07Y3vL2mvt2ml8APXG
@@ -150,11 +166,56 @@ CMGjwvxTsr74/f/F95m3TH9x8o0/TU//N+7/D/ScVcA=
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Create a searchable PDF from a pile of hOCR and JPEG")
+        description="Create a searchable PDF from a pile of hOCR and IMAGES")
+    parser.add_argument(
+        '-d',
+        '--dpi',
+        metavar='dpi',
+        type=int,
+        default=300,
+        help='dpi for pdf output. If input image does not specify dpi, the default is 300')
+    parser.add_argument(
+        '-e',
+        '--ext',
+        metavar='ext',
+        type=str,
+        default='hocr',
+        help='ext input hOCR, default hocr')
+    parser.add_argument(
+        '-i',
+        '--images',
+        metavar='images',
+        type=str,
+        default='jpg',
+        help='type input images, default jpg')
+    parser.add_argument(
+        '-o',
+        '--outfile',
+        metavar='outfile',
+        type=str,
+        default='',
+        help='output pdf name, default stdout')
+    parser.add_argument(
+        '-n',
+        '--nodraw',
+        action='store_true',
+        default=False,
+        help='no draw images, OCR only, default False')
+    parser.add_argument(
+        '-r',
+        '--readdpi',
+        action='store_true',
+        default=False,
+        help='read dpi in images, default False')
     parser.add_argument(
         "imgdir",
-        help=
-        "directory with the hOCR and JPEG files (corresponding JPEG and hOCR files have to have the same name with their respective file ending)"
-    )
+        help="directory with the hOCR and IMAGE files (corresponding IMAGE and hOCR files have to have the same name with their respective file ending)")
     args = parser.parse_args()
-    export_pdf(args.imgdir, 300)
+    export_pdf(
+        args.imgdir,
+        args.dpi,
+        args.ext,
+        args.images,
+        args.outfile,
+        args.nodraw,
+        args.readdpi)

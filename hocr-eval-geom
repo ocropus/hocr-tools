@@ -5,13 +5,11 @@
 
 from __future__ import print_function
 import argparse
-import os
 import re
-import sys
 
 from lxml import html
 
-### general utilities
+# general utilities
 
 
 def get_text(node):
@@ -22,21 +20,23 @@ def get_text(node):
 
 def get_prop(node, name):
     title = node.get('title')
-    if not title: return None
+    if not title:
+        return None
     props = title.split(';')
     for prop in props:
         (key, args) = prop.split(None, 1)
-        if key == name: return args
+        if key == name:
+            return args
     return None
 
 
 def get_bbox(node):
     bbox = get_prop(node, 'bbox')
-    if not bbox: return None
+    if not bbox:
+        return None
     return tuple([int(x) for x in bbox.split()])
 
-
-### rectangle properties
+# rectangle properties
 
 
 def intersect(u, v):
@@ -60,30 +60,26 @@ def relative_overlap(u, v):
     i = area(intersect(u, v))
     return float(i) / m
 
-
 ################################################################
-### main program
+# main program
 ################################################################
 
-### argument parsing
+# argument parsing
+
 
 parser = argparse.ArgumentParser(
-    description=
-    "Compute statistics about the quality of the geometric segmentation at the level of the given OCR element",
-    epilog=
-    "The output is a 4-tuple (multiple,missing,error,count) for the truth compared with the actual and then again another 4-tuple in the other direction"
-)
+    description="Compute statistics about the quality of the geometric segmentation at the level of the given OCR element",
+    epilog="The output is a 4-tuple (multiple,missing,error,count) for the truth compared with the actual and then again another 4-tuple in the other direction")
 parser.add_argument(
-    "truth", help="hOCR file with ground truth", type=argparse.FileType('r'))
+    "truth",
+    help="hOCR file with ground truth",
+    type=argparse.FileType('r'))
 parser.add_argument(
     "actual",
     help="hOCR file from the actual recognition",
     type=argparse.FileType('r'))
-parser.add_argument(
-    "-e",
-    "--element",
-    default="ocr_line",
-    help="OCR element to look at, default: %(default)s")
+parser.add_argument("-e", "--element", default="ocr_line",
+                    help="OCR element to look at, default: %(default)s")
 parser.add_argument(
     "-o",
     "--significant_overlap",
@@ -98,7 +94,7 @@ parser.add_argument(
     help="default: %(default)s")
 args = parser.parse_args()
 
-### read the hOCR files
+# read the hOCR files
 
 truth_doc = html.parse(args.truth)
 actual_doc = html.parse(args.actual)
@@ -107,7 +103,7 @@ actual_pages = actual_doc.xpath("//*[@class='ocr_page']")
 assert len(truth_pages) == len(actual_pages)
 pages = zip(truth_pages, actual_pages)
 
-### compute statistics
+# compute statistics
 
 
 def boxstats(truths, actuals):

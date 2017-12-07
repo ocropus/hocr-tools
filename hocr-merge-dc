@@ -2,17 +2,16 @@
 
 from __future__ import print_function
 import argparse
-import os
 import re
-import sys
-import xml
 
 from lxml import etree, html
 
 dcknown = [
-    "dc:title", "dc:creator", "dc:subject", "dc:description", "dc:publisher",
-    "dc:contributor", "dc:date", "dc:type", "dc:format", "dc:identifier",
-    "dc:source", "dc:language", "dc:relation", "dc:coverage", "dc:rights"
+    "dc:title", "dc:creator", "dc:subject",
+    "dc:description", "dc:publisher",
+    "dc:contributor", "dc:date", "dc:type", "dc:format",
+    "dc:identifier", "dc:source", "dc:language", "dc:relation",
+    "dc:coverage", "dc:rights"
 ]
 
 
@@ -34,7 +33,8 @@ args = parser.parse_args()
 dc_doc = etree.parse(args.dc, html.XHTMLParser())
 hocr_doc = html.parse(args.hocr)
 
-### remove all existing META tags representing Dublin Core metadata
+
+# remove all existing META tags representing Dublin Core metadata
 
 hocr_meta = hocr_doc.xpath("//HEAD|//head")
 assert hocr_meta != []
@@ -44,10 +44,12 @@ hocr_nodes = hocr_doc.xpath("//head//meta[starts-with(@name,'DC.')]")
 for node in hocr_nodes:
     node.getparent().remove(node)
 
-### find all the Dublin Core tags in the Dublin Core metadata
+# find all the Dublin Core tags in the Dublin Core metadata
 
 dc_nodes = dc_doc.xpath(
-    "//dc:*", namespaces={"dc": "http://purl.org/dc/elements/1.1/"})
+    "//dc:*",
+    namespaces={
+        "dc": "http://purl.org/dc/elements/1.1/"})
 for node in dc_nodes:
     nt = re.sub(r'^{http://purl.org/dc/elements/1.1/}', 'dc:', node.tag)
     if nt in dcknown:
@@ -56,7 +58,8 @@ for node in dc_nodes:
         value = re.sub("[\t\r\n'\"]", " ", value).strip()
         value = value[:500]
         hnode = etree.Element(
-            "meta", nsmap={'DC': 'http://purl.org/dc/elements/1.1'})
+            "meta", nsmap={
+                'DC': 'http://purl.org/dc/elements/1.1'})
         hnode.attrib['name'] = name
         hnode.attrib['content'] = value
         hocr_meta.append(hnode)

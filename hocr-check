@@ -4,15 +4,12 @@
 
 from __future__ import print_function
 import argparse
-import os
-import re
-import string
 import sys
 
 from lxml import html
 
 ################################################################
-### misc library code
+# misc library code
 ################################################################
 
 TEST_COUNTER = 0
@@ -25,27 +22,28 @@ def test_ok(v, msg):
         sys.stderr.write("not ")
     sys.stderr.write("ok " + str(TEST_COUNTER) + " - " + msg + "\n")
 
-
-### node properties
+# node properties
 
 
 def get_prop(node, name):
     title = node.get('title')
-    if not title: return None
+    if not title:
+        return None
     props = title.split(';')
     for prop in props:
         (key, args) = prop.split(None, 1)
-        if key == name: return args
+        if key == name:
+            return args
     return None
 
 
 def get_bbox(node):
     bbox = get_prop(node, 'bbox')
-    if not bbox: return None
+    if not bbox:
+        return None
     return tuple([int(x) for x in bbox.split()])
 
-
-### rectangle properties
+# rectangle properties
 
 
 def intersect(u, v):
@@ -77,14 +75,13 @@ def mostly_nonoverlapping(boxes, significant_overlap=0.2):
                 return 0
     return 1
 
+################################################################
+# main
+################################################################
 
-################################################################
-### main
-################################################################
 
 parser = argparse.ArgumentParser(
-    description="Check the given file for conformance with the hOCR format spec"
-)
+    description="Check the given file for conformance with the hOCR format spec")
 parser.add_argument(
     "file",
     help="hOCR file to check",
@@ -101,16 +98,14 @@ args = parser.parse_args()
 doc = html.parse(args.file)
 
 ################################################################
-### XML structure checks
+# XML structure checks
 ################################################################
 
 # check for presence of meta information
-test_ok(
-    doc.xpath("//meta[@name='ocr-system']") != [],
-    "//meta[@name='ocr-system']")
-test_ok(
-    doc.xpath("//meta[@name='ocr-capabilities']") != [],
-    "//meta[@name='ocr-capabilities']")
+test_ok(doc.xpath("//meta[@name='ocr-system']")
+        != [], "//meta[@name='ocr-system']")
+test_ok(doc.xpath("//meta[@name='ocr-capabilities']")
+        != [], "//meta[@name='ocr-capabilities']")
 
 # check for presence of page
 test_ok(doc.xpath("//*[@class='ocr_page']") != [], "has a page")
@@ -120,24 +115,27 @@ lines = doc.xpath("//*[@class='ocr_line']")
 for line_idx, line in enumerate(lines):
     test_ok(
         line.xpath("./ancestor::*[@class='ocr_page']"),
-        "ocr_line %2d in an ocr_page" % (line_idx))
+        "ocr_line %2d in an ocr_page" %
+        (line_idx))
 
 # check that pars are inside pages
 pars = doc.xpath("//*[@class='ocr_par']")
 for par_idx, par in enumerate(pars):
     test_ok(
         par.xpath("./ancestor::*[@class='ocr_page']"),
-        "ocr_par %2d in an ocr_page" % (par_idx))
+        "ocr_par %2d in an ocr_page" %
+        (par_idx))
 
 # check that careas are inside pages
 careas = doc.xpath("//*[@class='ocr_carea']")
 for carea_idx, carea in enumerate(careas):
     test_ok(
         carea.xpath("./ancestor::*[@class='ocr_page']"),
-        "ocr_carea %2d in an ocr_page" % (carea_idx))
+        "ocr_carea %2d in an ocr_page" %
+        (carea_idx))
 
 ################################################################
-### geometric checks
+# geometric checks
 ################################################################
 
 if not args.nooverlap:
@@ -146,7 +144,8 @@ if not args.nooverlap:
         objs = page.xpath("//*[@class='ocr_line']")
         line_bboxes = [get_bbox(obj) for obj in objs if get_prop(obj, 'bbox')]
         test_ok(
-            mostly_nonoverlapping(line_bboxes), 'mostly_nonoverlapping/line')
+            mostly_nonoverlapping(line_bboxes),
+            'mostly_nonoverlapping/line')
         # check paragraphs
         objs = page.xpath("//*[@class='ocr_par']")
         par_bboxes = [get_bbox(obj) for obj in objs if get_prop(obj, 'bbox')]
@@ -155,10 +154,11 @@ if not args.nooverlap:
         objs = page.xpath("//*[@class='ocr_carea']")
         carea_bboxes = [get_bbox(obj) for obj in objs if get_prop(obj, 'bbox')]
         test_ok(
-            mostly_nonoverlapping(carea_bboxes), 'mostly_nonoverlapping/carea')
+            mostly_nonoverlapping(carea_bboxes),
+            'mostly_nonoverlapping/carea')
 
 ################################################################
-### TODO
+# TODO
 ################################################################
 
 # FIXME add many other checks:

@@ -1,10 +1,6 @@
 # hocr-tools
 
-[![Build Status](https://travis-ci.org/UB-Mannheim/hocr-tools.svg?branch=master)](https://travis-ci.org/UB-Mannheim/hocr-tools)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/bb25a0d5fd4c4f8c95c5acd11ffe9da5)](https://www.codacy.com/app/UB-Mannheim/hocr-tools?utm_source=github.com&utm_medium=referral&utm_content=tmbdev/hocr-tools&utm_campaign=badger)
-[![PyPI](https://img.shields.io/pypi/v/hocr-tools.svg?maxAge=86400)](https://pypi.python.org/pypi/hocr-tools)
-[![pyversions](https://img.shields.io/pypi/pyversions/hocr-tools.svg)](https://pypi.python.org/pypi/hocr-tools)
-[![license](https://img.shields.io/badge/license-Apache%202.0-yellow.svg?style=flat)](https://github.com/tmbdev/hocr-tools/blob/master/LICENSE)
+[![Build Status](https://travis-ci.org/UB-Mannheim/hocr-tools.svg?branch=master)](https://travis-ci.org/UB-Mannheim/hocr-tools) [![PyPI](https://img.shields.io/pypi/v/hocr-tools.svg?maxAge=86400)](https://pypi.python.org/pypi/hocr-tools) [![pyversions](https://img.shields.io/pypi/pyversions/hocr-tools.svg)](https://pypi.python.org/pypi/hocr-tools) [![license](https://img.shields.io/badge/license-Apache%202.0-yellow.svg?style=flat)](https://github.com/tmbdev/hocr-tools/blob/master/LICENSE)
 
 
 * [About](#about)
@@ -23,7 +19,7 @@
   * [hocr-extract-images](#hocr-extract-images) -- extract the images and texts within all the ocr_line elements
   * [hocr-lines](#hocr-lines) -- extract the text within all the ocr_line elements
   * [hocr-merge-dc](#hocr-merge-dc) -- merge Dublin Core meta data into the hOCR HTML header
-  * [hocr-pdf](#hocr-pdf) -- create a searchable PDF from a pile of hOCR and JPEG
+  * [hocr-pdf](#hocr-pdf) -- create a searchable PDF from a pile of hOCR and IMAGE
   * [hocr-split](#hocr-split) -- split an hOCR file into individual pages
   * [hocr-wordfreq](#hocr-wordfreq) -- calculate word frequency in an hOCR file
 * [Unit tests](#unit-tests)
@@ -107,7 +103,7 @@ Included command line programs:
 ### hocr-check
 
 ```
-hocr-check file.html
+hocr-check [-h] [-o] file.hocr
 ```
 
 Perform consistency checks on the hOCR file.
@@ -115,7 +111,7 @@ Perform consistency checks on the hOCR file.
 ### hocr-combine
 
 ```
-hocr-combine file1.html [file2.html ...]
+hocr-combine [-h] file1.html [file2.html ...]
 ```
 
 Combine the OCR pages contained in each HTML file into a single document.
@@ -124,7 +120,7 @@ The document metadata is taken from the first file.
 ### hocr-eval-lines
 
 ```
-hocr-eval-lines [-v] true-lines.txt hocr-actual.html
+hocr-eval-lines [-h] [-v] true-lines.txt actual.hocr
 ```
 
 Evaluate hOCR output against ASCII ground truth.  This evaluation method
@@ -135,7 +131,7 @@ requirement).
 ### hocr-eval-geom
 
 ```
-hocr-eval-geom [-e element-name] [-o overlap-threshold] hocr-truth hocr-actual
+hocr-eval-geom [-h] [-e ELEMENT] [-o SIGNIFICANT_OVERLAP] [-c CLOSE_MATCH] truth.hocr actual.hocr
 ```
 
 Compare the segmentations at the level of the element name (default: ocr_line).
@@ -144,7 +140,7 @@ Computes undersegmentation, oversegmentation, and missegmentation.
 ### hocr-eval
 
 ```
-hocr-eval hocr-true.html hocr-actual.html
+hocr-eval [-h] [-d] [-v] [-i IMGFILE] true.hocr actual.hocr
 ```
 
 Evaluate the actual OCR with respect to the ground truth.  This outputs
@@ -162,7 +158,7 @@ Extract lines from [Google 1000 book sample](http://commondatastorage.googleapis
 ### hocr-extract-images
 
 ```
-hocr-extract-images [-b BASENAME] [-p PATTERN] [-e ELEMENT] [file]
+hocr-extract-images [-h] [-b BASENAME] [-p PATTERN] [-e ELEMENT] file.hocr
 ```
 
 Extract the images and texts within all the ocr_line elements within the hOCR file.
@@ -172,7 +168,7 @@ the default element is `ocr_line`.
 ### hocr-lines
 
 ```
-hocr-lines [FILE]
+hocr-lines [-h] file.hocr
 ```
 
 Extract the text within all the ocr_line elements within the hOCR file
@@ -182,7 +178,7 @@ hOCR data from stdin.
 ### hocr-merge-dc
 
 ```
-hocr-merge-dc dc.xml hocr.html > hocr-new.html
+hocr-merge-dc [-h] dc.xml input.hocr > merge.hocr
 ```
 
 Merges the Dublin Core metadata into the hOCR file by encoding the data in its header.
@@ -190,15 +186,15 @@ Merges the Dublin Core metadata into the hOCR file by encoding the data in its h
 ### hocr-pdf
 
 ```
-Usage: hocr-pdf <imgdir>
+Usage: hocr-pdf [-h] [-d dpi] [-e ext] [-i images] [-o outfile] [-n] [-r] imgdir
 ```
 
-Create a searchable PDF from a pile of hOCR and JPEG. It is important that the corresponding JPEG and hOCR files have the same name with their respective file ending. All of these files should lie in one directory, which one has to specify as an argument when calling the command, e.g. use `hocr-pdf . > out.pdf` to run the command in the current directory and save the output as `out.pdf`.
+Create a searchable PDF from a pile of hOCR and IMAGE. It is important that the corresponding IMAGE and hOCR files have the same name with their respective file ending. All of these files should lie in one directory, which one has to specify as an argument when calling the command, e.g. use `hocr-pdf -o out.pdf .` to run the command in the current directory and save the output as `out.pdf`.
 
 ### hocr-split
 
 ```
-hocr-split file.html pattern
+hocr-split [-h] file.hocr pattern
 ```
 
 Split a multipage hOCR file into hOCR files containing one page each.
@@ -207,16 +203,14 @@ The pattern should something like "base-%03d.html"
 ### hocr-wordfreq
 
 ```
-hocr-wordfreq [-h] [-i] [-n MAX] [-s] [-y] [file.html]
+hocr-wordfreq [-h] [-i] [-s] [-y] [-n MAX] file.hocr
 ```
 
 Outputs a list of the most frequent words in an hOCR file with their number of occurrences.
 If called without any file, `hocr-wordfreq` reads hOCR data (for example from `hocr-combine`) from stdin.
 
 By default, the first 10 words are shown, but any number can be requested with `-n`.
-Use `-i` to ignore upper and lower case, `-s` to split on spaces only which will then
-lead to words also containing punctations, and `-y` tries to dehyphenate the text
-(separation of words at line break with a hyphen) before analysis.
+Use `-i` to ignore upper and lower case.
 
 ## Unit tests
 
