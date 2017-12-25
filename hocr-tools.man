@@ -1,0 +1,81 @@
+.TH "Hocr-Tools User Manual" 1 "1 Jan 2013" "Hocr-Tools documentation"
+
+.SH NAME
+hocr-tools
+
+.SH DESCRIPTION
+Tools for manipulating and evaluating the hOCR format.
+.PP
+OCR is a format for representing OCR output, including layout information,
+character confidences, bounding boxes, and style information. It embeds this
+information invisibly in standard HTML. By building on standard HTML, it
+automatically inherits well-defined support for most scripts, languages,
+and common layout options. Furthermore, unlike previous OCR formats,
+the recognized text and OCR-related information co-exist in the same file
+and survives editing and manipulation. hOCR markup is independent
+of the presentation.
+.PP
+Included command line programs:
+.TP
+\fBhocr-check\fP
+check the given file for conformance with the hOCR format spec
+.TP
+\fBhocr-combine\fP
+combine multiple hOCR documents into one
+.TP
+\fBhocr-eval\fP
+compute number of segmentation and OCR errors
+.TP
+\fBhocr-eval-geom\fP
+compute over, under, and mis-segmentations
+.TP
+\fBhocr-eval-lines\fP
+compute statistics about the quality of the geometric segmentation at thelevel of the given OCR element
+.TP
+\fBhocr-extract-g1000\fP
+process Google 1000 books volumes and prepares line or word imagesfor alignment using OCRopus.
+.TP
+\fBhocr-extract-images\fP
+extract the images and texts within all the ocr_line elements within the hOCRfile
+.TP
+\fBhocr-lines\fP
+extract the text within all the ocr_line elements within the hOCR file
+.TP
+\fBhocr-merge-dc\fP
+merge Dublin Core metadata into hOCR header files
+.TP
+\fBhocr-pdf\fP
+create a searchable PDF from a pile of hOCR and JPEG
+.TP
+\fBhocr-pdf-noimg\fP
+create a searchable PDF from a pile of hOCR and JPEG (no add img)
+.TP
+\fBhocr-split\fP
+split a multipage hOCR file into single pages
+.TP
+\fBhocr-wordfreq\fP
+calculate word frequency in an hOCR file
+
+.SH SYNOPSIS
+"\fBhocr-tools\fP" [options] path
+
+.SH OPTIONS
+See "\fBhocr-tools\fP" --help
+
+.SH EXAMPLE
+ hocr-check file.hocr
+ hocr-combine *.hocr > combine.hocr
+ hocr-extract-images file.hocr
+ hocr-pdf -d 300 -o book.pdf img_and_hocr_dir
+ hocr-split book.hocr page
+
+.SH COPYRIGHT
+Copyright 2013 Thomas M. Breuel.
+ All rights reserved.
+
+.SH SEE ALSO
+ hocr2pdf(1).
+
+.SH CONTACTS
+ Homepage: https://github.com/tmbdev/hocr-tools/
+ Email: otmbdev@github.com

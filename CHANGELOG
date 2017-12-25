@@ -1,0 +1,34 @@
+=======
+CHANGES
+=======
+1.2.1.3 (2017-12-24)
+"autopep8"
+
+ autopep8 ./ --recursive --in-place -a
+
+1.2.1.2 (2017-12-16)
+"try drawImage"
+
+ hocr-pdf:
+  -added option -r (readdpi) - reading of dpi in images (harmful option!)
+  -added exception handling drawImage (for tiff).
+
+1.2.1.1 (2017-12-15)
+"summary"
+
+ hocr-pdf:
+  -removed reading of dpi in images (harmful option)
+  -added option -e (ext) - extension input HOCR file
+
+1.2.1 (2017-12-08)
+
+ hocr-pdf:
+  -added option -d (--dpi)
+  -added option -i (--images) - extension input images
+  -added option -o (--outfile)
+  -added option -n (--nodraw) - no draw image in pdf, only get size page
+
+1.2.0 (2017-03-29)
+------------------
+
+see https://github.com/tmbdev/hocr-tools

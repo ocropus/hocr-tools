@@ -2,21 +2,20 @@
 
 from __future__ import print_function
 import argparse
-import os
-import re
-import string
-import sys
 
 from lxml import etree, html
 
 ################################################################
-### main program
+# main program
 ################################################################
 
 parser = argparse.ArgumentParser(
     description="combine multiple hOCR documents into one")
 parser.add_argument(
-    "files", help="hOCR files", type=argparse.FileType('r'), nargs='+')
+    "files",
+    help="hOCR files",
+    type=argparse.FileType('r'),
+    nargs='+')
 args = parser.parse_args()
 
 doc = html.parse(args.files[0])

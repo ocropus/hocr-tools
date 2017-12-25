@@ -6,35 +6,34 @@
 
 from __future__ import print_function
 import argparse
-import codecs
-import os
 import re
-import string
-import sys
 
 from lxml import html
 from PIL import Image, ImageDraw
 
 ################################################################
-### library
+# library
 ################################################################
 
-### XML node processing
+# XML node processing
 
 
 def get_prop(node, name):
     title = node.get('title')
-    if not title: return None
+    if not title:
+        return None
     props = title.split(';')
     for prop in props:
         (key, args) = prop.split(None, 1)
-        if key == name: return args
+        if key == name:
+            return args
     return None
 
 
 def get_bbox(node):
     bbox = get_prop(node, 'bbox')
-    if not bbox: return None
+    if not bbox:
+        return None
     return tuple([int(x) for x in bbox.split()])
 
 
@@ -42,7 +41,6 @@ def get_text(node):
     textnodes = node.xpath(".//text()")
     s = "".join([text for text in textnodes])
     return re.sub(r'\s+', ' ', s)
-
 
 # rectangle properties
 
@@ -73,8 +71,8 @@ def erode(u, tx, ty):
     y = 2 * ty + 1
     return tuple([u[0] + x, u[1] + y, u[2] - x, u[3] - y])
 
+# text comparison
 
-### text comparison
 
 simp_re = re.compile(r'[^a-zA-Z0-9.,!?:;]+')
 
@@ -84,12 +82,12 @@ def normalize(s):
     s = s.strip()
     return s
 
-
-### edit distance
+# edit distance
 
 
 def edit_distance(a, b, threshold=99999):
-    if a == b: return 0
+    if a == b:
+        return 0
     m = len(a)
     n = len(b)
     distances = [[threshold for j in range(n + 1)] for i in range(m + 1)]
@@ -106,14 +104,17 @@ def edit_distance(a, b, threshold=99999):
                 cij = 0
             else:
                 cij = 1
-            d = min(distances[i - 1][j] + 1, distances[i][j - 1] + 1,
-                    distances[i - 1][j - 1] + cij)
-            if d >= threshold: return d
+            d = min(
+                distances[i - 1][j] + 1,
+                distances[i][j - 1] + 1,
+                distances[i - 1][j - 1] + cij
+            )
+            if d >= threshold:
+                return d
             distances[i][j] = d
     return distances[m][n]
 
-
-#def remove_tex(text):
+# def remove_tex(text):
 #    text_file = os.popen("echo %s | detex " %(text))
 #    text_plain = text_file.read()
 #    text_file.close()
@@ -123,29 +124,31 @@ def edit_distance(a, b, threshold=99999):
 def remove_tex(text):
     return text
 
-
 ################################################################
-### main program
+# main program
 ################################################################
 
-### argument parsing
+# argument parsing
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
-    "truth", help="hOCR file with ground truth", type=argparse.FileType('r'))
+    "truth",
+    help="hOCR file with ground truth",
+    type=argparse.FileType('r'))
 parser.add_argument(
     "actual",
     help="hOCR file from the actual recognition",
     type=argparse.FileType('r'))
 parser.add_argument("-d", "--debug", action="store_true")
 parser.add_argument("-v", "--verbose", action="store_true")
-#not yet supported:
+# not yet supported:
 #parser.add_argument("-e", "--element", default="ocr_line", help="%(default)s")
 #parser.add_argument("-o", "--significant_overlap", type=float, default=0.1, help="default: %(default)s")
 parser.add_argument("-i", "--imgfile", type=argparse.FileType('r'))
 args = parser.parse_args()
 
-if (args.imgfile):
+if(args.imgfile):
     im = Image.open(args.imgfile)
     print(im.size, im.format, im.mode)
     draw = ImageDraw.Draw(im)
@@ -172,33 +175,33 @@ VTOL = 80
 HPIX = 5
 VPIX = 5
 
+
 used = {}
 
 for truth, actual in pages:
     true_lines = truth.xpath("//*[@class='ocr_line']")
     actual_lines = actual.xpath("//*[@class='ocr_line']")
-    tx = [
-        min(HPIX, (100 - HTOL) * width(get_bbox(line)) / 100)
-        for line in true_lines
-    ]
-    ty = [
-        min(VPIX, (100 - VTOL) * height(get_bbox(line)) / 100)
-        for line in true_lines
-    ]
+    tx = [min(HPIX, (100 - HTOL) * width(get_bbox(line)) / 100)
+          for line in true_lines]
+    ty = [min(VPIX, (100 - VTOL) * height(get_bbox(line)) / 100)
+          for line in true_lines]
     for index, true_line in enumerate(true_lines):
         bbox = get_bbox(true_line)
         bbox_small = erode(bbox, tx[index], ty[index])
-        candidates = [(area(intersect(get_bbox(line), bbox)), get_bbox(line),
-                       get_text(line)) for line in actual_lines]
+        candidates = [
+            (area(
+                intersect(
+                    get_bbox(line),
+                    bbox)),
+                get_bbox(line),
+                get_text(line)) for line in actual_lines]
         q = 0
         tight_overlap = False
         if candidates != []:
             q, actual_bbox, actual_line = max(candidates)
             actual_bbox_small = erode(actual_bbox, tx[index], ty[index])
-            if (area(intersect(actual_bbox_small, bbox)) == area(
-                    actual_bbox_small)
-                    and area(intersect(actual_bbox, bbox_small)) == area(
-                        bbox_small)):
+            if(area(intersect(actual_bbox_small, bbox)) == area(actual_bbox_small) and
+               area(intersect(actual_bbox, bbox_small)) == area(bbox_small)):
                 tight_overlap = True
 
         if (tight_overlap == 0):
@@ -215,7 +218,7 @@ for truth, actual in pages:
             else:
                 segmentation_ocr_errors += len(get_text(true_line))
 
-            if (args.imgfile):
+            if(args.imgfile):
                 draw.rectangle(bbox, outline="#ff0000")
                 if candidates != []:
                     draw.rectangle(actual_bbox, outline="#0000ff")
@@ -236,6 +239,6 @@ for truth, actual in pages:
 print("segmentation_errors", segmentation_errors)
 print("segmentation_ocr_errors", segmentation_ocr_errors)
 print("ocr_errors", ocr_errors)
-if (args.imgfile):
+if(args.imgfile):
     im.save("errors.png")
     im.show("errors.png")

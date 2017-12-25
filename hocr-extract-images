@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
-# extract the images and texts within all the ocr_line elements within the hOCR file
+# extract the images and texts within all the ocr_line elements within the
+# hOCR file
 
 from __future__ import print_function
 import argparse
@@ -25,14 +26,13 @@ def get_prop(node, name):
     for prop in props:
         (key, args) = prop.split(None, 1)
         args = args.strip('"')
-        if key == name: return args
+        if key == name:
+            return args
     return None
 
 
 parser = argparse.ArgumentParser(
-    description=
-    "Extract the images and texts within all the ocr_line elements within the hOCR file"
-)
+    description="Extract the images and texts within all the ocr_line elements within the hOCR file")
 parser.add_argument(
     "file",
     help="hOCR file",

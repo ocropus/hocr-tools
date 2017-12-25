@@ -6,8 +6,6 @@ from __future__ import print_function
 import glob
 import os
 import re
-import shutil
-import string
 import sys
 import xml.sax
 
@@ -66,8 +64,7 @@ exe, hocr, image_pattern, output_pattern = sys.argv
 
 if image_pattern[0] == "@":
     image_list = open(image_pattern[1:]).readlines()
-    image_list = [s[:-1] for s in image_list]
-    image_list.sort()
+    image_list = sorted([s[:-1] for s in image_list])
 else:
     image_list = glob.glob(image_pattern)
 
@@ -96,11 +93,14 @@ if dictfile:
 
 
 def check_dict(dict, s):
-    if not dict: return 1
+    if not dict:
+        return 1
     words = re.split(r'\W+', s)
     for word in words:
-        if word == "": continue
-        if not dict.get(word.lower()): return 0
+        if word == "":
+            continue
+        if not dict.get(word.lower()):
+            return 0
     return 1
 
 
@@ -114,7 +114,8 @@ def get_prop(title, name):
     props = title.split(';')
     for prop in props:
         (key, args) = prop.split(None, 1)
-        if key == name: return args
+        if key == name:
+            return args
     return None
 
 
@@ -150,10 +151,10 @@ class docHandler(xml.sax.handler.ContentHandler):
 
     def endElement(self, name):
         if self.depth == self.start:
-            if len(self.text)>=min_len and \
-                    len(self.text)<=max_len and \
-                    re.match(self.regex,self.text) and \
-                    check_dict(dict,self.text):
+            if len(self.text) >= min_len and \
+                    len(self.text) <= max_len and \
+                    re.match(self.regex, self.text) and \
+                    check_dict(dict, self.text):
                 print(self.page, self.bbox, self.text.encode("utf-8"))
                 w, h = self.image.size
                 x0, y0, x1, y1 = [int(s) for s in self.bbox.split()]
@@ -165,22 +166,25 @@ class docHandler(xml.sax.handler.ContentHandler):
                 limage = self.image.crop((x0, y0, x1, y1))
                 base = output_pattern % (self.pageno, self.lineno)
                 basedir = os.path.dirname(base)
-                if not os.path.exists(basedir): os.mkdir(basedir)
+                if not os.path.exists(basedir):
+                    os.mkdir(basedir)
                 limage.save(base + "." + output_format)
                 write_string(base + ".txt", self.text)
                 write_string(base + ".bbox", self.bbox)
                 self.total += 1
-                if self.total >= max_lines: sys.exit(0)
+                if self.total >= max_lines:
+                    sys.exit(0)
             self.text = None
             self.start = -1
         self.depth -= 1
 
     def characters(self, str, start, end):
-        if self.text != None:
+        if self.text is not None:
             self.text += str[start:end]
 
 
 parser = xml.sax.make_parser()
-stream = os.popen("tidy -q -wrap 9999 -asxhtml < %s 2> /tmp/tidy_errs" % hocr,
-                  "r")
+stream = os.popen(
+    "tidy -q -wrap 9999 -asxhtml < %s 2> /tmp/tidy_errs" %
+    hocr, "r")
 parser.parseFile(stream, docHandler())
