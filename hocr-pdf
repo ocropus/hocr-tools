@@ -34,7 +34,6 @@ from reportlab.pdfgen.canvas import Canvas
 from lxml import etree, html
 from PIL import Image
 
-
 class StdoutWrapper:
     """
     Wrapper around stdout that ensures 'bytes' data is decoded
@@ -48,10 +47,10 @@ class StdoutWrapper:
         sys.stdout.write(data)
 
 
-def export_pdf(playground, default_dpi):
+def export_pdf(playground, default_dpi, savefile=False):
     """Create a searchable PDF from a pile of HOCR + JPEG"""
     load_invisible_font()
-    pdf = Canvas(StdoutWrapper(), pageCompression=1)
+    pdf = Canvas(savefile if savefile else StdoutWrapper(), pageCompression=1)
     pdf.setCreator('hocr-tools')
     pdf.setTitle(os.path.basename(playground))
     images = sorted(glob.glob(os.path.join(playground, '*.jpg')))
@@ -156,5 +155,9 @@ if __name__ == "__main__":
         help=
         "directory with the hOCR and JPEG files (corresponding JPEG and hOCR files have to have the same name with their respective file ending)"
     )
+    parser.add_argument(
+        "--savefile",
+        help="Where to save the file (ex: C:\\Users\\test.pdf)"
+    )
     args = parser.parse_args()
-    export_pdf(args.imgdir, 300)
+    export_pdf(args.imgdir, 300, args.savefile)
