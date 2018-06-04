@@ -157,7 +157,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--savefile",
-        help="Where to save the file (ex: C:\\Users\\test.pdf)"
+        help="Save to this file instead of outputting to stdout"
     )
     args = parser.parse_args()
     export_pdf(args.imgdir, 300, args.savefile)
