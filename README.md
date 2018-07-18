@@ -190,10 +190,11 @@ Merges the Dublin Core metadata into the hOCR file by encoding the data in its h
 ### hocr-pdf
 
 ```
-Usage: hocr-pdf <imgdir>
+hocr-pdf <imgdir> > out.pdf
+hocr-pdf --savefile out.pdf <imgdir>
 ```
 
-Create a searchable PDF from a pile of hOCR and JPEG. It is important that the corresponding JPEG and hOCR files have the same name with their respective file ending. All of these files should lie in one directory, which one has to specify as an argument when calling the command, e.g. use `hocr-pdf . > out.pdf` to run the command in the current directory and save the output as `out.pdf`.
+Create a searchable PDF from a pile of hOCR and JPEG. It is important that the corresponding JPEG and hOCR files have the same name with their respective file ending. All of these files should lie in one directory, which one has to specify as an argument when calling the command, e.g. use `hocr-pdf . > out.pdf` to run the command in the current directory and save the output as `out.pdf` alternatively `hocr-pdf . --savefile out.pdf` which avoids routing the output through the terminal.
 
 ### hocr-split
 
