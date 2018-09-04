@@ -6,11 +6,7 @@
 
 from __future__ import print_function
 import argparse
-import codecs
-import os
 import re
-import string
-import sys
 
 from lxml import html
 from PIL import Image, ImageDraw
