@@ -46,7 +46,6 @@ for page in pages:
         print("Warning: Image not found!")
         args.debug = False
         image_found = False
-    
 
     bbox = get_bbox(page)
     middle = bbox[2]/2
@@ -82,7 +81,6 @@ for page in pages:
     middle = (middle_left+middle_right)/2
     print("Cutting at",middle)
 
-
     if (image_found):
 
         if filename[-4] == ".":
@@ -108,5 +106,3 @@ for page in pages:
         right_name = name + "right." + suffix
         right.save(right_name)
         print("right page is saved in", right_name)
-
-
