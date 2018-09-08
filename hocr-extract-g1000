@@ -180,7 +180,7 @@ class docHandler(xml.sax.handler.ContentHandler):
         self.depth -= 1
 
     def characters(self, str, start, end):
-        if self.text != None:
+        if self.text is not None:
             self.text += str[start:end]
 
 
