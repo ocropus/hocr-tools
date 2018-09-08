@@ -45,11 +45,11 @@ text = doc.find('//body').text_content().strip()
 if args.case_insensitive:
     text = text.lower()
 if args.dehyphenate:
-    #delete blank lines
+    # delete blank lines
     text = re.sub(r"^\s*$\r?\n", "", text)
-    #dehyphenate
+    # dehyphenate
     text = re.sub(r"-\r?\n", "", text)
-    #replace line breaks with a space
+    # replace line breaks with a space
     text = re.sub(r"\r?\n", " ", text)
 wc = {}
 separators = re.compile('\W+', re.UNICODE)

@@ -109,11 +109,11 @@ def edit_distance(a, b, threshold=99999):
     return distances[m][n]
 
 
-#def remove_tex(text):
-#    text_file = os.popen("echo %s | detex " %(text))
-#    text_plain = text_file.read()
-#    text_file.close()
-#    return text_plain
+# def remove_tex(text):
+#     text_file = os.popen("echo %s | detex " %(text))
+#     text_plain = text_file.read()
+#     text_file.close()
+#     return text_plain
 
 
 def remove_tex(text):
@@ -135,9 +135,9 @@ parser.add_argument(
     type=argparse.FileType('r'))
 parser.add_argument("-d", "--debug", action="store_true")
 parser.add_argument("-v", "--verbose", action="store_true")
-#not yet supported:
-#parser.add_argument("-e", "--element", default="ocr_line", help="%(default)s")
-#parser.add_argument("-o", "--significant_overlap", type=float, default=0.1, help="default: %(default)s")
+# not yet supported:
+# parser.add_argument("-e", "--element", default="ocr_line", help="%(default)s")
+# parser.add_argument("-o", "--significant_overlap", type=float, default=0.1, help="default: %(default)s")
 parser.add_argument("-i", "--imgfile", type=argparse.FileType('r'))
 args = parser.parse_args()
 
