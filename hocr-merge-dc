@@ -31,7 +31,7 @@ args = parser.parse_args()
 dc_doc = etree.parse(args.dc, html.XHTMLParser())
 hocr_doc = html.parse(args.hocr)
 
-### remove all existing META tags representing Dublin Core metadata
+# remove all existing META tags representing Dublin Core metadata
 
 hocr_meta = hocr_doc.xpath("//HEAD|//head")
 assert hocr_meta != []
@@ -41,7 +41,7 @@ hocr_nodes = hocr_doc.xpath("//head//meta[starts-with(@name,'DC.')]")
 for node in hocr_nodes:
     node.getparent().remove(node)
 
-### find all the Dublin Core tags in the Dublin Core metadata
+# find all the Dublin Core tags in the Dublin Core metadata
 
 dc_nodes = dc_doc.xpath(
     "//dc:*", namespaces={"dc": "http://purl.org/dc/elements/1.1/"})

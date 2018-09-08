@@ -10,7 +10,7 @@ import re
 from lxml import html
 
 ################################################################
-### misc library code
+# misc library code
 ################################################################
 
 
@@ -30,7 +30,8 @@ def normalize(s):
 
 
 def edit_distance(a, b, threshold=999999):
-    if a == b: return 0
+    if a == b:
+        return 0
     m = len(a)
     n = len(b)
     distances = [[threshold for j in range(n + 1)] for i in range(m + 1)]
@@ -49,13 +50,14 @@ def edit_distance(a, b, threshold=999999):
                 cij = 1
             d = min(distances[i - 1][j] + 1, distances[i][j - 1] + 1,
                     distances[i - 1][j - 1] + cij)
-            if d >= threshold: return d
+            if d >= threshold:
+                return d
             distances[i][j] = d
     return distances[m][n]
 
 
 ################################################################
-### main program
+# main program
 ################################################################
 
 parser = argparse.ArgumentParser(
