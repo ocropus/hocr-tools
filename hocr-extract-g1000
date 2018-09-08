@@ -152,10 +152,10 @@ class docHandler(xml.sax.handler.ContentHandler):
 
     def endElement(self, name):
         if self.depth == self.start:
-            if len(self.text)>=min_len and \
-                    len(self.text)<=max_len and \
-                    re.match(self.regex,self.text) and \
-                    check_dict(dict,self.text):
+            if len(self.text) >= min_len and \
+                    len(self.text) <= max_len and \
+                    re.match(self.regex, self.text) and \
+                    check_dict(dict, self.text):
                 print(self.page, self.bbox, self.text.encode("utf-8"))
                 w, h = self.image.size
                 x0, y0, x1, y1 = [int(s) for s in self.bbox.split()]

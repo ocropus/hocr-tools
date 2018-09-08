@@ -34,6 +34,7 @@ from reportlab.pdfgen.canvas import Canvas
 from lxml import etree, html
 from PIL import Image
 
+
 class StdoutWrapper:
     """
     Wrapper around stdout that ensures 'bytes' data is decoded
