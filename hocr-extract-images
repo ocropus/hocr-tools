@@ -25,7 +25,8 @@ def get_prop(node, name):
     for prop in props:
         (key, args) = prop.split(None, 1)
         args = args.strip('"')
-        if key == name: return args
+        if key == name:
+            return args
     return None
 
 

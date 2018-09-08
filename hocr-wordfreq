@@ -56,9 +56,11 @@ separators = re.compile('\W+', re.UNICODE)
 if args.spaces:
     separators = re.compile('\s+', re.UNICODE)
 for word in separators.split(text):
-    if word == '': continue
+    if word == '':
+        continue
     wc[word] = wc[word] + 1 if word in wc else 1
 
 for idx, word in enumerate(sorted(wc, reverse=True, key=wc.get)):
-    if idx > args.max: break
+    if idx > args.max:
+        break
     print("%-5d\t%s" % (wc[word], word))

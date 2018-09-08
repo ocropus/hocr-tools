@@ -94,11 +94,14 @@ if dictfile:
 
 
 def check_dict(dict, s):
-    if not dict: return 1
+    if not dict:
+        return 1
     words = re.split(r'\W+', s)
     for word in words:
-        if word == "": continue
-        if not dict.get(word.lower()): return 0
+        if word == "":
+            continue
+        if not dict.get(word.lower()):
+            return 0
     return 1
 
 
@@ -112,7 +115,8 @@ def get_prop(title, name):
     props = title.split(';')
     for prop in props:
         (key, args) = prop.split(None, 1)
-        if key == name: return args
+        if key == name:
+            return args
     return None
 
 
@@ -163,12 +167,14 @@ class docHandler(xml.sax.handler.ContentHandler):
                 limage = self.image.crop((x0, y0, x1, y1))
                 base = output_pattern % (self.pageno, self.lineno)
                 basedir = os.path.dirname(base)
-                if not os.path.exists(basedir): os.mkdir(basedir)
+                if not os.path.exists(basedir):
+                    os.mkdir(basedir)
                 limage.save(base + "." + output_format)
                 write_string(base + ".txt", self.text)
                 write_string(base + ".bbox", self.bbox)
                 self.total += 1
-                if self.total >= max_lines: sys.exit(0)
+                if self.total >= max_lines:
+                    sys.exit(0)
             self.text = None
             self.start = -1
         self.depth -= 1

@@ -20,17 +20,20 @@ def get_text(node):
 
 def get_prop(node, name):
     title = node.get('title')
-    if not title: return None
+    if not title:
+        return None
     props = title.split(';')
     for prop in props:
         (key, args) = prop.split(None, 1)
-        if key == name: return args
+        if key == name:
+            return args
     return None
 
 
 def get_bbox(node):
     bbox = get_prop(node, 'bbox')
-    if not bbox: return None
+    if not bbox:
+        return None
     return tuple([int(x) for x in bbox.split()])
 
 
