@@ -12,10 +12,10 @@ from lxml import html
 from PIL import Image, ImageDraw
 
 ################################################################
-### library
+# library
 ################################################################
 
-### XML node processing
+# XML node processing
 
 
 def get_prop(node, name):
@@ -70,7 +70,7 @@ def erode(u, tx, ty):
     return tuple([u[0] + x, u[1] + y, u[2] - x, u[3] - y])
 
 
-### text comparison
+# text comparison
 
 simp_re = re.compile(r'[^a-zA-Z0-9.,!?:;]+')
 
@@ -81,7 +81,7 @@ def normalize(s):
     return s
 
 
-### edit distance
+# edit distance
 
 
 def edit_distance(a, b, threshold=99999):
@@ -121,10 +121,10 @@ def remove_tex(text):
 
 
 ################################################################
-### main program
+# main program
 ################################################################
 
-### argument parsing
+# argument parsing
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
