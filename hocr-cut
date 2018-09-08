@@ -48,7 +48,7 @@ for page in pages:
         debug_image = Image.open(filename)
         dr = ImageDraw.Draw(debug_image)
         image_found = True
-    except:
+    except IOError:
         print("Warning: Image not found!")
         args.debug = False
         image_found = False
