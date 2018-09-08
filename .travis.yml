@@ -1,9 +1,9 @@
 language: python
 python:
-  - "2.7"
-  - "3.4"
-  - "3.5"
-  - "3.6"
+  #- "2.7"
+  #- "3.4"
+  #- "3.5"
+  #- "3.6"
   - "3.7"
 # Enable 3.7 without globally enabling sudo and dist: xenial for other build jobs
 matrix:
@@ -19,7 +19,8 @@ cache:
     - /home/travis/virtualenv/python3.6/lib/python3.6/site-packages
     - /home/travis/virtualenv/python3.7/lib/python3.7/site-packages
 install:
-  - pip install -r requirements.txt
+  - sudo apt install python3-lxml python3-pil python3-reportlab
+  # - pip install -r requirements.txt
   - python setup.py install
   # - pip install pep8
 script:
