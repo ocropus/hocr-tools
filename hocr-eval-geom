@@ -69,10 +69,11 @@ def relative_overlap(u, v):
 # argument parsing
 
 parser = argparse.ArgumentParser(
-    description=
-    "Compute statistics about the quality of the geometric segmentation at the level of the given OCR element",
-    epilog=
-    "The output is a 4-tuple (multiple,missing,error,count) for the truth compared with the actual and then again another 4-tuple in the other direction"
+    description=("Compute statistics about the quality of the geometric"
+                 "segmentation at the level of the given OCR element"),
+    epilog=("The output is a 4-tuple (multiple,missing,error,count)"
+            "for the truth compared with the actual and then again"
+            "another 4-tuple in the other direction")
 )
 parser.add_argument(
     "truth", help="hOCR file with ground truth", type=argparse.FileType('r'))
