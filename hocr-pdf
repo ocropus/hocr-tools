@@ -153,8 +153,9 @@ if __name__ == "__main__":
         description="Create a searchable PDF from a pile of hOCR and JPEG")
     parser.add_argument(
         "imgdir",
-        help=
-        "directory with the hOCR and JPEG files (corresponding JPEG and hOCR files have to have the same name with their respective file ending)"
+        help=("directory with the hOCR and JPEG files (corresponding"
+              "JPEG and hOCR files have to have the same name with"
+              "their respective file ending)")
     )
     parser.add_argument(
         "--savefile",

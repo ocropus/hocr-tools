@@ -10,8 +10,9 @@ import sys
 from lxml import html
 
 parser = argparse.ArgumentParser(
-    description=
-    'extract the text within all the ocr_line elements within the hOCR file')
+    description=('extract the text within all the ocr_line elements'
+                 'within the hOCR file')
+)
 parser.add_argument('file', nargs='?', default=sys.stdin)
 args = parser.parse_args()
 
