@@ -13,8 +13,7 @@ matrix:
       sudo: true
 cache: pip
 install:
-  - python -m pip install --upgrade pip setuptools wheel
-  - pip install Cython>=27.3
+  - pip install https://files.pythonhosted.org/packages/22/94/d4ad8d2d107af92ee6c517400ea98c23221bd89785e37bc3b76777649bda/lxml-4.2.4-cp37-cp37m-manylinux1_x86_64.whl
   - pip install -r requirements.txt
   - python setup.py install
   # - pip install pep8
