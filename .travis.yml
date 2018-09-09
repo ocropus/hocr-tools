@@ -4,7 +4,7 @@ python:
   - "3.4"
   - "3.5"
   - "3.6"
-  - "3.7"
+  - "3.7-dev"
 # Enable 3.7 without globally enabling sudo and dist: xenial for other build jobs
 matrix:
   include:
@@ -13,6 +13,7 @@ matrix:
       sudo: true
 cache: pip
 install:
+  - pip install -r cython
   - pip install -r requirements.txt
   - python setup.py install
   # - pip install pep8
