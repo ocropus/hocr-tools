@@ -13,7 +13,7 @@ matrix:
       sudo: true
 cache: pip
 install:
-  - pip install -r cython
+  - pip install cython
   - pip install -r requirements.txt
   - python setup.py install
   # - pip install pep8
