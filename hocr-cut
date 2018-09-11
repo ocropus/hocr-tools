@@ -28,8 +28,8 @@ def get_bbox(node):
 
 
 parser = argparse.ArgumentParser(
-    description=('Cut a page (horizontally) into two pages in the middle'
-                 'such that the most of the bounding boxes are separated'
+    description=('Cut a page (horizontally) into two pages in the middle '
+                 'such that the most of the bounding boxes are separated '
                  'nicely, e.g. cutting double pages or double columns')
 )
 parser.add_argument('file', nargs='?', default=sys.stdin)

@@ -32,7 +32,7 @@ def get_prop(node, name):
 
 
 parser = argparse.ArgumentParser(
-    description=("Extract the images and texts within all the ocr_line"
+    description=("Extract the images and texts within all the ocr_line "
                  "elements within the hOCR file")
 )
 parser.add_argument(
