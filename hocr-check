@@ -83,7 +83,7 @@ def mostly_nonoverlapping(boxes, significant_overlap=0.2):
 ################################################################
 
 parser = argparse.ArgumentParser(
-    description=("Check the given file for conformance with the hOCR"
+    description=("Check the given file for conformance with the hOCR "
                  "format spec")
 )
 parser.add_argument(

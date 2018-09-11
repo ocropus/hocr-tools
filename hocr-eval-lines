@@ -61,7 +61,7 @@ def edit_distance(a, b, threshold=999999):
 ################################################################
 
 parser = argparse.ArgumentParser(
-    description=("Compute statistics about the quality of the geometric"
+    description=("Compute statistics about the quality of the geometric "
                  "segmentation at the level of the given OCR element")
 )
 parser.add_argument(
