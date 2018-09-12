@@ -11,5 +11,5 @@ install:
   - python setup.py install
   # - pip install pep8
 script:
-  -  PYTHONIOENCODING=UTF-8 ./test/tsht
-  # - pep8 hocr-* setup.py; true
+  - PYTHONIOENCODING=UTF-8 ./test/tsht
+  - pycodestyle hocr-* setup.py
