@@ -52,9 +52,9 @@ if args.dehyphenate:
     # replace line breaks with a space
     text = re.sub(r"\r?\n", " ", text)
 wc = {}
-separators = re.compile('\W+', re.UNICODE)
+separators = re.compile(r'\W+', re.UNICODE)
 if args.spaces:
-    separators = re.compile('\s+', re.UNICODE)
+    separators = re.compile(r'\s+', re.UNICODE)
 for word in separators.split(text):
     if word == '':
         continue
