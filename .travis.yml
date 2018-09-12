@@ -9,7 +9,7 @@ cache: pip
 install:
   - pip install -r requirements.txt
   - python setup.py install
-  # - pip install pep8
+  - pip install pycodestyle
 script:
   - PYTHONIOENCODING=UTF-8 ./test/tsht
   - pycodestyle hocr-* setup.py

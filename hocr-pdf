@@ -74,8 +74,8 @@ def export_pdf(playground, default_dpi, savefile=False):
 
 def add_text_layer(pdf, image, height, dpi):
     """Draw an invisible text layer for OCR data"""
-    p1 = re.compile('bbox((\s+\d+){4})')
-    p2 = re.compile('baseline((\s+[\d\.\-]+){2})')
+    p1 = re.compile(r'bbox((\s+\d+){4})')
+    p2 = re.compile(r'baseline((\s+[\d\.\-]+){2})')
     hocrfile = os.path.splitext(image)[0] + ".hocr"
     hocr = etree.parse(hocrfile, html.XHTMLParser())
     for line in hocr.xpath('//*[@class="ocr_line"]'):
