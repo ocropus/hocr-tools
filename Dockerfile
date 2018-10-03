@@ -4,10 +4,12 @@
 # Test: ./test/tsht
 #
 
-FROM python:2
+FROM python:3
 ENV PYTHONIOENCODING utf8
 
-RUN apt-get update && apt-get install -y pdfgrep
+RUN apt-get update && apt-get install -y --no-install-recommends pdfgrep \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
