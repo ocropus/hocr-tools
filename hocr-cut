@@ -2,6 +2,7 @@
 
 from __future__ import print_function
 import argparse
+import os
 import sys
 
 from lxml import html
@@ -44,6 +45,7 @@ for page in pages:
 
     try:
         filename = get_prop(page, 'image')
+        filename = os.path.join(os.path.dirname(args.file), filename)
         image = Image.open(filename)
         debug_image = Image.open(filename)
         dr = ImageDraw.Draw(debug_image)
@@ -84,7 +86,7 @@ for page in pages:
     middle_left = left_ends[n // 2]
     middle_right = right_starts[m // 2]
 
-    middle = (middle_left + middle_right) / 2
+    middle = int((middle_left + middle_right) / 2)
     print("Cutting at", middle)
 
     if (image_found):
