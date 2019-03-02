@@ -12,4 +12,6 @@ exec_ok wget --quiet "http://digi.bib.uni-mannheim.de/fileadmin/digi/445442158/m
 hocr-pdf . > "${work}.pdf"
 file_not_empty "${work}.pdf"
 exec_ok pdfgrep 'tribunali' "${work}.pdf"
+hocr-pdf . --savefile "${work}-saved.pdf"
+file_not_empty "${work}-saved.pdf"
 rm $work*
