@@ -16,6 +16,7 @@
 * [Available Programs](#available-programs)
   * [hocr-check](#hocr-check) -- check the hOCR file for errors
   * [hocr-combine](#hocr-combine) -- combine pages in multiple hOCR files into a single document
+  * [hocr-cut](#hocr-cut) -- cut a page (horizontally) into two pages in the middle
   * [hocr-eval](#hocr-eval) -- compute number of segmentation and OCR errors
   * [hocr-eval-geom](#hocr-eval-geom) -- compute over, under, and mis-segmentations
   * [hocr-eval-lines](#hocr-eval-lines) -- compute OCR errors of hOCR output relative to text ground truth
@@ -120,6 +121,16 @@ hocr-combine file1.html [file2.html ...]
 
 Combine the OCR pages contained in each HTML file into a single document.
 The document metadata is taken from the first file.
+
+### hocr-cut
+
+```
+hocr-cut [-h] [-d] [file.html]
+```
+
+Cut a page (horizontally) into two pages in the middle
+such that the most of the bounding boxes are separated
+nicely, e.g. cutting double pages or double columns
 
 ### hocr-eval-lines
 
