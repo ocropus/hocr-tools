@@ -1,0 +1,12 @@
+#!/usr/bin/env tsht
+TESTDATA="../testdata"
+
+plan 4
+
+exec_ok "hocr-cut" "$TESTDATA/litver.html"
+
+"../../hocr-cut" -d "$TESTDATA/litver.html"
+file_not_empty "$TESTDATA/litver.left.png"
+file_not_empty "$TESTDATA/litver.right.png"
+file_not_empty "$TESTDATA/litver.cut.png"
+rm  "$TESTDATA/litver.left.png" "$TESTDATA/litver.right.png" "$TESTDATA/litver.cut.png"
