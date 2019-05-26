@@ -15,16 +15,12 @@ parser.add_argument(
     "filenames", help="hOCR files", nargs='+')
 args = parser.parse_args()
 
-file = open(args.filenames[0])
-doc = html.parse(file)
-file.close()
+doc = html.parse(args.filenames[0])
 pages = doc.xpath("//*[@class='ocr_page']")
 container = pages[-1].getparent()
 
-for fname in args.filenames[1:]:
-    file = open(fname)
-    doc2 = html.parse(file)
-    file.close()
+for fname in args.filenames:
+    doc2 = html.parse(fname)
     pages = doc2.xpath("//*[@class='ocr_page']")
     for page in pages:
         container.append(page)
