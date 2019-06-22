@@ -52,7 +52,18 @@ parser.add_argument(
     "--element",
     help="element-name, default: %(default)s",
     default="ocr_line")
+parser.add_argument(
+    "-P",
+    "--pad",
+    default=None,
+    help="extra padding for bounding box")
 args = parser.parse_args()
+
+padding = None
+if args.pad is not None:
+    padding = eval("["+args.pad+"]")
+    assert len(padding) in [1, 4], (args.pad, padding)
+    if len(padding)==1: padding = padding*4
 
 tpattern = args.pattern + '.txt'
 if args.pattern[-4] == '.':
@@ -71,13 +82,18 @@ for page in pages:
         print("not found:", iname)
         sys.exit(1)
     image = Image.open(iname)
-    #  print image
     lines = page.xpath("//*[@class='%s']" % args.element)
     lcount = 1
     for line in lines:
         bbox = [int(x) for x in get_prop(line, 'bbox').split()]
-        assert bbox[0] < bbox[2]
-        assert bbox[1] < bbox[3]
+        if padding is not None:
+            w, h = image.size
+            bbox[0] = max(bbox[0]-padding[0], 0)
+            bbox[1] = max(bbox[1]-padding[1], 0)
+            bbox[2] = min(bbox[2]+padding[2], h)
+            bbox[3] = min(bbox[3]+padding[3], w)
+        if bbox[0] > bbox[2] or bbox[1] >= bbox[3]:
+            continue
         lineimage = image.crop(bbox)
         lineimage.save(args.pattern % lcount)
         f = codecs.open(tpattern % lcount, 'w', 'utf-8')
