@@ -90,8 +90,8 @@ for page in pages:
             w, h = image.size
             bbox[0] = max(bbox[0]-padding[0], 0)
             bbox[1] = max(bbox[1]-padding[1], 0)
-            bbox[2] = min(bbox[2]+padding[2], h)
-            bbox[3] = min(bbox[3]+padding[3], w)
+            bbox[2] = min(bbox[2]+padding[2], w)
+            bbox[3] = min(bbox[3]+padding[3], h)
         if bbox[0] > bbox[2] or bbox[1] >= bbox[3]:
             continue
         lineimage = image.crop(bbox)
