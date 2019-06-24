@@ -63,7 +63,8 @@ padding = None
 if args.pad is not None:
     padding = eval("["+args.pad+"]")
     assert len(padding) in [1, 4], (args.pad, padding)
-    if len(padding)==1: padding = padding*4
+    if len(padding) == 1:
+        padding = padding * 4
 
 tpattern = args.pattern + '.txt'
 if args.pattern[-4] == '.':
