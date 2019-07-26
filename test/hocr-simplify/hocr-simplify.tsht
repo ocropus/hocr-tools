@@ -1,0 +1,11 @@
+#!/usr/bin/env tsht
+TESTDATA="../testdata"
+SIMPLEFILE="./tess.simple.hocr"
+
+plan 5
+
+after () {
+    rm -f "$SIMPLEFILE"
+}
+hocr-simplify "$TESTDATA/tess.hocr" -t page > "$SIMPLEFILE" || fail 'hocr-simplify'
+equals 3870 $(ls -l "$SIMPLEFILE" | cut -d " " -f5 ) 'filesize == 3870'
