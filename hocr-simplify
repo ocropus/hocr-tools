@@ -13,10 +13,10 @@ from lxml import etree, html
 
 parser = argparse.ArgumentParser(
     description=('change level of typesetting and/or'
-                 'remove properties to create' 
+                 'remove properties to create'
                  'a simplified hocr-version'))
 properties = ['baseline', 'bbox', 'cflow', 'cuts', 'hardbreak', 'image',
-              'imagemd5', 'lpageno', 'ppageno', 'nlp','order', 'poly',
+              'imagemd5', 'lpageno', 'ppageno', 'nlp', 'order', 'poly',
               'scan_res', 'textangle', 'x_booxes', 'x_font', 'x_fsize',
               'x_confs', 'x_scanner', 'x_source', 'x_wconf']
 
