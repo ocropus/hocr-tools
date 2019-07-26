@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
-# change level of typesetting and/or remove properties to create a simplified hocr-version
+# change level of typesetting and/or remove properties
+# to create a simplified hocr-version
 
 from __future__ import print_function
 import argparse
@@ -12,17 +13,23 @@ from lxml import etree, html
 
 parser = argparse.ArgumentParser(
     description=('change level of typesetting and/or'
-                 'remove properties to create a simplified hocr-version')
-)
-properties = ['baseline', 'bbox', 'cflow', 'cuts', 'hardbreak', 'image', 'imagemd5', 'lpageno', 'ppageno', 'nlp',
-              'order', 'poly', 'scan_res', 'textangle', 'x_booxes', 'x_font', 'x_fsize', 'x_confs', 'x_scanner',
-              'x_source', 'x_wconf']
+                 'remove properties to create' 
+                 'a simplified hocr-version'))
+properties = ['baseline', 'bbox', 'cflow', 'cuts', 'hardbreak', 'image',
+              'imagemd5', 'lpageno', 'ppageno', 'nlp','order', 'poly',
+              'scan_res', 'textangle', 'x_booxes', 'x_font', 'x_fsize',
+              'x_confs', 'x_scanner', 'x_source', 'x_wconf']
+
 parser.add_argument('file', nargs='?', default=sys.stdin)
-parser.add_argument('-t', '--typesetting', type=str, choices=['glyph', 'word', 'line', 'par', 'carea', 'page'],
+parser.add_argument('-t', '--typesetting', type=str,
+                    choices=['glyph', 'word', 'line', 'par', 'carea', 'page'],
                     help='Maximum level of typesetting')
-parser.add_argument('-r', '--remove-properties', nargs='+', help='List of properties: {}'.format(', '.join(properties)))
-parser.add_argument('fileout', nargs='?', help="Outputpath, default: print to terminal")
-parser.add_argument('-v', '--verbose', action='store_true', help='Verbose, default: %(default)s')
+parser.add_argument('-r', '--remove-properties', nargs='+',
+                    help='List of properties: {}'.format(','.join(properties)))
+parser.add_argument('fileout', nargs='?',
+                    help="Outputpath, default: print to terminal")
+parser.add_argument('-v', '--verbose',
+                    action='store_true', help='Verbose, default: %(default)s')
 
 args = parser.parse_args()
 
@@ -58,7 +65,7 @@ if args.remove_properties:
 if args.fileout is None:
     print(etree.tostring(doc, pretty_print=True).decode('UTF-8'))
 else:
-    # create output path if needed 
+    # create output path if needed
     if not os.path.isdir(os.path.dirname(args.fileout)):
         os.makedirs(os.path.dirname(args.fileout))
 
