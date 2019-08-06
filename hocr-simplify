@@ -15,10 +15,10 @@ parser = argparse.ArgumentParser(
     description=('change level of typesetting and/or'
                  'remove properties to create'
                  'a simplified hocr-version'))
-properties = ['baseline', 'bbox', 'cflow', 'cuts', 'hardbreak', 'image',
+properties = {'baseline', 'bbox', 'cflow', 'cuts', 'hardbreak', 'image',
               'imagemd5', 'lpageno', 'ppageno', 'nlp', 'order', 'poly',
               'scan_res', 'textangle', 'x_booxes', 'x_font', 'x_fsize',
-              'x_confs', 'x_scanner', 'x_source', 'x_wconf']
+              'x_confs', 'x_scanner', 'x_source', 'x_wconf'}
 
 parser.add_argument('file', nargs='?', default=sys.stdin)
 parser.add_argument('-t', '--typesetting', type=str,
@@ -26,10 +26,10 @@ parser.add_argument('-t', '--typesetting', type=str,
                     help='Maximum level of typesetting')
 parser.add_argument('-a', '--remove-attributes', nargs='+',
                     help='Removes attributes, e.g. id')
+parser.add_argument('-e', '--remove-empty-contents', action='store_true',
+                    help='Removes contents which are empty or contains whitespaces only')
 parser.add_argument('-p', '--remove-properties', nargs='+',
                     help='List of properties: {}'.format(','.join(properties)))
-parser.add_argument('-c', '--remove-choices', action='store_true',
-                    help='Removes alternatives (only for tesseract outputs)')
 parser.add_argument('fileout', nargs='?',
                     help="Output path, default: print to terminal")
 parser.add_argument('-v', '--verbose',
@@ -37,7 +37,8 @@ parser.add_argument('-v', '--verbose',
 
 args = parser.parse_args()
 
-doc = html.parse(args.file)
+with open(args.file,"r",encoding="utf-8") as f:
+    doc = html.parse(f)
 
 # change level of typesetting
 if args.typesetting:
@@ -50,6 +51,7 @@ if args.typesetting:
     # update meta content
     for node in doc.xpath("//*[@name='ocr-capabilities']"):
         content = node.get("content")
+        if content is None: continue
         if args.typesetting in content:
             node.set("content", content.split(args.typesetting)[0] + args.typesetting)
             if args.verbose:
@@ -59,10 +61,11 @@ if args.typesetting:
     for node in doc.xpath("//*[@class='{}']".format(args.typesetting)):
         if args.verbose:
             print(re.sub(r'\s+', '\x20', node.text_content()).strip())
-        if args.remove_choices or "glyph" in args.typesetting:
-            node.text = node.text_content().split(" ")[0].strip()
-        else:
-            node.text = node.text_content().strip()
+        text_content = node.text_content()
+        if args.remove_empty and text_content.strip() == "":
+            node.getparent().remove(node)
+            continue
+        node.text = "\n".join([text.strip() for text in text_content.splitlines() if text.strip() != ""])
         for child in list(node):
             node.remove(child)
 
@@ -93,5 +96,5 @@ else:
         os.makedirs(os.path.dirname(args.fileout))
 
     # write new hocr file
-    with open(args.fileout, "w") as f:
+    with open(args.fileout, "w", encoding="utf-8") as f:
         f.writelines(etree.tostring(doc, pretty_print=True,encoding=str))
