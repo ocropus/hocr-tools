@@ -2,10 +2,16 @@
 TESTDATA="../testdata"
 SIMPLEFILE="./tess.simple.hocr"
 
-plan 5
+plan 3
 
 after () {
     rm -f "$SIMPLEFILE"
 }
-hocr-simplify "$TESTDATA/tess.hocr" -t page > "$SIMPLEFILE" || fail 'hocr-simplify'
-equals 3870 $(ls -l "$SIMPLEFILE" | cut -d " " -f5 ) 'filesize == 3870'
+hocr-simplify "$TESTDATA/tess.hocr" -t ocr_page > "$SIMPLEFILE" || fail 'hocr-simplify'
+equals 3268 $(ls -l "$SIMPLEFILE" | cut -d " " -f5 ) 'filesize == 3268'
+
+hocr-simplify "$TESTDATA/tess_choices.hocr" -c -t ocr_line > "$SIMPLEFILE" || fail 'hocr-simplify'
+equals 9691 $(ls -l "$SIMPLEFILE" | cut -d " " -f5 ) 'filesize == 9691'
+
+hocr-simplify "$TESTDATA/tess_choices_charboxes.hocr" -c -t ocrx_word > "$SIMPLEFILE" || fail 'hocr-simplify'
+equals 58622 $(ls -l "$SIMPLEFILE" | cut -d " " -f5 ) 'filesize == 58622'
