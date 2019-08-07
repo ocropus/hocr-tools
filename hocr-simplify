@@ -72,8 +72,10 @@ if args.typesetting:
                 seperator = ""
             elif "line" in typesetting:
                 seperator = " "
-            node.text = seperator.join([text.strip().replace("\n","") for text in text_content.splitlines() if
-                                    not text.strip() != "\n" and args.remove_empty_contents or text.strip() != ""])
+            node.text = seperator.join([text.strip().replace("\n","") for text in
+                                        text_content.splitlines() if
+                                        not text.strip() != "\n" and
+                                        args.remove_empty_contents or text.strip() != ""])
             for child in list(node):
                node.remove(child)
         if typesetting == args.typesetting:
@@ -83,7 +85,10 @@ if args.typesetting:
 if args.remove_properties:
     for node in doc.xpath("//*[@title]"):
         title = node.get("title")
-        node.set('title', ';'.join([prop.replace("\"","'") for prop in title.split(";") if prop.strip().split(None, 1)[0] not in args.remove_properties]))
+        node.set('title', ';'.join([prop.replace("\"","'") for prop in
+                                    title.split(";") if
+                                    prop.strip().split(None, 1)[0] not in
+                                    args.remove_properties]))
         if args.verbose:
             print("Replaced :{}".format(title))
 else:
