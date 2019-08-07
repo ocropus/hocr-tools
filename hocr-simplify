@@ -11,8 +11,9 @@
 from __future__ import print_function
 import argparse
 import re
-import sys
 import os
+from io import open
+import sys
 
 from lxml import etree, html
 
@@ -110,12 +111,16 @@ if args.remove_attributes:
 
 # if no output path is given, print to terminal
 if args.fileout is None:
-    print(etree.tostring(doc, pretty_print=True,encoding=str))
+    encoding = "utf-8"
+    if sys.version_info[0] > 2:
+        encoding = str
+    print(etree.tostring(doc, pretty_print=True,encoding=encoding))
+
 else:
     # create output path if needed
     if not os.path.isdir(os.path.dirname(args.fileout)):
         os.makedirs(os.path.dirname(args.fileout))
 
     # write new hocr file
-    with open(args.fileout, "w", encoding="utf-8") as f:
-        f.writelines(etree.tostring(doc, pretty_print=True,encoding=str))
+    with open(args.fileout, "wb") as f:
+        f.write(etree.tostring(doc, pretty_print=True,encoding="utf-8"))
