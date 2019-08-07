@@ -1,7 +1,12 @@
 #!/usr/bin/env python
 
-# change level of typesetting and/or remove properties
-# to create a simplified hocr-version
+# Create a simplipfied hocr-version by:
+# change level of typesetting
+# remove properties
+# remove attributes
+# remove empty contents
+# remove character alternatives (choices)
+
 
 from __future__ import print_function
 import argparse
@@ -26,11 +31,12 @@ typesettings = ['ocrx_word', 'ocr_line', 'ocr_par', 'ocr_carea', 'ocr_page']
 parser.add_argument('file', nargs='?', default=sys.stdin)
 parser.add_argument('-t', '--typesetting', type=str,
                     choices=typesettings,
-                    help='List of typesetting: {}'.format(','.join(typesettings)))
+                    help='Sets a new minimum typesetting level.\n'
+                         'List of typesetting: {}'.format(','.join(typesettings)))
 parser.add_argument('-a', '--remove-attributes', nargs='+',
                     help='Removes attributes, e.g. id')
 parser.add_argument('-c', '--remove-choices', action='store_true',
-                    help='Removes alternatives (tesseract outputs only)')
+                    help='Removes character alternatives (tesseract outputs only)')
 parser.add_argument('-e', '--remove-empty-contents', action='store_true',
                     help='Removes contents which are empty or contains whitespaces only')
 parser.add_argument('-p', '--remove-properties', nargs='+',
