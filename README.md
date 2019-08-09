@@ -214,12 +214,12 @@ Create a searchable PDF from a pile of hOCR and JPEG. It is important that the c
 hocr-simplify [-t TYPESETTING] [-a REMOVE-ATTRIBUTES] [-c REMOVE-CHOICES] [-e REMOVE-EMPTY-CONTENTS] [-p REMOVE-PROPERTIES] input.html [output.html]
 ```
 
-Compute a simplified hOCR file. If called wihtout any output path, the result is printed to the terminal.
-Use: 
-`-t` to set a new typesetting level, lower ones will be removed, e.g. `-t page`
-`-a` to remove attributes, it will be applied to all typesetting levels, e.g. `-a id`
-`-c` to remove character choices
-`-e` to remove any text content containing only whitespaces or nothing
+Compute a simplified hOCR file. If called wihtout any output path, the result is printed to the terminal.  
+Use:  
+`-t` to set a new typesetting level, lower ones will be removed, e.g. `-t page`    
+`-a` to remove attributes, it will be applied to all typesetting levels, e.g. `-a id`  
+`-c` to remove character choices  
+`-e` to remove any text content containing only whitespaces or nothing  
 `-p` to remove properties, e.g. `-p baseline`
 
 
