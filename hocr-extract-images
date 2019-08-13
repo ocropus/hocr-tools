@@ -57,6 +57,11 @@ parser.add_argument(
     "--pad",
     default=None,
     help="extra padding for bounding box")
+parser.add_argument(
+    "-U",
+    "--unicodedammit",
+    action="store_true",
+    help="attempt to use BeautifulSoup.UnicodeDammit to fix encoding issues")
 args = parser.parse_args()
 
 padding = None
@@ -70,7 +75,14 @@ tpattern = args.pattern + '.txt'
 if args.pattern[-4] == '.':
     tpattern = args.pattern[:-3] + 'txt'
 
-doc = html.parse(args.file)
+if args.unicodedammit:
+    from bs4 import UnicodeDammit
+    content = args.file.read()
+    doc = UnicodeDammit(content, is_html=True)
+    parser = html.HTMLParser(encoding=doc.original_encoding)
+    doc = html.document_fromstring(content, parser=parser)
+else:
+    doc = html.parse(args.file)
 
 pages = doc.xpath('//*[@class="ocr_page"]')
 for page in pages:

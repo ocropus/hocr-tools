@@ -10,7 +10,7 @@ test_extract() {
     number="$3"
 
     echo "# $level argument"
-    exec_ok hocr-extract-images -p "$base-%03d.png" -b "$TESTDATA" -e "$level" "$TESTDATA/tess.hocr"
+    exec_ok hocr-extract-images $opt -p "$base-%03d.png" -b "$TESTDATA" -e "$level" "$TESTDATA/tess.hocr"
     equals $number "$(ls $base*png|wc -l)" "$level: number of images == $number"
     equals $number "$(ls $base*txt|wc -l)" "$level: number of texts == $number"
     rm $base*
@@ -26,3 +26,4 @@ test_extract 'page' 'ocr_page' 1
 test_extract 'line' 'ocr_line' 37
 test_extract 'word' 'ocrx_word' 503
 equals 503 "$(wc -w < "$TESTDATA/sample.txt")" "Indeed 503 words in sample"
+opt=-U test_extract 'word' 'ocrx_word' 503
