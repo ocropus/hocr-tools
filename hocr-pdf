@@ -27,6 +27,7 @@ import re
 import sys
 import zlib
 
+from bidi.algorithm import get_display
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen.canvas import Canvas
@@ -112,6 +113,7 @@ def add_text_layer(pdf, image, height, dpi):
             text.setTextOrigin(box[0] * 72 / dpi, height - b * 72 / dpi)
             box_width = (box[2] - box[0]) * 72 / dpi
             text.setHorizScale(100.0 * box_width / font_width)
+            rawtext = get_display(rawtext)
             text.textLine(rawtext)
             pdf.drawText(text)
 
