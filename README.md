@@ -69,7 +69,7 @@ On a Debian/Ubuntu system, install the dependencies from packages:
 
 ```
 sudo apt-get install python-lxml python-reportlab python-pil \
-  python-beautifulsoup python-numpy python-scipy python-matplotlib
+  python-beautifulsoup python-numpy python-scipy python-matplotlib python-setuptools
 ```
 
 Or, to fetch dependencies from the [cheese shop](https://pypi.python.org/pypi):
