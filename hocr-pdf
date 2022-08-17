@@ -53,7 +53,7 @@ def export_pdf(playground, default_dpi, savefile=False):
     """Create a searchable PDF from a pile of HOCR + JPEG"""
     images = sorted(glob.glob(os.path.join(playground, '*.jpg')))
     if len(images) == 0:
-        print("WARNING: No JPG images found in the folder", playground,
+        print(f"WARNING: No JPG images found in the folder {playground}"
               "\nScript cannot proceed without them and will terminate now.\n")
         sys.exit(0)
     load_invisible_font()
@@ -169,5 +169,5 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
     if not os.path.isdir(args.imgdir):
-        sys.exit("ERROR: Given path '" + args.imgdir + "' is not a directory")
+        sys.exit(f"ERROR: Given path '{args.imgdir}' is not a directory")
     export_pdf(args.imgdir, 300, args.savefile)
