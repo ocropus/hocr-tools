@@ -47,7 +47,7 @@ There is a [Public Specification](http://hocr.info) for the hOCR Format.
 
 ### About the code
 
-Each command line program is self contained; if you have Python 2.7 with the
+Each command line program is self contained; if you have Python 3.7 with the
 required packages installed, it should just work.  (Unfortunately, that
 means some code duplication; we may revisit this issue in later
 revisions.)
