@@ -2,7 +2,6 @@
 
 # check the given file for conformance with the hOCR format spec
 
-from __future__ import print_function
 import argparse
 import sys
 

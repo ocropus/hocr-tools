@@ -4,7 +4,6 @@
 # compute statistics about the quality of the geometric segmentation
 # at the level of the given OCR element
 
-from __future__ import print_function
 import argparse
 import re
 

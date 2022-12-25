@@ -3,7 +3,6 @@
 # extract the images and texts within all the ocr_line elements
 # within the hOCR file
 
-from __future__ import print_function
 import argparse
 import codecs
 import os
