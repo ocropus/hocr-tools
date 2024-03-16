@@ -1,0 +1,126 @@
+#!/usr/bin/env python
+
+# Create a simplipfied hocr-version by:
+# change level of typesetting
+# remove properties
+# remove attributes
+# remove empty contents
+# remove character alternatives (choices)
+
+
+from __future__ import print_function
+import argparse
+import re
+import os
+from io import open
+import sys
+
+from lxml import etree, html
+
+parser = argparse.ArgumentParser(
+    description=('change level of typesetting and/or'
+                 'remove properties to create'
+                 'a simplified hocr-version'))
+
+properties = ['baseline', 'bbox', 'cflow', 'cuts', 'hardbreak', 'image',
+              'imagemd5', 'lpageno', 'ppageno', 'nlp', 'order', 'poly',
+              'scan_res', 'textangle', 'x_booxes', 'x_font', 'x_fsize',
+              'x_confs', 'x_scanner', 'x_source', 'x_wconf']
+
+typesettings = ['ocrx_word', 'ocr_line', 'ocr_par', 'ocr_carea', 'ocr_page']
+
+parser.add_argument('file', nargs='?', default=sys.stdin)
+parser.add_argument('-t', '--typesetting', type=str,
+                    choices=typesettings,
+                    help='Sets a new minimum typesetting level.\n'
+                         'List of typesetting: {}'.format(','.join(typesettings)))
+parser.add_argument('-a', '--remove-attributes', nargs='+',
+                    help='Removes attributes, e.g. id')
+parser.add_argument('-c', '--remove-choices', action='store_true',
+                    help='Removes character alternatives (tesseract outputs only)')
+parser.add_argument('-e', '--remove-empty-contents', action='store_true',
+                    help='Removes contents which are empty or contains whitespaces only')
+parser.add_argument('-p', '--remove-properties', nargs='+',
+                    help='List of properties: {}'.format(','.join(properties)))
+parser.add_argument('fileout', nargs='?',
+                    help="Output path, default: print to terminal")
+parser.add_argument('-v', '--verbose',
+                    action='store_true', help='Verbose, default: %(default)s')
+
+args = parser.parse_args()
+
+with open(args.file,"r",encoding="utf-8") as f:
+    doc = html.parse(f)
+
+# delete all nodes where the id-attribute contain lstm_choices
+if args.remove_choices:
+    for node in doc.xpath('.//*[contains(@id,"lstm_choices")]'):
+        node.getparent().remove(node)
+
+# change level of typesetting
+if args.typesetting:
+    # update meta content
+    node = doc.find("//*[@name='ocr-capabilities']")
+    if node is not None:
+        content = node.get("content")
+        if content is not None and args.typesetting in content:
+            node.set("content", content.split(args.typesetting)[0] + args.typesetting)
+            if args.verbose:
+                print(node.get("content"))
+
+    # apply new level of typesetting
+    for typesetting in typesettings:
+        for node in doc.xpath("//*[@class='{}']".format(typesetting)):
+            if args.verbose and typesetting == args.typesetting:
+                print(re.sub(r'\s+', '\x20', node.text_content()).strip())
+            text_content = node.text_content()
+            seperator = "\n"
+            if "word" in typesetting:
+                seperator = ""
+            elif "line" in typesetting:
+                seperator = " "
+            node.text = seperator.join([text.strip().replace("\n","") for text in
+                                        text_content.splitlines() if
+                                        not text.strip() != "\n" and
+                                        args.remove_empty_contents or text.strip() != ""])
+            for child in list(node):
+               node.remove(child)
+        if typesetting == args.typesetting:
+            break
+
+# remove properties
+if args.remove_properties:
+    for node in doc.xpath("//*[@title]"):
+        title = node.get("title")
+        node.set('title', ';'.join([prop.replace("\"","'") for prop in
+                                    title.split(";") if
+                                    prop.strip().split(None, 1)[0] not in
+                                    args.remove_properties]))
+        if args.verbose:
+            print("Replaced :{}".format(title))
+else:
+    # Replace double quotation marks with single
+    for node in doc.xpath("//*[@title]"):
+        node.set("title",node.get("title").replace("\"","'"))
+
+# remove attributes
+if args.remove_attributes:
+    for attr in args.remove_attributes:
+        for node in doc.xpath("//*[@{}]".format(attr)):
+            node.attrib.pop("{}".format(attr))
+
+# if no output path is given, print to terminal
+if args.fileout is None:
+    encoding = "utf-8"
+    if sys.version_info[0] > 2:
+        encoding = str
+    print(etree.tostring(doc, pretty_print=True,encoding=encoding))
+
+else:
+    # create output path if needed
+    if not os.path.isdir(os.path.dirname(args.fileout)):
+        os.makedirs(os.path.dirname(args.fileout))
+
+    # write new hocr file
+    with open(args.fileout, "wb") as f:
+        f.write(etree.tostring(doc, pretty_print=True,encoding="utf-8"))
