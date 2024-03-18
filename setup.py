@@ -29,6 +29,7 @@ setup(
     install_requires=[
         'Pillow',
         'lxml',
+        'python-bidi',
         'reportlab',
     ],
     scripts=[c for c in glob.glob("hocr-*")]
